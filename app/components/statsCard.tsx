@@ -1,5 +1,5 @@
-import React, { ElementType, ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardDescription, CardTitle } from './ui/card';
+import React, { ReactNode } from 'react';
+import { Card, CardContent, CardHeader, CardDescription, CardTitle } from './ui/Card';
 
 type StatsCardProps = {
     icon: ReactNode; 

@@ -1,7 +1,7 @@
 import { clerkClient, currentUser } from '@clerk/nextjs/server';
-import SalesByCategoryChart from '../../components/salesByCategoryChart';
-import RevenueChart from '../../components/revenueChart';
-import StatsCard from '../../components/statsCard';
+import SalesByCategoryChart from '../../components/SalesByCategoryChart';
+import RevenueChart from '../../components/RevenueChart';
+import StatsCard from '../../components/StatsCard';
 import { FaBoxesPacking, FaMoneyBillWave } from 'react-icons/fa6';
 import { MdWidgets } from "react-icons/md";
 

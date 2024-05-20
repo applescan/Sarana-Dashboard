@@ -1,6 +1,5 @@
 import React from 'react';
-import { SignInButton, SignedOut, SignedIn, UserButton } from '@clerk/nextjs';
-import OrganizationProfilePage from './orgSwitch';
+import { SignInButton, SignedOut, SignedIn, UserButton, OrganizationSwitcher } from '@clerk/nextjs';
 
 export default function Header() {
 
@@ -13,7 +12,13 @@ export default function Header() {
 
                     </a>
                     <div className="flex items-center lg:order-2 gap-4">
-                    <OrganizationProfilePage/>
+                        <OrganizationSwitcher
+                            createOrganizationMode={'modal'}
+                            organizationProfileMode={'modal'}
+                            afterCreateOrganizationUrl="/organization/:slug"
+                            afterSelectOrganizationUrl="/organization/:slug"
+                            hidePersonal={true}
+                        />
                         <SignedOut>
                             <SignInButton />
                         </SignedOut>
