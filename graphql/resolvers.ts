@@ -28,129 +28,146 @@ export const resolvers = {
         },
     },
     Mutation: {
-        createOrder: async (_: any, args: any, context: Context) => {
-            const { totalAmount, orderItems } = args;
-            return await context.prisma.order.create({
-                data: {
-                    totalAmount,
+        createOrders: async (_: any, args: any, context: Context) => {
+            const { orders } = args;
+            return await context.prisma.order.createMany({
+                data: orders.map((order: any) => ({
+                    totalAmount: order.totalAmount,
+                    userId: order.userId,
                     orderItems: {
-                        create: orderItems.map((item: any) => ({
+                        create: order.orderItems.map((item: any) => ({
                             quantity: item.quantity,
                             price: item.price,
-                            product: { connect: { id: item.productId } },
+                            productId: item.productId,
                         })),
                     },
-                },
+                })),
             });
         },
-        updateOrder: async (_: any, args: any, context: Context) => {
-            const { id, totalAmount, orderItems } = args;
-            return await context.prisma.order.update({
-                where: { id },
-                data: {
-                    totalAmount,
-                    orderItems: {
-                        upsert: orderItems.map((item: any) => ({
-                            where: { id: item.id },
-                            update: {
-                                quantity: item.quantity,
-                                price: item.price,
-                            },
-                            create: {
-                                quantity: item.quantity,
-                                price: item.price,
-                                product: { connect: { id: item.productId } },
-                            },
-                        })),
+        updateOrders: async (_: any, args: any, context: Context) => {
+            const { orders } = args;
+            const updatePromises = orders.map((order: any) =>
+                context.prisma.order.update({
+                    where: { id: order.id },
+                    data: {
+                        totalAmount: order.totalAmount,
+                        orderItems: {
+                            upsert: order.orderItems.map((item: any) => ({
+                                where: { id: item.id },
+                                update: {
+                                    quantity: item.quantity,
+                                    price: item.price,
+                                },
+                                create: {
+                                    quantity: item.quantity,
+                                    price: item.price,
+                                    productId: item.productId,
+                                },
+                            })),
+                        },
                     },
-                },
-            });
+                })
+            );
+            return await Promise.all(updatePromises);
         },
-        deleteOrder: async (_: any, args: { id: number }, context: Context) => {
-            return await context.prisma.order.delete({
-                where: { id: args.id },
-            });
-        },
-
-        createOrderItem: async (_: any, args: any, context: Context) => {
-            const { quantity, price, orderId, productId } = args;
-            return await context.prisma.orderItem.create({
-                data: {
-                    quantity,
-                    price,
-                    order: { connect: { id: orderId } },
-                    product: { connect: { id: productId } },
-                },
-            });
-        },
-        updateOrderItem: async (_: any, args: any, context: Context) => {
-            const { id, quantity, price } = args;
-            return await context.prisma.orderItem.update({
-                where: { id },
-                data: {
-                    quantity,
-                    price,
-                },
-            });
-        },
-        deleteOrderItem: async (_: any, args: { id: number }, context: Context) => {
-            return await context.prisma.orderItem.delete({
-                where: { id: args.id },
-            });
+        deleteOrders: async (_: any, args: { ids: number[] }, context: Context) => {
+            const deletePromises = args.ids.map((id: number) =>
+                context.prisma.order.delete({ where: { id } })
+            );
+            return await Promise.all(deletePromises);
         },
 
-        createProduct: async (_: any, args: any, context: Context) => {
-            const { name, description, price, stock, categoryId } = args;
-            return await context.prisma.product.create({
-                data: {
-                    name,
-                    description,
-                    price,
-                    stock,
-                    category: { connect: { id: categoryId } },
-                },
+        createOrderItems: async (_: any, args: any, context: Context) => {
+            const { orderItems } = args;
+            return await context.prisma.orderItem.createMany({
+                data: orderItems.map((item: any) => ({
+                    quantity: item.quantity,
+                    price: item.price,
+                    orderId: item.orderId,
+                    productId: item.productId,
+                })),
             });
         },
-        updateProduct: async (_: any, args: any, context: Context) => {
-            const { id, name, description, price, stock, categoryId } = args;
-            return await context.prisma.product.update({
-                where: { id },
-                data: {
-                    name,
-                    description,
-                    price,
-                    stock,
-                    category: { connect: { id: categoryId } },
-                },
-            });
+        updateOrderItems: async (_: any, args: any, context: Context) => {
+            const { orderItems } = args;
+            const updatePromises = orderItems.map((item: any) =>
+                context.prisma.orderItem.update({
+                    where: { id: item.id },
+                    data: {
+                        quantity: item.quantity,
+                        price: item.price,
+                    },
+                })
+            );
+            return await Promise.all(updatePromises);
         },
-        deleteProduct: async (_: any, args: { id: number }, context: Context) => {
-            return await context.prisma.product.delete({
-                where: { id: args.id },
-            });
+        deleteOrderItems: async (_: any, args: { ids: number[] }, context: Context) => {
+            const deletePromises = args.ids.map((id: number) =>
+                context.prisma.orderItem.delete({ where: { id } })
+            );
+            return await Promise.all(deletePromises);
         },
 
-        createCategory: async (_: any, args: any, context: Context) => {
-            const { name } = args;
-            return await context.prisma.category.create({
-                data: {
-                    name,
-                },
+        createProducts: async (_: any, args: any, context: Context) => {
+            const { products } = args;
+            return await context.prisma.product.createMany({
+                data: products.map((product: any) => ({
+                    name: product.name,
+                    description: product.description,
+                    price: product.price,
+                    stock: product.stock,
+                    categoryId: product.categoryId,
+                })),
             });
         },
-        updateCategory: async (_: any, args: any, context: Context) => {
-            const { id, name } = args;
-            return await context.prisma.category.update({
-                where: { id },
-                data: {
-                    name,
-                },
+        updateProducts: async (_: any, args: any, context: Context) => {
+            const { products } = args;
+            const updatePromises = products.map((product: any) =>
+                context.prisma.product.update({
+                    where: { id: product.id },
+                    data: {
+                        name: product.name,
+                        description: product.description,
+                        price: product.price,
+                        stock: product.stock,
+                        categoryId: product.categoryId,
+                    },
+                })
+            );
+            return await Promise.all(updatePromises);
+        },
+        deleteProducts: async (_: any, args: { ids: number[] }, context: Context) => {
+            const deletePromises = args.ids.map((id: number) =>
+                context.prisma.product.delete({ where: { id } })
+            );
+            return await Promise.all(deletePromises);
+        },
+
+        createCategories: async (_: any, args: any, context: Context) => {
+            const { categories } = args;
+            return await context.prisma.category.createMany({
+                data: categories.map((category: any) => ({
+                    name: category.name,
+                })),
             });
         },
-        deleteCategory: async (_: any, args: { id: number }, context: Context) => {
-            return await context.prisma.category.delete({
-                where: { id: args.id },
-            });
+        updateCategories: async (_: any, args: any, context: Context) => {
+            const { categories } = args;
+            const updatePromises = categories.map((category: any) =>
+                context.prisma.category.update({
+                    where: { id: category.id },
+                    data: {
+                        name: category.name,
+                    },
+                })
+            );
+            return await Promise.all(updatePromises);
+        },
+        deleteCategories: async (_: any, args: { ids: number[] }, context: Context) => {
+            const deletePromises = args.ids.map((id: number) =>
+                context.prisma.category.delete({ where: { id } })
+            );
+            return await Promise.all(deletePromises);
         },
     },
     Order: {

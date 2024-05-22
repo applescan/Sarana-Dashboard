@@ -21,7 +21,7 @@ export const GET_ORDERS = gql`
 `;
 
 export const GET_ORDER_BY_ID = gql`
-  query GetOrderById($id: ID!) {
+  query GetOrderById($id: Int!) {
     order(id: $id) {
       id
       totalAmount
@@ -59,7 +59,7 @@ export const GET_PRODUCTS = gql`
 `;
 
 export const GET_PRODUCT_BY_ID = gql`
-  query GetProductById($id: ID!) {
+  query GetProductById($id: Int!) {
     product(id: $id) {
       id
       name
@@ -93,7 +93,7 @@ export const GET_CATEGORIES = gql`
 `;
 
 export const GET_CATEGORY_BY_ID = gql`
-  query GetCategoryById($id: ID!) {
+  query GetCategoryById($id: Int!) {
     category(id: $id) {
       id
       name

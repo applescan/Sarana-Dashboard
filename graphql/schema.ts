@@ -1,7 +1,7 @@
 export const typeDefs = `#graphql
 
 type Order {
-  id: ID!
+  id: Int!
   totalAmount: Float!
   orderItems: [OrderItem!]!
   createdAt: String!
@@ -9,7 +9,7 @@ type Order {
 }
 
 type OrderItem {
-  id: ID!
+  id: Int!
   quantity: Int!
   price: Float!
   order: Order!
@@ -19,7 +19,7 @@ type OrderItem {
 }
 
 type Product {
-  id: ID!
+  id: Int!
   name: String!
   description: String
   price: Float!
@@ -31,7 +31,7 @@ type Product {
 }
 
 type Category {
-  id: ID!
+  id: Int!
   name: String!
   products: [Product!]!
   createdAt: String!
@@ -42,32 +42,80 @@ type Query {
   orders: [Order!]!
   products: [Product!]!
   categories: [Category!]!
-  order(id: ID!): Order
-  product(id: ID!): Product
-  category(id: ID!): Category
+  order(id: Int!): Order
+  product(id: Int!): Product
+  category(id: Int!): Category
 }
 
 type Mutation {
-  createOrder(totalAmount: Float!, orderItems: [OrderItemInput!]!): Order!
-  updateOrder(id: ID!, totalAmount: Float, orderItems: [OrderItemInput!]): Order!
-  deleteOrder(id: ID!): Order!
+  createOrders(orders: [OrderInput!]!): BatchPayload!
+  updateOrders(orders: [OrderUpdateInput!]!): [Order!]!
+  deleteOrders(ids: [Int!]!): BatchPayload!
 
-  createOrderItem(quantity: Int!, price: Float!, orderId: ID!, productId: ID!): OrderItem!
-  updateOrderItem(id: ID!, quantity: Int, price: Float): OrderItem!
-  deleteOrderItem(id: ID!): OrderItem!
+  createOrderItems(orderItems: [OrderItemInput!]!): BatchPayload!
+  updateOrderItems(orderItems: [OrderItemUpdateInput!]!): [OrderItem!]!
+  deleteOrderItems(ids: [Int!]!): BatchPayload!
 
-  createProduct(name: String!, description: String, price: Float!, stock: Int!, categoryId: ID!): Product!
-  updateProduct(id: ID!, name: String, description: String, price: Float, stock: Int, categoryId: ID): Product!
-  deleteProduct(id: ID!): Product!
+  createProducts(products: [ProductInput!]!): BatchPayload!
+  updateProducts(products: [ProductUpdateInput!]!): [Product!]!
+  deleteProducts(ids: [Int!]!): BatchPayload!
 
-  createCategory(name: String!): Category!
-  updateCategory(id: ID!, name: String): Category!
-  deleteCategory(id: ID!): Category!
+  createCategories(categories: [CategoryInput!]!): BatchPayload!
+  updateCategories(categories: [CategoryUpdateInput!]!): [Category!]!
+  deleteCategories(ids: [Int!]!): BatchPayload!
+}
+
+input OrderInput {
+  totalAmount: Float!
+  userId: Int!
+  orderItems: [OrderItemInput!]!
+}
+
+input OrderUpdateInput {
+  id: Int!
+  totalAmount: Float
+  orderItems: [OrderItemUpdateInput!]
 }
 
 input OrderItemInput {
   quantity: Int!
   price: Float!
-  productId: ID!
+  productId: Int!
+}
+
+input OrderItemUpdateInput {
+  id: Int!
+  quantity: Int
+  price: Float
+}
+
+input ProductInput {
+  name: String!
+  description: String
+  price: Float!
+  stock: Int!
+  categoryId: Int!
+}
+
+input ProductUpdateInput {
+  id: Int!
+  name: String
+  description: String
+  price: Float
+  stock: Int
+  categoryId: Int
+}
+
+input CategoryInput {
+  name: String!
+}
+
+input CategoryUpdateInput {
+  id: Int!
+  name: String
+}
+
+type BatchPayload {
+  count: Int!
 }
 `;

@@ -1,5 +1,5 @@
 export interface Order {
-  id: string;
+  id: number;
   totalAmount: number;
   orderItems: OrderItem[];
   createdAt: string;
@@ -7,24 +7,24 @@ export interface Order {
 }
 
 export interface OrderItem {
-  id: string;
+  id: number;
   quantity: number;
   price: number;
-  orderId: string;
+  orderId: number;
   order: Order;
-  productId: string;
+  productId: number;
   product: Product;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Product {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   price: number;
   stock: number;
-  categoryId: string;
+  categoryId: number;
   category: Category;
   orderItems: OrderItem[];
   createdAt: string;
@@ -32,33 +32,56 @@ export interface Product {
 }
 
 export interface Category {
-  id: string;
+  id: number;
   name: string;
   products: Product[];
   createdAt: string;
   updatedAt: string;
 }
 
+export interface BatchPayload {
+  count: number;
+}
+
+export interface SellItemsPayload {
+  totalItemsSold: number;
+}
+
+export interface RevenuePayload {
+  totalRevenue: number;
+}
+
+export interface RestockItemsPayload {
+  totalItemsRestocked: number;
+}
+
 export interface Query {
   orders: Order[];
+  order(id: number): Order;
   products: Product[];
+  product(id: number): Product;
   categories: Category[];
+  category(id: number): Category;
 }
 
 export interface Mutation {
-  createOrder: (totalAmount: number, orderItems: { quantity: number; price: number; productId: string }[]) => Order;
-  updateOrder: (id: string, totalAmount?: number, orderItems?: { quantity: number; price: number; productId: string }[]) => Order;
-  deleteOrder: (id: string) => Order;
+  createOrders: (orders: { totalAmount: number; userId: number; orderItems: { quantity: number; price: number; productId: number }[] }[]) => BatchPayload;
+  updateOrders: (orders: { id: number; totalAmount?: number; orderItems?: { id: number; quantity: number; price: number; productId: number }[] }[]) => Order[];
+  deleteOrders: (ids: number[]) => BatchPayload;
 
-  createOrderItem: (quantity: number, price: number, orderId: string, productId: string) => OrderItem;
-  updateOrderItem: (id: string, quantity?: number, price?: number) => OrderItem;
-  deleteOrderItem: (id: string) => OrderItem;
+  createOrderItems: (orderItems: { quantity: number; price: number; orderId: number; productId: number }[]) => BatchPayload;
+  updateOrderItems: (orderItems: { id: number; quantity?: number; price?: number }[]) => OrderItem[];
+  deleteOrderItems: (ids: number[]) => BatchPayload;
 
-  createProduct: (name: string, description: string, price: number, stock: number, categoryId: string) => Product;
-  updateProduct: (id: string, name?: string, description?: string, price?: number, stock?: number, categoryId?: string) => Product;
-  deleteProduct: (id: string) => Product;
+  createProducts: (products: { name: string; description?: string; price: number; stock: number; categoryId: number }[]) => BatchPayload;
+  updateProducts: (products: { id: number; name?: string; description?: string; price?: number; stock?: number; categoryId?: number }[]) => Product[];
+  deleteProducts: (ids: number[]) => BatchPayload;
 
-  createCategory: (name: string) => Category;
-  updateCategory: (id: string, name?: string) => Category;
-  deleteCategory: (id: string) => Category;
+  createCategories: (categories: { name: string }[]) => BatchPayload;
+  updateCategories: (categories: { id: number; name?: string }[]) => Category[];
+  deleteCategories: (ids: number[]) => BatchPayload;
+
+  sellItems: (itemsSold: { productId: number; quantity: number }[]) => SellItemsPayload;
+  recordRevenue: (amount: number) => RevenuePayload;
+  restockItems: (itemsRestocked: { productId: number; quantity: number }[]) => RestockItemsPayload;
 }

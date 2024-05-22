@@ -1,8 +1,16 @@
 import { gql } from "@apollo/client";
 
-export const CREATE_ORDER = gql`
-  mutation CreateOrder($totalAmount: Float!, $orderItems: [OrderItemInput!]!) {
-    createOrder(totalAmount: $totalAmount, orderItems: $orderItems) {
+export const CREATE_ORDERS = gql`
+  mutation CreateOrders($orders: [OrderInput!]!) {
+    createOrders(orders: $orders) {
+      count
+    }
+  }
+`;
+
+export const UPDATE_ORDERS = gql`
+  mutation UpdateOrders($orders: [OrderUpdateInput!]!) {
+    updateOrders(orders: $orders) {
       id
       totalAmount
       createdAt
@@ -20,42 +28,28 @@ export const CREATE_ORDER = gql`
   }
 `;
 
-export const EDIT_ORDER = gql`
-  mutation EditOrder($id: ID!, $totalAmount: Float, $orderItems: [OrderItemInput!]) {
-    updateOrder(id: $id, totalAmount: $totalAmount, orderItems: $orderItems) {
-      id
-      totalAmount
-      createdAt
-      updatedAt
-      orderItems {
-        id
-        quantity
-        price
-        product {
-          id
-          name
-        }
-      }
+export const DELETE_ORDERS = gql`
+  mutation DeleteOrders($ids: [Int!]!) {
+    deleteOrders(ids: $ids) {
+      count
     }
   }
 `;
 
-export const DELETE_ORDER = gql`
-  mutation DeleteOrder($id: ID!) {
-    deleteOrder(id: $id) {
-      id
+export const CREATE_ORDER_ITEMS = gql`
+  mutation CreateOrderItems($orderItems: [OrderItemInput!]!) {
+    createOrderItems(orderItems: $orderItems) {
+      count
     }
   }
 `;
 
-export const CREATE_ORDER_ITEM = gql`
-  mutation CreateOrderItem($quantity: Int!, $price: Float!, $orderId: ID!, $productId: ID!) {
-    createOrderItem(quantity: $quantity, price: $price, orderId: $orderId, productId: $productId) {
+export const UPDATE_ORDER_ITEMS = gql`
+  mutation UpdateOrderItems($orderItems: [OrderItemUpdateInput!]!) {
+    updateOrderItems(orderItems: $orderItems) {
       id
       quantity
       price
-      createdAt
-      updatedAt
       order {
         id
         totalAmount
@@ -71,40 +65,25 @@ export const CREATE_ORDER_ITEM = gql`
   }
 `;
 
-export const EDIT_ORDER_ITEM = gql`
-  mutation EditOrderItem($id: ID!, $quantity: Int, $price: Float) {
-    updateOrderItem(id: $id, quantity: $quantity, price: $price) {
-      id
-      quantity
-      price
-      createdAt
-      updatedAt
-      order {
-        id
-        totalAmount
-        createdAt
-        updatedAt
-      }
-      product {
-        id
-        name
-        price
-      }
+export const DELETE_ORDER_ITEMS = gql`
+  mutation DeleteOrderItems($ids: [Int!]!) {
+    deleteOrderItems(ids: $ids) {
+      count
     }
   }
 `;
 
-export const DELETE_ORDER_ITEM = gql`
-  mutation DeleteOrderItem($id: ID!) {
-    deleteOrderItem(id: $id) {
-      id
+export const CREATE_PRODUCTS = gql`
+  mutation CreateProducts($products: [ProductInput!]!) {
+    createProducts(products: $products) {
+      count
     }
   }
 `;
 
-export const CREATE_PRODUCT = gql`
-  mutation CreateProduct($name: String!, $description: String, $price: Float!, $stock: Int!, $categoryId: ID!) {
-    createProduct(name: $name, description: $description, price: $price, stock: $stock, categoryId: $categoryId) {
+export const UPDATE_PRODUCTS = gql`
+  mutation UpdateProducts($products: [ProductUpdateInput!]!) {
+    updateProducts(products: $products) {
       id
       name
       description
@@ -120,35 +99,25 @@ export const CREATE_PRODUCT = gql`
   }
 `;
 
-export const EDIT_PRODUCT = gql`
-  mutation EditProduct($id: ID!, $name: String, $description: String, $price: Float, $stock: Int, $categoryId: ID) {
-    updateProduct(id: $id, name: $name, description: $description, price: $price, stock: $stock, categoryId: $categoryId) {
-      id
-      name
-      description
-      price
-      stock
-      createdAt
-      updatedAt
-      category {
-        id
-        name
-      }
+export const DELETE_PRODUCTS = gql`
+  mutation DeleteProducts($ids: [Int!]!) {
+    deleteProducts(ids: $ids) {
+      count
     }
   }
 `;
 
-export const DELETE_PRODUCT = gql`
-  mutation DeleteProduct($id: ID!) {
-    deleteProduct(id: $id) {
-      id
+export const CREATE_CATEGORIES = gql`
+  mutation CreateCategories($categories: [CategoryInput!]!) {
+    createCategories(categories: $categories) {
+      count
     }
   }
 `;
 
-export const CREATE_CATEGORY = gql`
-  mutation CreateCategory($name: String!) {
-    createCategory(name: $name) {
+export const UPDATE_CATEGORIES = gql`
+  mutation UpdateCategories($categories: [CategoryUpdateInput!]!) {
+    updateCategories(categories: $categories) {
       id
       name
       createdAt
@@ -162,26 +131,10 @@ export const CREATE_CATEGORY = gql`
   }
 `;
 
-export const EDIT_CATEGORY = gql`
-  mutation EditCategory($id: ID!, $name: String) {
-    updateCategory(id: $id, name: $name) {
-      id
-      name
-      createdAt
-      updatedAt
-      products {
-        id
-        name
-        price
-      }
-    }
-  }
-`;
-
-export const DELETE_CATEGORY = gql`
-  mutation DeleteCategory($id: ID!) {
-    deleteCategory(id: $id) {
-      id
+export const DELETE_CATEGORIES = gql`
+  mutation DeleteCategories($ids: [Int!]!) {
+    deleteCategories(ids: $ids) {
+      count
     }
   }
 `;
