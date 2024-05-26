@@ -28,23 +28,50 @@ model OrderItem {
 }
 
 model Product {
-  id           Int          @id @default(autoincrement())
-  name         String
-  description  String?
-  price        Float
-  stock        Int
-  categoryId   Int
-  category     Category     @relation(fields: [categoryId], references: [id])
-  orderItems   OrderItem[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id            Int             @id @default(autoincrement())
+  name          String
+  description   String?
+  price         Float
+  stock         Int
+  categoryId    Int?
+  category      Category?       @relation(fields: [categoryId], references: [id])
+  orderItems    OrderItem[]
+  itemsSold     ItemsSold[]
+  itemsRestocked ItemsRestocked[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Category {
   id          Int          @id @default(autoincrement())
   name        String
-  products    Product[]
+  products    Product[]    
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
+model Revenue {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ItemsSold {
+  id        Int      @id @default(autoincrement())
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ItemsRestocked {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

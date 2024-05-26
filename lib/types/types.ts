@@ -27,6 +27,8 @@ export interface Product {
   categoryId: number;
   category: Category;
   orderItems: OrderItem[];
+  itemsSold: ItemsSold[];
+  itemsRestocked: ItemsRestocked[];
   createdAt: string;
   updatedAt: string;
 }
@@ -39,20 +41,34 @@ export interface Category {
   updatedAt: string;
 }
 
+export interface ItemsSold {
+  id: number;
+  productId: number;
+  product: Product;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ItemsRestocked {
+  id: number;
+  productId: number;
+  product: Product;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Revenue {
+  id: number;
+  amount: number;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface BatchPayload {
   count: number;
-}
-
-export interface SellItemsPayload {
-  totalItemsSold: number;
-}
-
-export interface RevenuePayload {
-  totalRevenue: number;
-}
-
-export interface RestockItemsPayload {
-  totalItemsRestocked: number;
 }
 
 export interface Query {
@@ -62,11 +78,17 @@ export interface Query {
   product(id: number): Product;
   categories: Category[];
   category(id: number): Category;
+  itemsSold: ItemsSold[];
+  itemsRestocked: ItemsRestocked[];
+  revenues: Revenue[];
+  revenue(id: number): Revenue;
+  itemSold(id: number): ItemsSold;
+  itemRestocked(id: number): ItemsRestocked;
 }
 
 export interface Mutation {
-  createOrders: (orders: { totalAmount: number; userId: number; orderItems: { quantity: number; price: number; productId: number }[] }[]) => BatchPayload;
-  updateOrders: (orders: { id: number; totalAmount?: number; orderItems?: { id: number; quantity: number; price: number; productId: number }[] }[]) => Order[];
+  createOrders: (orders: { totalAmount: number }[]) => BatchPayload;
+  updateOrders: (orders: { id: number; totalAmount?: number }[]) => Order[];
   deleteOrders: (ids: number[]) => BatchPayload;
 
   createOrderItems: (orderItems: { quantity: number; price: number; orderId: number; productId: number }[]) => BatchPayload;
@@ -81,7 +103,7 @@ export interface Mutation {
   updateCategories: (categories: { id: number; name?: string }[]) => Category[];
   deleteCategories: (ids: number[]) => BatchPayload;
 
-  sellItems: (itemsSold: { productId: number; quantity: number }[]) => SellItemsPayload;
-  recordRevenue: (amount: number) => RevenuePayload;
-  restockItems: (itemsRestocked: { productId: number; quantity: number }[]) => RestockItemsPayload;
+  recordItemsSold: (itemsSold: { productId: number; quantity: number }[]) => BatchPayload;
+  recordRevenue: (revenue: { amount: number; date: string }[]) => BatchPayload;
+  recordItemsRestocked: (itemsRestocked: { productId: number; quantity: number }[]) => BatchPayload;
 }

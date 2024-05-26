@@ -1,68 +1,75 @@
-import { clerkClient, currentUser } from '@clerk/nextjs/server';
-import SalesByCategoryChart from '../../components/SalesByCategoryChart';
-import RevenueChart from '../../components/RevenueChart';
-import StatsCard from '../../components/StatsCard';
+'use client'
+
+import RevenueChart from '@/components/RevenueChart';
+import SalesByCategoryChart from '@/components/SalesByCategoryChart';
+import StatsCard from '@/components/StatsCard';
+import { useDashboardData } from '@/hook/useDashboardData';
+import { clerkClient, currentUser } from '@clerk/nextjs/dist/types/server';
+import React, { useEffect, useState } from 'react';
+
 import { FaBoxesPacking, FaMoneyBillWave } from 'react-icons/fa6';
 import { MdWidgets } from "react-icons/md";
 
-export default async function Page({ params }: { params: { slug: string } }) {
-    const user = await currentUser();
+const DashboardPage = ({ params }: { params: { slug: string } }) => {
+  const { 
+    loading, 
+    error, 
+    buildingSupplySalesData, 
+    categories, 
+    revenueData, 
+    itemsSold, 
+    itemsRestocked, 
+    totalRevenue 
+  } = useDashboardData();
 
-    if (!user) return <div>Not signed in</div>;
-    const slug = params.slug
+  const [user, setUser] = useState(null);
+  const [orgName, setOrgName] = useState('');
 
-    const response = await clerkClient.organizations.getOrganization({ slug });
+//   useEffect(() => {
+//     const fetchUserData = async () => {
+//       const user = await currentUser();
+//       if (user) {
+//         setUser(user);
+//         const response = await clerkClient.organizations.getOrganization({ slug: params.slug });
+//         setOrgName(response.name);
+//       }
+//     };
 
-    const orgName = response.name
+//     fetchUserData();
+//   }, [params.slug]);
 
-    const buildingSupplySalesData = [
-        { value: 1500, name: 'Lumber' },
-        { value: 1200, name: 'Plumbing Supplies' },
-        { value: 900, name: 'Electrical Supplies' },
-        { value: 800, name: 'Hand Tools' },
-        { value: 700, name: 'Power Tools' },
-        { value: 600, name: 'Paint' },
-        { value: 500, name: 'Flooring' },
-        { value: 400, name: 'Lighting' },
-        { value: 300, name: 'Garden Supplies' },
-        { value: 200, name: 'Hardware' }
-    ];
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
+//   if (!user) return <div>Not signed in</div>;
 
-    const categories = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    const data = [
-        200, 300, 290, 350, 320, 310,
-        330, 380, 360, 390, 450, 420
-    ];
+  return (
+    <div>
+      {/* <h1 className='text-3xl font-bold pb-8'> Welcome back to {orgName}, {user.firstName}</h1> */}
 
-    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
         <div>
-            <h1 className='text-3xl font-bold pb-8'> Welcome back to {orgName}, {user.firstName}</h1>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
-                <div>
-                    <StatsCard icon={<FaBoxesPacking className='h-9 w-9' />} desc={'Items Sold'} value={'10,632'} />
-                </div>
-                <div>
-                    <StatsCard icon={<MdWidgets  className='h-9 w-9' />} desc={'Items restocked'} value={'564'} />
-                </div>
-                <div>
-                    <StatsCard icon={<FaMoneyBillWave className='h-9 w-9' />} desc={'Sales Revenue'} value={'IDR 1,567,430'} />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="p-6 rounded-lg shadow-md">
-                    <h2>Revenue Stats</h2>
-                    <RevenueChart categories={categories} data={data} />
-                </div>
-                <div className="p-6 rounded-lg shadow-md">
-                    <h2>Sales by Category</h2>
-                    <SalesByCategoryChart data={buildingSupplySalesData} />
-                </div>
-            </div>
+          <StatsCard icon={<FaBoxesPacking className='h-9 w-9' />} desc={'Items Sold'} value={itemsSold.toString()} />
         </div>
-    );
-}
+        <div>
+          <StatsCard icon={<MdWidgets className='h-9 w-9' />} desc={'Items restocked'} value={itemsRestocked.toString()} />
+        </div>
+        <div>
+          <StatsCard icon={<FaMoneyBillWave className='h-9 w-9' />} desc={'Sales Revenue'} value={`IDR ${totalRevenue.toLocaleString()}`} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="p-6 rounded-lg shadow-md">
+          <h2>Revenue Stats</h2>
+          <RevenueChart categories={categories} data={revenueData} />
+        </div>
+        <div className="p-6 rounded-lg shadow-md">
+          <h2>Sales by Category</h2>
+          <SalesByCategoryChart data={buildingSupplySalesData} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardPage;

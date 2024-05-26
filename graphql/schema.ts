@@ -3,7 +3,7 @@ export const typeDefs = `#graphql
 type Order {
   id: Int!
   totalAmount: Float!
-  orderItems: [OrderItem!]!
+  orderItems: [OrderItem]
   createdAt: String!
   updatedAt: String!
 }
@@ -24,8 +24,10 @@ type Product {
   description: String
   price: Float!
   stock: Int!
-  category: Category!
-  orderItems: [OrderItem!]!
+  category: Category
+  orderItems: [OrderItem]
+  itemsSold: [ItemsSold]
+  itemsRestocked: [ItemsRestocked]
   createdAt: String!
   updatedAt: String!
 }
@@ -33,53 +35,89 @@ type Product {
 type Category {
   id: Int!
   name: String!
-  products: [Product!]!
+  products: [Product]
   createdAt: String!
   updatedAt: String!
 }
 
+type ItemsSold {
+  id: Int!
+  product: Product
+  quantity: Int
+  createdAt: String!
+  updatedAt: String!
+}
+
+type ItemsRestocked {
+  id: Int!
+  product: Product!
+  quantity: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Revenue {
+  id: Int!
+  amount: Float!
+  date: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type BatchPayload {
+  count: Int!
+}
+
 type Query {
-  orders: [Order!]!
-  products: [Product!]!
-  categories: [Category!]!
+  orders: [Order]
   order(id: Int!): Order
+  products: [Product]
   product(id: Int!): Product
+  categories: [Category]
   category(id: Int!): Category
+  itemsSold: [ItemsSold]
+  itemsRestocked: [ItemsRestocked]
+  revenues: [Revenue]
+  revenue(id: Int!): Revenue
+  itemSold(id: Int!): ItemsSold
+  itemRestocked(id: Int!): ItemsRestocked
 }
 
 type Mutation {
   createOrders(orders: [OrderInput!]!): BatchPayload!
-  updateOrders(orders: [OrderUpdateInput!]!): [Order!]!
+  updateOrders(orders: [OrderUpdateInput!]!): [Order]
   deleteOrders(ids: [Int!]!): BatchPayload!
 
   createOrderItems(orderItems: [OrderItemInput!]!): BatchPayload!
-  updateOrderItems(orderItems: [OrderItemUpdateInput!]!): [OrderItem!]!
+  updateOrderItems(orderItems: [OrderItemUpdateInput!]!): [OrderItem]
   deleteOrderItems(ids: [Int!]!): BatchPayload!
 
   createProducts(products: [ProductInput!]!): BatchPayload!
-  updateProducts(products: [ProductUpdateInput!]!): [Product!]!
+  updateProducts(products: [ProductUpdateInput!]!): [Product]!
   deleteProducts(ids: [Int!]!): BatchPayload!
 
   createCategories(categories: [CategoryInput!]!): BatchPayload!
-  updateCategories(categories: [CategoryUpdateInput!]!): [Category!]!
+  updateCategories(categories: [CategoryUpdateInput!]!): [Category]!
   deleteCategories(ids: [Int!]!): BatchPayload!
+
+  recordItemsSold(itemsSold: [ItemsSoldInput!]!): BatchPayload!
+  recordRevenue(revenue: [RevenueInput!]!): BatchPayload!
+  recordItemsRestocked(itemsRestocked: [ItemsRestockedInput!]!): BatchPayload!
 }
 
 input OrderInput {
   totalAmount: Float!
-  userId: Int!
-  orderItems: [OrderItemInput!]!
 }
 
 input OrderUpdateInput {
   id: Int!
   totalAmount: Float
-  orderItems: [OrderItemUpdateInput!]
 }
 
 input OrderItemInput {
   quantity: Int!
   price: Float!
+  orderId: Int!
   productId: Int!
 }
 
@@ -94,7 +132,7 @@ input ProductInput {
   description: String
   price: Float!
   stock: Int!
-  categoryId: Int!
+  categoryId: Int
 }
 
 input ProductUpdateInput {
@@ -115,7 +153,18 @@ input CategoryUpdateInput {
   name: String
 }
 
-type BatchPayload {
-  count: Int!
+input ItemsSoldInput {
+  productId: Int!
+  quantity: Int!
+}
+
+input RevenueInput {
+  amount: Float!
+  date: String!
+}
+
+input ItemsRestockedInput {
+  productId: Int!
+  quantity: Int!
 }
 `;

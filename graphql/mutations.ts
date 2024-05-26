@@ -138,3 +138,27 @@ export const DELETE_CATEGORIES = gql`
     }
   }
 `;
+
+export const RECORD_ITEMS_SOLD = gql`
+  mutation RecordItemsSold($itemsSold: [ItemsSoldInput!]!) {
+    recordItemsSold(itemsSold: $itemsSold) {
+      count
+    }
+  }
+`;
+
+export const RECORD_REVENUE = gql`
+  mutation RecordRevenue($revenue: [RevenueInput!]!) {
+    recordRevenue(revenue: $revenue) {
+      count
+    }
+  }
+`;
+
+export const RECORD_ITEMS_RESTOCKED = gql`
+  mutation RecordItemsRestocked($itemsRestocked: [ItemsRestockedInput!]!) {
+    recordItemsRestocked(itemsRestocked: $itemsRestocked) {
+      count
+    }
+  }
+`;

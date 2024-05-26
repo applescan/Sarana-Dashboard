@@ -1,5 +1,34 @@
 import { gql } from "@apollo/client";
 
+export const GET_DASHBOARD_DATA = gql`
+  query GetDashboardData {
+    categories {
+      id
+      name
+      products {
+        id
+        name
+        price
+      }
+    }
+    itemsSold {
+      product {
+        category {
+          name
+        }
+      }
+      quantity
+    }
+    itemsRestocked {
+      quantity
+    }
+    revenues {
+      amount
+      date
+    }
+  }
+`;
+
 export const GET_ORDERS = gql`
   query Orders {
     orders {
@@ -103,6 +132,90 @@ export const GET_CATEGORY_BY_ID = gql`
         id
         name
         price
+      }
+    }
+  }
+`;
+
+export const GET_REVENUES = gql`
+  query Revenues {
+    revenues {
+      id
+      amount
+      date
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const GET_ITEMS_SOLD = gql`
+  query ItemsSold {
+    itemsSold {
+      id
+      quantity
+      createdAt
+      updatedAt
+      product {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_ITEMS_RESTOCKED = gql`
+  query ItemsRestocked {
+    itemsRestocked {
+      id
+      quantity
+      createdAt
+      updatedAt
+      product {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_REVENUE_BY_ID = gql`
+  query GetRevenueById($id: Int!) {
+    revenue(id: $id) {
+      id
+      amount
+      date
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const GET_ITEM_SOLD_BY_ID = gql`
+  query GetItemSoldById($id: Int!) {
+    itemSold(id: $id) {
+      id
+      quantity
+      createdAt
+      updatedAt
+      product {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_ITEM_RESTOCKED_BY_ID = gql`
+  query GetItemRestockedById($id: Int!) {
+    itemRestocked(id: $id) {
+      id
+      quantity
+      createdAt
+      updatedAt
+      product {
+        id
+        name
       }
     }
   }
