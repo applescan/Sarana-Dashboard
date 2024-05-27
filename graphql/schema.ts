@@ -36,6 +36,7 @@ type Category {
   id: Int!
   name: String!
   products: [Product]
+  itemsSold: [ItemsSold] # Added itemsSold field here
   createdAt: String!
   updatedAt: String!
 }

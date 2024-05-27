@@ -60,8 +60,8 @@ model Revenue {
 
 model ItemsSold {
   id        Int      @id @default(autoincrement())
-  productId Int?
-  product   Product? @relation(fields: [productId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

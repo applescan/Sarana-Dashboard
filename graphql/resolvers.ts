@@ -5,7 +5,11 @@ export const resolvers = {
         orders: async (_: any, __: any, context: Context) => {
             return await context.prisma.order.findMany({
                 include: {
-                    orderItems: true,
+                    orderItems: {
+                        include: {
+                            product: true,
+                        },
+                    },
                 },
             });
         },
@@ -13,7 +17,11 @@ export const resolvers = {
             return await context.prisma.order.findUnique({
                 where: { id: args.id },
                 include: {
-                    orderItems: true,
+                    orderItems: {
+                        include: {
+                            product: true,
+                        },
+                    },
                 },
             });
         },
@@ -68,7 +76,11 @@ export const resolvers = {
         itemsSold: async (_: any, __: any, context: Context) => {
             return await context.prisma.itemsSold.findMany({
                 include: {
-                    product: true,
+                    product: {
+                        include: {
+                            category: true,
+                        },
+                    },
                 },
             });
         },
@@ -76,14 +88,22 @@ export const resolvers = {
             return await context.prisma.itemsSold.findUnique({
                 where: { id: args.id },
                 include: {
-                    product: true,
+                    product: {
+                        include: {
+                            category: true,
+                        },
+                    },
                 },
             });
         },
         itemsRestocked: async (_: any, __: any, context: Context) => {
             return await context.prisma.itemsRestocked.findMany({
                 include: {
-                    product: true,
+                    product: {
+                        include: {
+                            category: true,
+                        },
+                    },
                 },
             });
         },
@@ -91,7 +111,11 @@ export const resolvers = {
             return await context.prisma.itemsRestocked.findUnique({
                 where: { id: args.id },
                 include: {
-                    product: true,
+                    product: {
+                        include: {
+                            category: true,
+                        },
+                    },
                 },
             });
         },
@@ -211,6 +235,18 @@ export const resolvers = {
                     orderItems: true,
                     itemsSold: true,
                     itemsRestocked: true,
+                },
+            });
+        },
+        itemsSold: async (parent: any, _: any, context: Context) => {
+            return await context.prisma.itemsSold.findMany({
+                where: {
+                    product: {
+                        categoryId: parent.id,
+                    },
+                },
+                include: {
+                    product: true,
                 },
             });
         },

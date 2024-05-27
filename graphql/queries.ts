@@ -5,19 +5,17 @@ export const GET_DASHBOARD_DATA = gql`
     categories {
       id
       name
-      products {
-        id
-        name
-        price
-      }
     }
     itemsSold {
+      quantity
       product {
+        id
+        name
         category {
+          id
           name
         }
       }
-      quantity
     }
     itemsRestocked {
       quantity
@@ -83,6 +81,14 @@ export const GET_PRODUCTS = gql`
         id
         name
       }
+      itemsSold {
+        id
+        quantity
+      }
+      itemsRestocked {
+        id
+        quantity
+      }
     }
   }
 `;
@@ -101,6 +107,14 @@ export const GET_PRODUCT_BY_ID = gql`
         id
         name
       }
+      itemsSold {
+        id
+        quantity
+      }
+      itemsRestocked {
+        id
+        quantity
+      }
     }
   }
 `;
@@ -116,6 +130,18 @@ export const GET_CATEGORIES = gql`
         id
         name
         price
+        itemsSold {
+          id
+          quantity
+        }
+      }
+      itemsSold {
+        id
+        product {
+          id
+          name
+        }
+        quantity
       }
     }
   }
@@ -132,6 +158,18 @@ export const GET_CATEGORY_BY_ID = gql`
         id
         name
         price
+        itemsSold {
+          id
+          quantity
+        }
+      }
+      itemsSold {
+        id
+        product {
+          id
+          name
+        }
+        quantity
       }
     }
   }
@@ -159,6 +197,10 @@ export const GET_ITEMS_SOLD = gql`
       product {
         id
         name
+        category {
+          id
+          name
+        }
       }
     }
   }
@@ -174,6 +216,10 @@ export const GET_ITEMS_RESTOCKED = gql`
       product {
         id
         name
+        category {
+          id
+          name
+        }
       }
     }
   }
@@ -201,6 +247,10 @@ export const GET_ITEM_SOLD_BY_ID = gql`
       product {
         id
         name
+        category {
+          id
+          name
+        }
       }
     }
   }
@@ -216,6 +266,10 @@ export const GET_ITEM_RESTOCKED_BY_ID = gql`
       product {
         id
         name
+        category {
+          id
+          name
+        }
       }
     }
   }
