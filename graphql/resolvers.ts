@@ -35,7 +35,7 @@ export const resolvers = {
                 },
             });
         },
-        product: async (_: any, args: { id: number }, context: Context) => {
+        product: async (_: any, args: { id: string }, context: Context) => {  // Changed id type to string
             return await context.prisma.product.findUnique({
                 where: { id: args.id },
                 include: {
@@ -179,7 +179,8 @@ export const resolvers = {
                     data: {
                         name: product.name,
                         description: product.description,
-                        price: product.price,
+                        buyPrice: product.buyPrice,
+                        sellPrice: product.sellPrice,
                         stock: product.stock,
                         categoryId: product.categoryId,
                     },
@@ -187,7 +188,7 @@ export const resolvers = {
             );
             return await Promise.all(updatePromises);
         },
-        deleteProducts: async (_: any, args: { ids: number[] }, context: Context) => {
+        deleteProducts: async (_: any, args: { ids: string[] }, context: Context) => {  // Changed id type to string
             return await context.prisma.product.deleteMany({
                 where: { id: { in: args.ids } },
             });

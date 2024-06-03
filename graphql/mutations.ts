@@ -59,7 +59,7 @@ export const UPDATE_ORDER_ITEMS = gql`
       product {
         id
         name
-        price
+        sellPrice  # Updated to sellPrice
       }
     }
   }
@@ -87,7 +87,8 @@ export const UPDATE_PRODUCTS = gql`
       id
       name
       description
-      price
+      buyPrice  # Added buyPrice
+      sellPrice  # Added sellPrice
       stock
       createdAt
       updatedAt
@@ -100,7 +101,7 @@ export const UPDATE_PRODUCTS = gql`
 `;
 
 export const DELETE_PRODUCTS = gql`
-  mutation DeleteProducts($ids: [Int!]!) {
+  mutation DeleteProducts($ids: [String!]!) {  # Changed id type to String
     deleteProducts(ids: $ids) {
       count
     }
@@ -125,7 +126,8 @@ export const UPDATE_CATEGORIES = gql`
       products {
         id
         name
-        price
+        buyPrice  # Updated to buyPrice
+        sellPrice  # Updated to sellPrice
       }
     }
   }

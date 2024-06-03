@@ -19,10 +19,11 @@ type OrderItem {
 }
 
 type Product {
-  id: Int!
+  id: String!
   name: String!
   description: String
-  price: Float!
+  buyPrice: Float!
+  sellPrice: Float!
   stock: Int!
   category: Category
   orderItems: [OrderItem]
@@ -36,15 +37,15 @@ type Category {
   id: Int!
   name: String!
   products: [Product]
-  itemsSold: [ItemsSold] # Added itemsSold field here
+  itemsSold: [ItemsSold]
   createdAt: String!
   updatedAt: String!
 }
 
 type ItemsSold {
   id: Int!
-  product: Product
-  quantity: Int
+  product: Product!
+  quantity: Int!
   createdAt: String!
   updatedAt: String!
 }
@@ -73,7 +74,7 @@ type Query {
   orders: [Order]
   order(id: Int!): Order
   products: [Product]
-  product(id: Int!): Product
+  product(id: String!): Product
   categories: [Category]
   category(id: Int!): Category
   itemsSold: [ItemsSold]
@@ -95,7 +96,7 @@ type Mutation {
 
   createProducts(products: [ProductInput!]!): BatchPayload!
   updateProducts(products: [ProductUpdateInput!]!): [Product]!
-  deleteProducts(ids: [Int!]!): BatchPayload!
+  deleteProducts(ids: [String!]!): BatchPayload! 
 
   createCategories(categories: [CategoryInput!]!): BatchPayload!
   updateCategories(categories: [CategoryUpdateInput!]!): [Category]!
@@ -119,7 +120,7 @@ input OrderItemInput {
   quantity: Int!
   price: Float!
   orderId: Int!
-  productId: Int!
+  productId: String! 
 }
 
 input OrderItemUpdateInput {
@@ -129,18 +130,21 @@ input OrderItemUpdateInput {
 }
 
 input ProductInput {
+  id: String  
   name: String!
   description: String
-  price: Float!
+  buyPrice: Float!  
+  sellPrice: Float!  
   stock: Int!
   categoryId: Int
 }
 
 input ProductUpdateInput {
-  id: Int!
+  id: String!  
   name: String
   description: String
-  price: Float
+  buyPrice: Float 
+  sellPrice: Float 
   stock: Int
   categoryId: Int
 }
@@ -155,7 +159,7 @@ input CategoryUpdateInput {
 }
 
 input ItemsSoldInput {
-  productId: Int!
+  productId: String!
   quantity: Int!
 }
 
@@ -165,7 +169,7 @@ input RevenueInput {
 }
 
 input ItemsRestockedInput {
-  productId: Int!
+  productId: String!
   quantity: Int!
 }
 `;

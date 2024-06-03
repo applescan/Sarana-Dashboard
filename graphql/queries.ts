@@ -19,6 +19,10 @@ export const GET_DASHBOARD_DATA = gql`
     }
     itemsRestocked {
       quantity
+      product {
+        id
+        name
+      }
     }
     revenues {
       amount
@@ -73,7 +77,8 @@ export const GET_PRODUCTS = gql`
       id
       name
       description
-      price
+      buyPrice
+      sellPrice
       stock
       createdAt
       updatedAt
@@ -94,12 +99,13 @@ export const GET_PRODUCTS = gql`
 `;
 
 export const GET_PRODUCT_BY_ID = gql`
-  query GetProductById($id: Int!) {
+  query GetProductById($id: String!) {
     product(id: $id) {
       id
       name
       description
-      price
+      buyPrice
+      sellPrice
       stock
       createdAt
       updatedAt
@@ -129,7 +135,8 @@ export const GET_CATEGORIES = gql`
       products {
         id
         name
-        price
+        buyPrice
+        sellPrice
         itemsSold {
           id
           quantity
@@ -157,7 +164,8 @@ export const GET_CATEGORY_BY_ID = gql`
       products {
         id
         name
-        price
+        buyPrice
+        sellPrice
         itemsSold {
           id
           quantity

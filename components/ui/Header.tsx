@@ -15,8 +15,8 @@ export default function Header() {
                         <OrganizationSwitcher
                             createOrganizationMode={'modal'}
                             organizationProfileMode={'modal'}
-                            afterCreateOrganizationUrl="/organization/:slug"
-                            afterSelectOrganizationUrl="/organization/:slug"
+                            afterCreateOrganizationUrl="/:slug/dashboard"
+                            afterSelectOrganizationUrl="/:slug/dashboard"
                             hidePersonal={true}
                         />
                         <SignedOut>

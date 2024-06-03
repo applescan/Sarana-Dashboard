@@ -21,17 +21,18 @@ model OrderItem {
   price     Float
   orderId   Int
   order     Order    @relation(fields: [orderId], references: [id])
-  productId Int
+  productId String
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Product {
-  id            Int             @id @default(autoincrement())
+  id            String          @id @default(uuid())
   name          String
   description   String?
-  price         Float
+  buyPrice      Float
+  sellPrice     Float
   stock         Int
   categoryId    Int?
   category      Category?       @relation(fields: [categoryId], references: [id])
@@ -60,7 +61,7 @@ model Revenue {
 
 model ItemsSold {
   id        Int      @id @default(autoincrement())
-  productId Int
+  productId String
   product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
   createdAt DateTime @default(now())
@@ -69,7 +70,7 @@ model ItemsSold {
 
 model ItemsRestocked {
   id        Int      @id @default(autoincrement())
-  productId Int
+  productId String
   product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
   createdAt DateTime @default(now())
