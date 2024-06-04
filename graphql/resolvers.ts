@@ -35,7 +35,7 @@ export const resolvers = {
                 },
             });
         },
-        product: async (_: any, args: { id: string }, context: Context) => {  // Changed id type to string
+        product: async (_: any, args: { id: string }, context: Context) => {
             return await context.prisma.product.findUnique({
                 where: { id: args.id },
                 include: {
@@ -149,8 +149,28 @@ export const resolvers = {
             });
         },
         createOrderItems: async (_: any, args: any, context: Context) => {
-            return await context.prisma.orderItem.createMany({
-                data: args.orderItems,
+            const orderItems = args.orderItems;
+
+            // Create order items and update product stock in a transaction
+            return await context.prisma.$transaction(async (prisma) => {
+                const createdOrderItems = await prisma.orderItem.createMany({
+                    data: orderItems,
+                });
+
+                const updateStockPromises = orderItems.map((item: any) =>
+                    prisma.product.update({
+                        where: { id: item.productId },
+                        data: {
+                            stock: {
+                                decrement: item.quantity,
+                            },
+                        },
+                    })
+                );
+
+                await Promise.all(updateStockPromises);
+
+                return createdOrderItems;
             });
         },
         updateOrderItems: async (_: any, args: any, context: Context) => {
@@ -188,7 +208,7 @@ export const resolvers = {
             );
             return await Promise.all(updatePromises);
         },
-        deleteProducts: async (_: any, args: { ids: string[] }, context: Context) => {  // Changed id type to string
+        deleteProducts: async (_: any, args: { ids: string[] }, context: Context) => {
             return await context.prisma.product.deleteMany({
                 where: { id: { in: args.ids } },
             });
@@ -213,8 +233,28 @@ export const resolvers = {
             });
         },
         recordItemsSold: async (_: any, args: any, context: Context) => {
-            return await context.prisma.itemsSold.createMany({
-                data: args.itemsSold,
+            const itemsSold = args.itemsSold;
+
+            // Record items sold and update product stock in a transaction
+            return await context.prisma.$transaction(async (prisma) => {
+                const recordedItemsSold = await prisma.itemsSold.createMany({
+                    data: itemsSold,
+                });
+
+                const updateStockPromises = itemsSold.map((item: any) =>
+                    prisma.product.update({
+                        where: { id: item.productId },
+                        data: {
+                            stock: {
+                                decrement: item.quantity,
+                            },
+                        },
+                    })
+                );
+
+                await Promise.all(updateStockPromises);
+
+                return recordedItemsSold;
             });
         },
         recordRevenue: async (_: any, args: any, context: Context) => {
@@ -223,8 +263,28 @@ export const resolvers = {
             });
         },
         recordItemsRestocked: async (_: any, args: any, context: Context) => {
-            return await context.prisma.itemsRestocked.createMany({
-                data: args.itemsRestocked,
+            const itemsRestocked = args.itemsRestocked;
+
+            // Record items restocked and update product stock in a transaction
+            return await context.prisma.$transaction(async (prisma) => {
+                const recordedItemsRestocked = await prisma.itemsRestocked.createMany({
+                    data: itemsRestocked,
+                });
+
+                const updateStockPromises = itemsRestocked.map((item: any) =>
+                    prisma.product.update({
+                        where: { id: item.productId },
+                        data: {
+                            stock: {
+                                increment: item.quantity,
+                            },
+                        },
+                    })
+                );
+
+                await Promise.all(updateStockPromises);
+
+                return recordedItemsRestocked;
             });
         },
     },
@@ -253,6 +313,11 @@ export const resolvers = {
         },
     },
     Product: {
+        category: async (parent: any, _: any, context: Context) => {
+            return await context.prisma.category.findUnique({
+                where: { id: parent.categoryId },
+            });
+        },
         orderItems: async (parent: any, _: any, context: Context) => {
             return await context.prisma.orderItem.findMany({
                 where: { productId: parent.id },

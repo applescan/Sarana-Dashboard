@@ -74,25 +74,14 @@ export const GET_ORDER_BY_ID = gql`
 export const GET_PRODUCTS = gql`
   query Products {
     products {
-      id
       name
+      id
       description
-      buyPrice
       sellPrice
       stock
-      createdAt
-      updatedAt
       category {
         id
         name
-      }
-      itemsSold {
-        id
-        quantity
-      }
-      itemsRestocked {
-        id
-        quantity
       }
     }
   }
@@ -130,26 +119,6 @@ export const GET_CATEGORIES = gql`
     categories {
       id
       name
-      createdAt
-      updatedAt
-      products {
-        id
-        name
-        buyPrice
-        sellPrice
-        itemsSold {
-          id
-          quantity
-        }
-      }
-      itemsSold {
-        id
-        product {
-          id
-          name
-        }
-        quantity
-      }
     }
   }
 `;

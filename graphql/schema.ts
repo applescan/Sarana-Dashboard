@@ -109,6 +109,7 @@ type Mutation {
 
 input OrderInput {
   totalAmount: Float!
+  orderItems: [OrderItemInput!]!
 }
 
 input OrderUpdateInput {
@@ -119,8 +120,8 @@ input OrderUpdateInput {
 input OrderItemInput {
   quantity: Int!
   price: Float!
-  orderId: Int!
-  productId: String! 
+  orderId: Int
+  productId: String!
 }
 
 input OrderItemUpdateInput {

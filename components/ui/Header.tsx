@@ -5,7 +5,7 @@ export default function Header() {
 
     return (
         <header className="bg-white border-gray-200 shadow-lg">
-            <nav className="px-4 lg:px-6 py-2.5 max-w-screen-xl mx-auto">
+            <nav className="px-10 py-2.5 mx-auto">
                 <div className="flex justify-between items-center">
                     <a href="/" className="flex items-center">
                         <img src="/sarana.png" alt="Sarana Logo" className="mr-3 h-6 sm:h-9" />
