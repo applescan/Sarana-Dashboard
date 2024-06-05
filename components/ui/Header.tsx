@@ -9,7 +9,6 @@ export default function Header() {
                 <div className="flex justify-between items-center">
                     <a href="/" className="flex items-center">
                         <img src="/sarana.png" alt="Sarana Logo" className="mr-3 h-6 sm:h-9" />
-
                     </a>
                     <div className="flex items-center lg:order-2 gap-4">
                         <OrganizationSwitcher

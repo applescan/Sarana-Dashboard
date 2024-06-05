@@ -168,7 +168,7 @@ const POSPage = () => {
             <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
                 <DialogContent>
                     <DialogHeader className='flex items-center'>
-                        <DialogTitle className='text-2xl'>Transaction Successful!</DialogTitle>
+                        <DialogTitle className='text-3xl text-gray-900'>Transaction Successful</DialogTitle>
                         <DialogDescription><FcPaid className='h-56 w-56 flex items-center' />
                         </DialogDescription>
                     </DialogHeader>
