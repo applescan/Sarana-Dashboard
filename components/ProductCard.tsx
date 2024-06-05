@@ -12,16 +12,16 @@ type ProductCardProps = {
 
 // Mapping of category IDs to icons
 const categoryIcons: Record<number, React.ComponentType<{ className?: string }>> = {
-    1: GiWoodBeam,     // Lumber
-    2: FaTint,       // Plumbing Supplies
-    3: FaPlug,       // Electrical Supplies
-    4: FaToolbox,     // Hand Tools
-    5: FaWrench,      // Power Tools
-    6: FaPaintRoller,   // Paint
-    7: FaRuler,      // Flooring
-    8: FaLightbulb,    // Lighting
-    9: FaHome,       // Garden Supplies
-    10: FaHammer      // Hardware
+    1: GiWoodBeam,
+    2: FaTint,
+    3: FaPlug,
+    4: FaToolbox,
+    5: FaWrench,
+    6: FaPaintRoller,
+    7: FaRuler,
+    8: FaLightbulb,
+    9: FaHome,
+    10: FaHammer
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
 
     return (
         <Card
-            className='flex flex-col gap-5 bg-white border border-gray-300 text-gray-900 text-left p-0 cursor-pointer hover:bg-primary/5'
+            className='flex flex-col max-h-[240px] gap-5 bg-white border border-gray-300 text-gray-900 text-left p-0 cursor-pointer hover:bg-primary/5'
             onClick={() => onSelect(product)}>
             <CardHeader className='flex items-center gap-2 text-gray-300'>
                 {Icon && <Icon className="h-10 w-10"></Icon>}

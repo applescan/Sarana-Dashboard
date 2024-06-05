@@ -6,13 +6,21 @@ import { RECORD_ITEMS_SOLD, RECORD_REVENUE } from '@/graphql/mutations';
 import { GET_CATEGORIES, GET_PRODUCTS } from '@/graphql/queries';
 import ProductCard from '@/components/ProductCard';
 import { Badge } from '@/components/ui/Badge';
+import SelectedItemsList from '@/components/SelectedItemsList';
+import { Input } from '@/components/ui/Input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/Dialog';
 import Button from '@/components/ui/Button';
+import { FcPaid } from "react-icons/fc";
+
 
 const POSPage = () => {
-    const { data: productsData, loading: productsLoading, error: productsError, refetch: productRefetch } = useQuery<{ products: Product[] }>(GET_PRODUCTS);
-    const { data: categoriesData, loading: categoriesLoading, error: categoriesError, refetch: categoriesRefetch } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
+    const { data: productsData, loading: productsLoading, error: productsError } = useQuery<{ products: Product[] }>(GET_PRODUCTS);
+    const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
     const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
-
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [isOutOfStockModalOpen, setIsOutOfStockModalOpen] = useState<boolean>(false);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
+    const [outOfStockProduct, setOutOfStockProduct] = useState<string>('');
 
     useEffect(() => {
         if (productsError) {
@@ -23,14 +31,36 @@ const POSPage = () => {
     const [recordItemsSold] = useMutation(RECORD_ITEMS_SOLD);
     const [recordRevenue] = useMutation(RECORD_REVENUE);
 
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [quantity, setQuantity] = useState<number>(1);
-    const [selectedCategory, setSelectedCategory] = useState<string | null>('All'); // Default to "All"
+    const [selectedCategory, setSelectedCategory] = useState<string | null>('All');
 
-    // Function to handle product selection and record item sold
-    const handleSelectProduct = async (product: Product) => {
-        setSelectedProduct(product);
+    // Function to handle product selection
+    const handleSelectProduct = (product: Product) => {
+        if (product.stock > 0) {
+            const newSelectedItems = { ...selectedItems };
+            newSelectedItems[product.id] = (newSelectedItems[product.id] || 0) + 1;
+            setSelectedItems(newSelectedItems);
+        } else {
+            setOutOfStockProduct(product.name);
+            setIsOutOfStockModalOpen(true);
+        }
+    };
 
+    // Function to handle quantity change
+    const handleQuantityChange = (productId: string, quantity: number) => {
+        const newSelectedItems = { ...selectedItems };
+        newSelectedItems[productId] = quantity;
+        setSelectedItems(newSelectedItems);
+    };
+
+    // Function to handle item removal
+    const handleRemoveItem = (productId: string) => {
+        const newSelectedItems = { ...selectedItems };
+        delete newSelectedItems[productId];
+        setSelectedItems(newSelectedItems);
+    };
+
+    // Function to handle record items sold
+    const handleRecordItemsSold = async () => {
         const itemsSold = Object.entries(selectedItems).map(([productId, quantity]) => ({
             productId,
             quantity,
@@ -38,28 +68,38 @@ const POSPage = () => {
 
         await recordItemsSold({ variables: { itemsSold } });
 
-        const newSelectedItems = { ...selectedItems };
-        newSelectedItems[product.id] = (newSelectedItems[product.id] || 0) + 1;
-        setSelectedItems(newSelectedItems);
-
-        // Optionally, update revenue
+        // Update revenue
         const currentDate = new Date().toISOString();
-        const newRevenue = { amount: product.sellPrice * quantity, date: currentDate };
-        await recordRevenue({ variables: { revenue: [newRevenue] } });
-    };
+        const newRevenue = itemsSold.map(item => ({
+            amount: (productsData?.products?.find(p => p.id === item.productId)?.sellPrice || 0) * item.quantity,
+            date: currentDate,
+        }));
 
+        await recordRevenue({ variables: { revenue: newRevenue } });
+
+        // Reset selected items
+        setSelectedItems({});
+        setIsSuccessModalOpen(true);
+    };
 
     // Function to handle category selection
     const handleSelectCategory = (categoryName: string) => {
         setSelectedCategory(categoryName);
     };
 
+    // Function to handle search term change
+    const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+    };
+
     if (productsLoading || categoriesLoading) return <p>Loading...</p>;
 
-    // Filter products based on selected category
-    const filteredProducts = selectedCategory && selectedCategory !== 'All'
-        ? productsData?.products.filter(product => product.category?.name === selectedCategory)
-        : productsData?.products;
+    // Filter products based on selected category and search term
+    const filteredProducts = productsData?.products.filter(product => {
+        const matchesCategory = selectedCategory === 'All' || product.category?.name === selectedCategory;
+        const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCategory && matchesSearchTerm;
+    });
 
     return (
         <div>
@@ -82,37 +122,63 @@ const POSPage = () => {
                         </Badge>
                     ))}
                 </div>
+
             </section>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4 pt-4">
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredProducts?.map(product => (
-                        <ProductCard key={product.id} product={product} onSelect={handleSelectProduct} />
-                    ))}
-                </section>
-
-                <div>
-                    <section>
-                        <h2>Selected Items</h2>
-                        {Object.entries(selectedItems).map(([productId]) => (
-                            <div key={productId}>
-                                <p>{productsData?.products.find(p => p.id === productId)?.name}</p>
-                                <input type="number" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} />
-                            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4">
+                <div className='flex flex-col gap-2'>
+                    <Input
+                        type="text"
+                        placeholder="Search products by name"
+                        value={searchTerm}
+                        onChange={handleSearchTermChange}
+                        className="w-56 p-2 border border-gray-300"
+                    />
+                    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {filteredProducts?.map(product => (
+                            <ProductCard key={product.id} product={product} onSelect={handleSelectProduct} />
                         ))}
                     </section>
-
-                    <section>
-                        <Button onClick={() => handleSelectProduct(selectedProduct!)}>Record Items Sold</Button>
-                    </section>
-
-                    <section>
-                        <h2>Record Revenue</h2>
-                        <input type="number" placeholder="Amount" value={selectedProduct ? selectedProduct.sellPrice * quantity : 0} readOnly />
-                        <input type="datetime-local" placeholder="Date" value={new Date().toISOString().substring(0, 16)} readOnly />
-                    </section>
+                </div>
+                <div>
+                    <SelectedItemsList
+                        selectedItems={selectedItems}
+                        products={productsData?.products || []}
+                        onQuantityChange={handleQuantityChange}
+                        onRecordItemsSold={handleRecordItemsSold}
+                        onRemoveItem={handleRemoveItem}
+                    />
                 </div>
             </div>
+
+            <Dialog open={isOutOfStockModalOpen} onOpenChange={setIsOutOfStockModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Out of Stock</DialogTitle>
+                        <DialogDescription>{outOfStockProduct} is out of stock and cannot be added to the cart.</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button onClick={() => setIsOutOfStockModalOpen(false)} className="bg-primary">Close</Button>
+                        </DialogClose>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+                <DialogContent>
+                    <DialogHeader className='flex items-center'>
+                        <DialogTitle className='text-2xl'>Transaction Successful!</DialogTitle>
+                        <DialogDescription><FcPaid className='h-56 w-56 flex items-center' />
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className='p-0'>
+                        <DialogClose asChild>
+                            <Button onClick={() => setIsSuccessModalOpen(false)} className="bg-primary">Close</Button>
+                        </DialogClose>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
