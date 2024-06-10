@@ -71,15 +71,15 @@ type BatchPayload {
 }
 
 type Query {
-  orders: [Order]
+  orders(startDate: String, endDate: String): [Order]
+  itemsSold(startDate: String, endDate: String): [ItemsSold]
+  itemsRestocked(startDate: String, endDate: String): [ItemsRestocked]
+  revenues(startDate: String, endDate: String): [Revenue]
   order(id: Int!): Order
   products: [Product]
   product(id: String!): Product
   categories: [Category]
   category(id: Int!): Category
-  itemsSold: [ItemsSold]
-  itemsRestocked: [ItemsRestocked]
-  revenues: [Revenue]
   revenue(id: Int!): Revenue
   itemSold(id: Int!): ItemsSold
   itemRestocked(id: Int!): ItemsRestocked

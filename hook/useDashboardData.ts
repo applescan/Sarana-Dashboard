@@ -1,11 +1,12 @@
-'use client'
 import { useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_DASHBOARD_DATA } from '../graphql/queries';
 import { ItemsRestocked, ItemsSold, Revenue } from '@/lib/types/types';
 
-export const useDashboardData = () => {
-    const { loading, error, data, refetch } = useQuery(GET_DASHBOARD_DATA);
+export const useDashboardData = (startDate?: string, endDate?: string) => {
+    const { loading, error, data, refetch } = useQuery(GET_DASHBOARD_DATA, {
+        variables: { startDate, endDate },
+    });
 
     // Log error if present
     useEffect(() => {
@@ -26,7 +27,6 @@ export const useDashboardData = () => {
         const date = new Date(timestamp * 1000);
         return date.toLocaleString('default', { month: 'short' });
     });
-
 
     const revenueData = data?.revenues.map((revenue: Revenue) => revenue.amount);
 

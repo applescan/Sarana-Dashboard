@@ -1,9 +1,24 @@
 import { Context } from "../pages/api/graphql";
+import { Prisma } from '@prisma/client';
 
 export const resolvers = {
     Query: {
-        orders: async (_: any, __: any, context: Context) => {
+        orders: async (_: any, args: { startDate?: string, endDate?: string }, context: Context) => {
+            const where: Prisma.OrderWhereInput = {};
+
+            if (args.startDate && args.endDate) {
+                where.createdAt = {
+                    gte: new Date(args.startDate),
+                    lte: new Date(args.endDate)
+                };
+            } else if (args.startDate) {
+                where.createdAt = { gte: new Date(args.startDate) };
+            } else if (args.endDate) {
+                where.createdAt = { lte: new Date(args.endDate) };
+            }
+
             return await context.prisma.order.findMany({
+                where,
                 include: {
                     orderItems: {
                         include: {
@@ -73,8 +88,22 @@ export const resolvers = {
                 },
             });
         },
-        itemsSold: async (_: any, __: any, context: Context) => {
+        itemsSold: async (_: any, args: { startDate?: string, endDate?: string }, context: Context) => {
+            const where: Prisma.ItemsSoldWhereInput = {};
+
+            if (args.startDate && args.endDate) {
+                where.createdAt = {
+                    gte: new Date(args.startDate),
+                    lte: new Date(args.endDate)
+                };
+            } else if (args.startDate) {
+                where.createdAt = { gte: new Date(args.startDate) };
+            } else if (args.endDate) {
+                where.createdAt = { lte: new Date(args.endDate) };
+            }
+
             return await context.prisma.itemsSold.findMany({
+                where,
                 include: {
                     product: {
                         include: {
@@ -96,8 +125,22 @@ export const resolvers = {
                 },
             });
         },
-        itemsRestocked: async (_: any, __: any, context: Context) => {
+        itemsRestocked: async (_: any, args: { startDate?: string, endDate?: string }, context: Context) => {
+            const where: Prisma.ItemsRestockedWhereInput = {};
+
+            if (args.startDate && args.endDate) {
+                where.createdAt = {
+                    gte: new Date(args.startDate),
+                    lte: new Date(args.endDate)
+                };
+            } else if (args.startDate) {
+                where.createdAt = { gte: new Date(args.startDate) };
+            } else if (args.endDate) {
+                where.createdAt = { lte: new Date(args.endDate) };
+            }
+
             return await context.prisma.itemsRestocked.findMany({
+                where,
                 include: {
                     product: {
                         include: {
@@ -119,8 +162,21 @@ export const resolvers = {
                 },
             });
         },
-        revenues: async (_: any, __: any, context: Context) => {
-            return await context.prisma.revenue.findMany();
+        revenues: async (_: any, args: { startDate?: string, endDate?: string }, context: Context) => {
+            const where: Prisma.RevenueWhereInput = {};
+
+            if (args.startDate && args.endDate) {
+                where.date = {
+                    gte: new Date(args.startDate),
+                    lte: new Date(args.endDate)
+                };
+            } else if (args.startDate) {
+                where.date = { gte: new Date(args.startDate) };
+            } else if (args.endDate) {
+                where.date = { lte: new Date(args.endDate) };
+            }
+
+            return await context.prisma.revenue.findMany({ where });
         },
         revenue: async (_: any, args: { id: number }, context: Context) => {
             return await context.prisma.revenue.findUnique({

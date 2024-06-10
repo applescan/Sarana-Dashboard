@@ -5,6 +5,7 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
 }
+
 export interface OrderInput {
   totalAmount: number;
   orderItems: OrderItemInput[];
@@ -13,7 +14,7 @@ export interface OrderInput {
 export interface OrderItemInput {
   quantity: number;
   price: number;
-  orderId?: number; 
+  orderId?: number;
   productId: string;
 }
 
@@ -23,20 +24,20 @@ export interface OrderItem {
   price: number;
   orderId: number;
   order: Order;
-  productId: string; 
+  productId: string;
   product: Product;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Product {
-  id: string; 
+  id: string;
   name: string;
   description?: string;
-  buyPrice: number; 
-  sellPrice: number;  
+  buyPrice: number;
+  sellPrice: number;
   stock: number;
-  categoryId: number; 
+  categoryId: number;
   category: Category;
   orderItems: OrderItem[];
   itemsSold: ItemsSold[];
@@ -55,7 +56,7 @@ export interface Category {
 
 export interface ItemsSold {
   id: number;
-  productId: string; 
+  productId: string;
   product: Product;
   quantity: number;
   createdAt: string;
@@ -64,7 +65,7 @@ export interface ItemsSold {
 
 export interface ItemsRestocked {
   id: number;
-  productId: string; 
+  productId: string;
   product: Product;
   quantity: number;
   createdAt: string;
@@ -84,39 +85,38 @@ export interface BatchPayload {
 }
 
 export interface Query {
-  orders: Order[];
+  orders(startDate?: string, endDate?: string): Order[];
   order(id: number): Order;
   products: Product[];
-  product(id: string): Product;  
+  product(id: string): Product;
   categories: Category[];
   category(id: number): Category;
-  itemsSold: ItemsSold[];
-  itemsRestocked: ItemsRestocked[];
-  revenues: Revenue[];
+  itemsSold(startDate?: string, endDate?: string): ItemsSold[];
+  itemsRestocked(startDate?: string, endDate?: string): ItemsRestocked[];
+  revenues(startDate?: string, endDate?: string): Revenue[];
   revenue(id: number): Revenue;
   itemSold(id: number): ItemsSold;
   itemRestocked(id: number): ItemsRestocked;
 }
 
 export interface Mutation {
-  createOrders: (orders: OrderInput[]) => BatchPayload;
-  updateOrders: (orders: { id: number; totalAmount?: number }[]) => Order[];
-  deleteOrders: (ids: number[]) => BatchPayload;
+  createOrders(orders: OrderInput[]): BatchPayload;
+  updateOrders(orders: { id: number; totalAmount?: number }[]): Order[];
+  deleteOrders(ids: number[]): BatchPayload;
 
-  createOrderItems: (orderItems: OrderItemInput[]) => BatchPayload;
-  updateOrderItems: (orderItems: { id: number; quantity?: number; price?: number }[]) => OrderItem[];
-  deleteOrderItems: (ids: number[]) => BatchPayload;
+  createOrderItems(orderItems: OrderItemInput[]): BatchPayload;
+  updateOrderItems(orderItems: { id: number; quantity?: number; price?: number }[]): OrderItem[];
+  deleteOrderItems(ids: number[]): BatchPayload;
 
-  createProducts: (products: { id?: string; name: string; description?: string; buyPrice: number; sellPrice: number; stock: number; categoryId?: number }[]) => BatchPayload;
-  updateProducts: (products: { id: string; name?: string; description?: string; buyPrice?: number; sellPrice?: number; stock?: number; categoryId?: number }[]) => Product[];
-  deleteProducts: (ids: string[]) => BatchPayload;
+  createProducts(products: { id?: string; name: string; description?: string; buyPrice: number; sellPrice: number; stock: number; categoryId?: number }[]): BatchPayload;
+  updateProducts(products: { id: string; name?: string; description?: string; buyPrice?: number; sellPrice?: number; stock?: number; categoryId?: number }[]): Product[];
+  deleteProducts(ids: string[]): BatchPayload;
 
-  createCategories: (categories: { name: string }[]) => BatchPayload;
-  updateCategories: (categories: { id: number; name?: string }[]) => Category[];
-  deleteCategories: (ids: number[]) => BatchPayload;
+  createCategories(categories: { name: string }[]): BatchPayload;
+  updateCategories(categories: { id: number; name?: string }[]): Category[];
+  deleteCategories(ids: number[]): BatchPayload;
 
-  recordItemsSold: (itemsSold: { productId: string; quantity: number }[]) => BatchPayload;
-  recordRevenue: (revenue: { amount: number; date: string }[]) => BatchPayload;
-  recordItemsRestocked: (itemsRestocked: { productId: string; quantity: number }[]) => BatchPayload;
+  recordItemsSold(itemsSold: { productId: string; quantity: number }[]): BatchPayload;
+  recordRevenue(revenue: { amount: number; date: string }[]): BatchPayload;
+  recordItemsRestocked(itemsRestocked: { productId: string; quantity: number }[]): BatchPayload;
 }
-

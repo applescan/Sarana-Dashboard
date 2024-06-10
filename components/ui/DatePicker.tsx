@@ -1,68 +1,88 @@
-import * as React from "react";
-import { addDays, format } from "date-fns";
-import { cn } from "@/lib/utils";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "./Popover";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "./Select";
-import Button from "./Button";
-import { FaCalendarAlt } from "react-icons/fa";
-import { useEffect } from "react";
+"use client"
 
-interface DatePickerWithPresetsProps {
-    selectedDate: Date | null;
-    onDateChange: (date: Date) => void;
+import * as React from "react"
+import {  format } from "date-fns"
+import { DateRange } from "react-day-picker"
+
+import { cn } from "@/lib/utils"
+import { FaCalendar } from "react-icons/fa6"
+import { Calendar } from "./Calendar"
+import { Select, SelectContent, SelectTrigger } from "./Select"
+import { useEffect, useRef, useState } from "react"
+
+interface DatePickerWithRangeProps {
+    className?: string
+    selectedDate: DateRange | undefined
+    onDateChange: (date: DateRange | undefined) => void
 }
 
-export function DatePickerWithPresets({ selectedDate, onDateChange }: DatePickerWithPresetsProps) {
-    const [date, setDate] = React.useState<Date | undefined>(selectedDate ?? undefined);
+export function DatePickerWithRange({
+    className,
+    selectedDate,
+    onDateChange
+}: DatePickerWithRangeProps) {
+    const [date, setDate] = React.useState<DateRange | undefined>(selectedDate)
+    const [isOpen, setIsOpen] = useState(false);
+    const triggerRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
-        if (date) {
-            onDateChange(date);
+        setDate(selectedDate)
+    }, [selectedDate])
+
+    const handleDateChange = (newDate: DateRange | undefined) => {
+        setDate(newDate)
+        onDateChange(newDate)
+        if (newDate && newDate.from && newDate.to) {
+            setIsOpen(false); // Close the select when both dates are selected
         }
-    }, [date]);
+    }
+
+    const handleToggle = () => {
+        setIsOpen(!isOpen);
+    };
 
     return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button
-                    variant={"outline-primary"}
-                    className={cn(
-                        "w-[280px] justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
+        <div className={cn("grid gap-2", className)}>
+            <Select>
+                <SelectTrigger
+                    ref={triggerRef}
+                    className="w-[300px] mb-5"
+                    onClick={handleToggle}
+                    aria-expanded={isOpen}
+                    aria-controls="date-picker-content"
+                >
+                    <FaCalendar className="mr-2 h-4 w-4 text-gray-400" />
+                    {date?.from ? (
+                        date.to ? (
+                            <>
+                                {format(date.from, "LLL dd, y")} -{" "}
+                                {format(date.to, "LLL dd, y")}
+                            </>
+                        ) : (
+                            format(date.from, "LLL dd, y")
+                        )
+                    ) : (
+                        <span>Pick a date</span>
                     )}
-                >
-                    <FaCalendarAlt className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
-                <Select
-                    onValueChange={(value) => setDate(addDays(new Date(), parseInt(value)))}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                        <SelectItem value="0">Today</SelectItem>
-                        <SelectItem value="1">Tomorrow</SelectItem>
-                        <SelectItem value="3">In 3 days</SelectItem>
-                        <SelectItem value="7">In a week</SelectItem>
+                </SelectTrigger>
+                {isOpen && (
+                    <SelectContent
+                        className="w-auto p-0"
+                        align="start"
+                        aria-labelledby="date-picker-trigger"
+                        id="date-picker-content"
+                    >
+                        <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date?.from}
+                            selected={date}
+                            onSelect={handleDateChange}
+                            numberOfMonths={2}
+                        />
                     </SelectContent>
-                </Select>
-                <div className="rounded-md border">
-                    <FaCalendarAlt mode="single" selected={date} onSelect={setDate} />
-                </div>
-            </PopoverContent>
-        </Popover>
-    );
+                )}
+            </Select>
+        </div>
+    )
 }

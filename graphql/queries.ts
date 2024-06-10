@@ -1,34 +1,26 @@
 import { gql } from "@apollo/client";
 
 export const GET_DASHBOARD_DATA = gql`
-  query GetDashboardData {
-    categories {
-      id
+query GetDashboardData($startDate: String, $endDate: String) {
+  categories {
       name
-    }
-    itemsSold {
+  }
+  itemsSold(startDate: $startDate, endDate: $endDate) {
       quantity
       product {
-        id
-        name
-        category {
-          id
-          name
-        }
+          category {
+              name
+          }
       }
-    }
-    itemsRestocked {
+  }
+  itemsRestocked(startDate: $startDate, endDate: $endDate) {
       quantity
-      product {
-        id
-        name
-      }
-    }
-    revenues {
+  }
+  revenues(startDate: $startDate, endDate: $endDate) {
       amount
       date
-    }
   }
+}
 `;
 
 export const GET_ORDERS = gql`
