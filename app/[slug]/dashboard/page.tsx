@@ -9,6 +9,7 @@ import { useDashboardData } from '@/hook/useDashboardData';
 import { DateRange } from 'react-day-picker';
 import { addDays } from 'date-fns';
 import { DatePickerWithRange } from '@/components/ui/DatePicker';
+import Loading from '@/components/ui/Loading';
 
 const DashboardPage = () => {
     const [selectedDate, setSelectedDate] = useState<DateRange | undefined>({
@@ -32,14 +33,18 @@ const DashboardPage = () => {
     );
 
     const handleDateChange = (date: DateRange | undefined) => {
-        setSelectedDate(date);
-        refetch({
-            startDate: date?.from?.toISOString(),
-            endDate: date?.to?.toISOString()
-        });
+        if (date) {
+            // Adjust date format or timezone here if needed
+            setSelectedDate(date);
+            refetch({
+                startDate: date.from?.toISOString(),
+                endDate: date.to?.toISOString()
+            });
+        }
     };
+    
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <Loading/>;
     if (error) return <div>Error loading data</div>;
 
     return (

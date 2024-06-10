@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/Dialog';
 import Button from '@/components/ui/Button';
 import { FcPaid } from "react-icons/fc";
+import Loading from '@/components/ui/Loading';
 
 
 const POSPage = () => {
@@ -59,13 +60,13 @@ const POSPage = () => {
         setSelectedItems(newSelectedItems);
     };
 
+
     // Function to handle record items sold
     const handleRecordItemsSold = async () => {
         const itemsSold = Object.entries(selectedItems).map(([productId, quantity]) => ({
             productId,
             quantity,
         }));
-
         await recordItemsSold({ variables: { itemsSold } });
 
         // Update revenue
@@ -74,7 +75,6 @@ const POSPage = () => {
             amount: (productsData?.products?.find(p => p.id === item.productId)?.sellPrice || 0) * item.quantity,
             date: currentDate,
         }));
-
         await recordRevenue({ variables: { revenue: newRevenue } });
 
         // Reset selected items
@@ -92,7 +92,7 @@ const POSPage = () => {
         setSearchTerm(e.target.value);
     };
 
-    if (productsLoading || categoriesLoading) return <p>Loading...</p>;
+    if (productsLoading || categoriesLoading) return <Loading/>;
 
     // Filter products based on selected category and search term
     const filteredProducts = productsData?.products.filter(product => {
