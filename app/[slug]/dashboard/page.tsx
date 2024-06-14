@@ -46,17 +46,25 @@ const DashboardPage = () => {
         }
     };
 
+    const handleRangeToggle = () => {
+        setIsRange(!isRange);
+        setSelectedDate({
+            from: new Date(),
+            to: new Date()
+        });
+    };
+
     if (loading) return <Loading />;
     if (error) return <div>Error loading data</div>;
 
     return (
         <div>
-             <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4">
                 <input
                     type="checkbox"
                     id="range-checkbox"
                     checked={isRange}
-                    onChange={() => setIsRange(!isRange)}
+                    onChange={handleRangeToggle}
                     className="mr-2"
                 />
                 <label htmlFor="range-checkbox" className='text-xs'>Enable Range Selection</label>
@@ -66,7 +74,6 @@ const DashboardPage = () => {
                 onDateChange={handleDateChange}
                 isRange={isRange}
             />
-           
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
                 <div>

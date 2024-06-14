@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYear } from "date-fns"
 import { DateRange } from "react-day-picker"
@@ -35,16 +33,18 @@ export function DatePickerWithRange({
         setDate(selectedDate || defaultDateRange)
     }, [selectedDate])
 
-    const handleDateChange = (newDate: DateRange | undefined) => {
-        if (newDate && !isRange) {
-            const singleDate = newDate.from
-            setDate({ from: singleDate, to: singleDate })
-            onDateChange({ from: singleDate, to: singleDate })
-        } else if (newDate) {
-            setDate(newDate)
-            onDateChange(newDate)
+    const handleDateChange = (newDate: DateRange) => {
+        if (newDate) {
+            if (!isRange) {
+                const singleDate = newDate.from
+                setDate({ from: singleDate, to: singleDate })
+                onDateChange({ from: singleDate, to: singleDate })
+            } else {
+                setDate(newDate)
+                onDateChange(newDate)
+            }
+            setIsOpen(false)
         }
-        setIsOpen(false)
     }
 
     const handlePreset = (preset: 'today' | 'thisWeek' | 'thisMonth' | 'thisYear') => {
@@ -108,19 +108,16 @@ export function DatePickerWithRange({
                             <div className="rounded-md border">
                                 <Calendar
                                     initialFocus
-                                    mode="range"
+                                    mode={isRange ? "range" : "single"}
                                     defaultMonth={date?.from}
                                     selected={date}
                                     onSelect={(range) => {
-                                        if (range && range.from) {
-                                            handleDateChange(
-                                                isRange
-                                                    ? range
-                                                    : { from: range.from, to: range.from }
-                                            )
+                                        if (range) {
+                                            handleDateChange(isRange ? range : { from: range, to: range })
                                         }
                                     }}
                                     numberOfMonths={2}
+                                    disabled={{ after: today }}
                                 />
                             </div>
                         </div>

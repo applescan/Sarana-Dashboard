@@ -4,18 +4,25 @@ import { GET_DASHBOARD_DATA } from '../graphql/queries';
 import { ItemsRestocked, ItemsSold, Revenue } from '@/lib/types/types';
 
 export const useDashboardData = (startDate?: string, endDate?: string) => {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString();
+
     // Default to today if no date is provided
     if (!startDate) {
-        const today = new Date();
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
+        startDate = startOfMonth;
     }
     if (!endDate) {
-        const today = new Date();
-        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString();
+        endDate = endOfMonth;
     }
 
     const { loading, error, data, refetch } = useQuery(GET_DASHBOARD_DATA, {
         variables: { startDate, endDate },
+    });
+
+    // Fetch revenue data for the entire month
+    const { data: monthlyRevenueData } = useQuery(GET_DASHBOARD_DATA, {
+        variables: { startDate: startOfMonth, endDate: endOfMonth },
     });
 
     // Log error if present
@@ -27,8 +34,8 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
 
     // Aggregate revenue data by month
     const revenueDataByMonth: { month: string; totalRevenue: number }[] = [];
-    if (data?.revenues) {
-        data.revenues.forEach((revenue: Revenue) => {
+    if (monthlyRevenueData?.revenues) {
+        monthlyRevenueData.revenues.forEach((revenue: Revenue) => {
             const timestamp = Number(revenue.date);
             const date = new Date(timestamp);
             const monthKey = date.toLocaleString('default', { month: 'short' });
@@ -41,21 +48,22 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
         });
     }
 
-    const itemsSold = data?.itemsSold?.reduce((sum: number, item: ItemsSold) => item.product ? sum + item.quantity : sum, 0);
+    const itemsSold = data?.itemsSold?.reduce((sum: number, item: ItemsSold) => item.product ? sum + item.quantity : sum, 0) || 0;
 
-    const itemsRestocked = data?.itemsRestocked.reduce((sum: number, item: ItemsRestocked) => sum + item.quantity, 0);
+    const itemsRestocked = data?.itemsRestocked?.reduce((sum: number, item: ItemsRestocked) => sum + item.quantity, 0) || 0;
 
-    const totalRevenue = data?.revenues.reduce((sum: number, revenue: Revenue) => sum + revenue.amount, 0);
+    // Calculate total revenue filtered by the selected date range
+    const totalRevenue = data?.revenues?.reduce((sum: number, revenue: Revenue) => sum + revenue.amount, 0) || 0;
 
     return {
         loading,
         error,
-        buildingSupplySalesData: data?.categories.map((category: any) => ({
+        buildingSupplySalesData: data?.categories?.map((category: any) => ({
             value: data.itemsSold
                 .filter((item: any) => item.product && item.product.category && item.product.category.name === category.name)
                 .reduce((sum: number, item: any) => sum + item.quantity, 0),
             name: category.name,
-        })),
+        })) || [],
         categories: revenueDataByMonth.map((data) => data.month),
         revenueData: revenueDataByMonth.map((data) => data.totalRevenue),
         itemsSold,
@@ -64,3 +72,4 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
         refetch,
     };
 };
+
