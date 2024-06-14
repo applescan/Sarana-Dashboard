@@ -59,9 +59,8 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
         loading,
         error,
         buildingSupplySalesData: data?.categories?.map((category: any) => ({
-            value: data.itemsSold
-                .filter((item: any) => item.product && item.product.category && item.product.category.name === category.name)
-                .reduce((sum: number, item: any) => sum + item.quantity, 0),
+            value: data.itemsSold?.filter((item: any) => item.product && item.product.category && item.product.category.name === category.name)
+                .reduce((sum: number, item: any) => sum + item.quantity, 0) || 0,
             name: category.name,
         })) || [],
         categories: revenueDataByMonth.map((data) => data.month),
@@ -72,4 +71,3 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
         refetch,
     };
 };
-

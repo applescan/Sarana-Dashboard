@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { FaCalendar } from "react-icons/fa6"
 import { Calendar } from "./Calendar"
-import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "./Select"
+import { Select, SelectContent, SelectTrigger } from "./Select"
 import { useEffect, useRef, useState } from "react"
 import { Badge } from "./Badge"
 
@@ -99,12 +99,12 @@ export function DatePickerWithRange({
                         id="date-picker-content"
                     >
                         <div className="flex flex-col p-2">
-                            <div className="flex space-x-2 mb-2 justify-center">
+                            {isRange && (<div className="flex space-x-2 mb-2 justify-center">
                                 <Badge onClick={() => handlePreset('today')} variant={selectedPreset === 'today' ? "default" : "secondary"} className="cursor-pointer">Today</Badge>
                                 <Badge onClick={() => handlePreset('thisWeek')} variant={selectedPreset === 'thisWeek' ? "default" : "secondary"} className="cursor-pointer">This Week</Badge>
                                 <Badge onClick={() => handlePreset('thisMonth')} variant={selectedPreset === 'thisMonth' ? "default" : "secondary"} className="cursor-pointer">This Month</Badge>
                                 <Badge onClick={() => handlePreset('thisYear')} variant={selectedPreset === 'thisYear' ? "default" : "secondary"} className="cursor-pointer">This Year</Badge>
-                            </div>
+                            </div>)}
                             <div className="rounded-md border">
                                 <Calendar
                                     initialFocus
