@@ -92,7 +92,7 @@ const POSPage = () => {
         setSearchTerm(e.target.value);
     };
 
-    if (productsLoading || categoriesLoading) return <Loading/>;
+    if (productsLoading || categoriesLoading) return <Loading />;
 
     // Filter products based on selected category and search term
     const filteredProducts = productsData?.products.filter(product => {
@@ -168,8 +168,8 @@ const POSPage = () => {
             <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
                 <DialogContent>
                     <DialogHeader className='flex items-center'>
-                        <DialogTitle className='text-3xl text-gray-900'>Transaction Successful</DialogTitle>
-                        <DialogDescription><FcPaid className='h-56 w-56 flex items-center' />
+                        <DialogDescription><img src='/buy.gif' alt='checkmark' className='h-[200px] w-[200px]' />
+                            <DialogTitle className='text-xl text-gray-900 pt-2'>Transaction Successful</DialogTitle>
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className='p-0'>
