@@ -8,40 +8,43 @@ import { FaCalendar } from "react-icons/fa6"
 import { Calendar } from "./Calendar"
 import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "./Select"
 import { useEffect, useRef, useState } from "react"
+import { Badge } from "./Badge"
 
 interface DatePickerWithRangeProps {
     className?: string
     selectedDate: DateRange | undefined
     onDateChange: (date: DateRange | undefined) => void
+    isRange: boolean
 }
 
 export function DatePickerWithRange({
     className,
     selectedDate,
-    onDateChange
+    onDateChange,
+    isRange
 }: DatePickerWithRangeProps) {
     const today = new Date()
     const defaultDateRange = { from: today, to: today }
 
     const [date, setDate] = useState<DateRange | undefined>(selectedDate || defaultDateRange)
     const [isOpen, setIsOpen] = useState(false)
+    const [selectedPreset, setSelectedPreset] = useState<string | null>(null)
     const triggerRef = useRef<HTMLButtonElement>(null)
 
     useEffect(() => {
         setDate(selectedDate || defaultDateRange)
     }, [selectedDate])
 
-    const handleDateChange = (newDate: Date | DateRange | undefined) => {
-        if (newDate instanceof Date) {
-            const singleDate = newDate as Date
+    const handleDateChange = (newDate: DateRange | undefined) => {
+        if (newDate && !isRange) {
+            const singleDate = newDate.from
             setDate({ from: singleDate, to: singleDate })
             onDateChange({ from: singleDate, to: singleDate })
-            setIsOpen(false)
         } else if (newDate) {
             setDate(newDate)
             onDateChange(newDate)
-            setIsOpen(false)
         }
+        setIsOpen(false)
     }
 
     const handlePreset = (preset: 'today' | 'thisWeek' | 'thisMonth' | 'thisYear') => {
@@ -63,6 +66,7 @@ export function DatePickerWithRange({
         }
         setDate(newDateRange)
         onDateChange(newDateRange)
+        setSelectedPreset(preset)
         setIsOpen(false)
     }
 
@@ -95,10 +99,12 @@ export function DatePickerWithRange({
                         id="date-picker-content"
                     >
                         <div className="flex flex-col p-2">
-                            <button onClick={() => handlePreset('today')} className="mb-2">Today</button>
-                            <button onClick={() => handlePreset('thisWeek')} className="mb-2">This Week</button>
-                            <button onClick={() => handlePreset('thisMonth')} className="mb-2">This Month</button>
-                            <button onClick={() => handlePreset('thisYear')} className="mb-2">This Year</button>
+                            <div className="flex space-x-2 mb-2 justify-center">
+                                <Badge onClick={() => handlePreset('today')} variant={selectedPreset === 'today' ? "default" : "secondary"} className="cursor-pointer">Today</Badge>
+                                <Badge onClick={() => handlePreset('thisWeek')} variant={selectedPreset === 'thisWeek' ? "default" : "secondary"} className="cursor-pointer">This Week</Badge>
+                                <Badge onClick={() => handlePreset('thisMonth')} variant={selectedPreset === 'thisMonth' ? "default" : "secondary"} className="cursor-pointer">This Month</Badge>
+                                <Badge onClick={() => handlePreset('thisYear')} variant={selectedPreset === 'thisYear' ? "default" : "secondary"} className="cursor-pointer">This Year</Badge>
+                            </div>
                             <div className="rounded-md border">
                                 <Calendar
                                     initialFocus
@@ -107,7 +113,11 @@ export function DatePickerWithRange({
                                     selected={date}
                                     onSelect={(range) => {
                                         if (range && range.from) {
-                                            handleDateChange(range.from)
+                                            handleDateChange(
+                                                isRange
+                                                    ? range
+                                                    : { from: range.from, to: range.from }
+                                            )
                                         }
                                     }}
                                     numberOfMonths={2}

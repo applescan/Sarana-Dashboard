@@ -16,6 +16,7 @@ const DashboardPage = () => {
         from: new Date(),
         to: new Date()
     });
+    const [isRange, setIsRange] = useState(false);
 
     const formatStartDate = (date: Date | undefined) => date ? startOfDay(date).toISOString() : undefined;
     const formatEndDate = (date: Date | undefined) => date ? endOfDay(date).toISOString() : undefined;
@@ -50,7 +51,22 @@ const DashboardPage = () => {
 
     return (
         <div>
-            <DatePickerWithRange selectedDate={selectedDate} onDateChange={handleDateChange} />
+             <div className="flex items-center mb-4">
+                <input
+                    type="checkbox"
+                    id="range-checkbox"
+                    checked={isRange}
+                    onChange={() => setIsRange(!isRange)}
+                    className="mr-2"
+                />
+                <label htmlFor="range-checkbox" className='text-xs'>Enable Range Selection</label>
+            </div>
+            <DatePickerWithRange
+                selectedDate={selectedDate}
+                onDateChange={handleDateChange}
+                isRange={isRange}
+            />
+           
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
                 <div>

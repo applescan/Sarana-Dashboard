@@ -14,6 +14,8 @@ function Calendar({
     showOutsideDays = true,
     ...props
 }: CalendarProps) {
+    const today = new Date()
+
     return (
         <DayPicker
             showOutsideDays={showOutsideDays}
@@ -56,6 +58,7 @@ function Calendar({
                 IconLeft: ({ ...props }) => <FaChevronLeft className="h-4 w-4" />,
                 IconRight: ({ ...props }) => <FaChevronRight className="h-4 w-4" />,
             }}
+            disabled={{ after: today }}
             {...props}
         />
     )
