@@ -7,44 +7,45 @@ import SalesByCategoryChart from '@/components/SalesByCategoryChart';
 import StatsCard from '@/components/StatsCard';
 import { useDashboardData } from '@/hook/useDashboardData';
 import { DateRange } from 'react-day-picker';
-import { addDays } from 'date-fns';
+import { startOfDay, endOfDay } from 'date-fns';
 import { DatePickerWithRange } from '@/components/ui/DatePicker';
 import Loading from '@/components/ui/Loading';
 
 const DashboardPage = () => {
     const [selectedDate, setSelectedDate] = useState<DateRange | undefined>({
         from: new Date(),
-        to: addDays(new Date(), 20)
+        to: new Date()
     });
 
-    const {
-        loading,
-        error,
-        buildingSupplySalesData,
-        categories,
-        revenueData,
-        itemsSold,
-        itemsRestocked,
-        totalRevenue,
-        refetch
-    } = useDashboardData(
-        selectedDate ? selectedDate.from?.toISOString() : undefined,
-        selectedDate ? selectedDate.to?.toISOString() : undefined
+    const formatStartDate = (date: Date | undefined) => date ? startOfDay(date).toISOString() : undefined;
+    const formatEndDate = (date: Date | undefined) => date ? endOfDay(date).toISOString() : undefined;
+
+    const { loading, error, buildingSupplySalesData, categories, revenueData, itemsSold, itemsRestocked, totalRevenue, refetch } = useDashboardData(
+        formatStartDate(selectedDate?.from),
+        formatEndDate(selectedDate?.to)
     );
 
     const handleDateChange = (date: DateRange | undefined) => {
-        if (date) {
-            // Adjust date format or timezone here if needed
-            setSelectedDate(date);
+        setSelectedDate(date);
+        if (date?.from && date?.to) {
             refetch({
-                startDate: date.from?.toISOString(),
-                endDate: date.to?.toISOString()
+                startDate: formatStartDate(date?.from),
+                endDate: formatEndDate(date?.to)
+            });
+        } else if (date?.from) {
+            refetch({
+                startDate: formatStartDate(date?.from),
+                endDate: formatEndDate(date?.from)
+            });
+        } else {
+            refetch({
+                startDate: undefined,
+                endDate: undefined
             });
         }
     };
-    
 
-    if (loading) return <Loading/>;
+    if (loading) return <Loading />;
     if (error) return <div>Error loading data</div>;
 
     return (

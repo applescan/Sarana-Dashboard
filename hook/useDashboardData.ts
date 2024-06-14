@@ -41,7 +41,7 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
         });
     }
 
-    const itemsSold = data?.itemsSold.reduce((sum: number, item: ItemsSold) => item.product ? sum + item.quantity : sum, 0);
+    const itemsSold = data?.itemsSold?.reduce((sum: number, item: ItemsSold) => item.product ? sum + item.quantity : sum, 0);
 
     const itemsRestocked = data?.itemsRestocked.reduce((sum: number, item: ItemsRestocked) => sum + item.quantity, 0);
 
