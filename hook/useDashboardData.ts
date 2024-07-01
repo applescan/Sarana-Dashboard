@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_DASHBOARD_DATA } from '../graphql/queries';
+import { GET_DASHBOARD_DATA, GET_REVENUES } from '../graphql/queries';
 import { ItemsRestocked, ItemsSold, Revenue } from '@/lib/types/types';
 
 export const useDashboardData = (startDate?: string, endDate?: string) => {
@@ -21,9 +21,7 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
     });
 
     // Fetch revenue data for the entire month
-    const { data: monthlyRevenueData } = useQuery(GET_DASHBOARD_DATA, {
-        variables: { startDate: startOfMonth, endDate: endOfMonth },
-    });
+    const { data: monthlyRevenueData } = useQuery(GET_REVENUES);
 
     // Log error if present
     useEffect(() => {

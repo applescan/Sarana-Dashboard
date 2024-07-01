@@ -10,13 +10,12 @@ import SelectedItemsList from '@/components/SelectedItemsList';
 import { Input } from '@/components/ui/Input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/Dialog';
 import Button from '@/components/ui/Button';
-import { FcPaid } from "react-icons/fc";
 import Loading from '@/components/ui/Loading';
 
 
 const POSPage = () => {
     const { data: productsData, loading: productsLoading, error: productsError } = useQuery<{ products: Product[] }>(GET_PRODUCTS);
-    const { data: categoriesData, loading: categoriesLoading, error: categoriesError } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
+    const { data: categoriesData, loading: categoriesLoading} = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
     const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [isOutOfStockModalOpen, setIsOutOfStockModalOpen] = useState<boolean>(false);

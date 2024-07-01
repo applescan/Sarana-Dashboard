@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/Card';
 import { Product } from '@/lib/types/types';
 import { Input } from './ui/Input';
@@ -14,6 +14,8 @@ type SelectedItemsListProps = {
 };
 
 const SelectedItemsList: React.FC<SelectedItemsListProps> = ({ selectedItems, products, onQuantityChange, onRecordItemsSold, onRemoveItem }) => {
+    const [amountPaid, setAmountPaid] = useState<number>(0);
+
     const subtotal = Object.entries(selectedItems).reduce((total, [productId, quantity]) => {
         const product = products.find(p => p.id === productId);
         return total + (product ? product.sellPrice * quantity : 0);
@@ -26,6 +28,12 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({ selectedItems, pr
             onQuantityChange(productId, quantity);
         }
     };
+
+    const handleAmountPaidChange = (value: string) => {
+        setAmountPaid(parseFloat(value));
+    };
+
+    const returnMoney = amountPaid > subtotal ? amountPaid - subtotal : 0;
 
     return (
         <Card className="sticky top-4 h-[82vh] flex flex-col bg-white border border-gray-300 text-gray-900 text-left cursor-pointer">
@@ -72,6 +80,19 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({ selectedItems, pr
                     <div className="mt-4 text-left">
                         <p className="font-bold text-left text-gray-900 text-xl">Subtotal:</p>
                         <p className="text-3xl text-left text-gray-900">IDR {subtotal.toLocaleString()}</p>
+                    </div>
+                    <div className="mt-4 text-left">
+                        <p className="font-bold text-left text-gray-900 text-xl">Amount Paid:</p>
+                        <Input
+                            type="number"
+                            value={amountPaid}
+                            onChange={(e) => handleAmountPaidChange(e.target.value)}
+                            className="border w-full h-8 text-gray-900 text-xl"
+                        />
+                    </div>
+                    <div className="mt-4 text-left">
+                        <p className="font-bold text-left text-gray-900 text-xl">Return Money:</p>
+                        <p className="text-3xl text-left text-gray-900">IDR {returnMoney.toLocaleString()}</p>
                     </div>
                     <Button onClick={onRecordItemsSold} className="mt-4 w-full bg-primary" disabled={!Object.keys(selectedItems).length}>Proceed</Button>
                 </div>
