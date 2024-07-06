@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@apollo/client";
 import { GET_CATEGORIES, GET_PRODUCTS } from "@/graphql/queries";
 import { Category, Product } from "@/lib/types/types";
@@ -24,7 +24,9 @@ const ProductPage = () => {
 
   const columns = [
     { Header: "Name", accessor: "name" },
-    { Header: "Price", accessor: "price" },
+    { Header: "Description", accessor: "description" },
+    { Header: "Buy Price", accessor: "buyPrice" },
+    { Header: "Sell Price", accessor: "sellPrice" },
     { Header: "Category", accessor: "category.name" },
     { Header: "Stock", accessor: "stock" },
   ];
