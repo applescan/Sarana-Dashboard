@@ -51,7 +51,7 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
   };
 
   return (
-    <Card className="sticky top-4 h-[82vh] flex flex-col bg-white border border-gray-300 text-gray-900 text-left cursor-pointer">
+    <Card className="sticky top-4 h-[90vh] flex flex-col bg-white border border-gray-300 text-gray-900 text-left cursor-pointer">
       <CardHeader>
         <CardTitle className="text-gray-900 text-left text-2xl mb-4">
           Selected Items
@@ -140,7 +140,7 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
           </div>
           <Button
             onClick={onRecordItemsSold}
-            className="mt-4 w-full bg-primary"
+            variant="brand"
             disabled={
               !Object.keys(selectedItems).length ||
               parseFloat(amountPaid.replace(/,/g, "")) < subtotal

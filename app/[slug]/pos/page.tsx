@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/Dialog";
 import Button from "@/components/ui/Button";
 import Loading from "@/components/ui/Loading";
+import PosDialog from "@/components/PosDialog";
 
 const POSPage = () => {
   const {
@@ -203,30 +204,14 @@ const POSPage = () => {
         </div>
       </div>
 
-      <Dialog
+      <PosDialog
         open={isOutOfStockModalOpen}
-        onOpenChange={setIsOutOfStockModalOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Out of Stock</DialogTitle>
-            <DialogDescription>
-              {outOfStockProduct} is out of stock and cannot be added to the
-              cart.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                onClick={() => setIsOutOfStockModalOpen(false)}
-                className="bg-primary"
-              >
-                Close
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onOpenChange={() => setIsOutOfStockModalOpen}
+        title={"Out of Stock"}
+        desc={`${outOfStockProduct} is out of stock and cannot be added to the cart.`}
+        onClick={() => setIsOutOfStockModalOpen(false)}
+        button="Close"
+      />
 
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
         <DialogContent>

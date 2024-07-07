@@ -6,6 +6,7 @@ export interface IButtonProps
   children?: React.ReactNode;
   variant?:
     | "primary"
+    | "brand"
     | "danger"
     | "success"
     | "warning"
@@ -34,6 +35,8 @@ const Button = ({
     switch (variant) {
       case "primary":
         return "bg-gray-500 hover:bg-gray-700 text-white";
+      case "brand":
+        return "bg-primary hover:bg-gray-700 text-white";
       case "danger":
         return "bg-red-500 hover:bg-red-700 text-white";
       case "success":

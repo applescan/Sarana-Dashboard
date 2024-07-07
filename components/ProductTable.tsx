@@ -1,5 +1,5 @@
-import React, { useState, FC, ChangeEvent } from "react";
-import { useMutation } from "@apollo/client";
+import React, { useState, FC, ChangeEvent, SetStateAction } from "react";
+import { useMutation, gql } from "@apollo/client";
 import { Product, Category } from "@/lib/types/types";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
@@ -8,7 +8,8 @@ import { DELETE_PRODUCTS, UPDATE_PRODUCTS } from "@/graphql/mutations";
 import { MdEdit } from "react-icons/md";
 import { FaTrashCan } from "react-icons/fa6";
 import { IoSaveSharp } from "react-icons/io5";
-import { IoMdClose } from "react-icons/io";
+import { IoMdAdd, IoMdClose } from "react-icons/io";
+import PosDialog from "./PosDialog";
 import {
   Select,
   SelectContent,
@@ -17,7 +18,8 @@ import {
   SelectScrollUpButton,
   SelectTrigger,
   SelectValue,
-} from "./Select";
+} from "./ui/Select";
+import { GET_PRODUCTS } from "@/graphql/queries";
 
 export type Column = {
   Header: string;
@@ -29,6 +31,14 @@ export type ProductTableProps = {
   data: Product[];
   categories: Category[];
 };
+
+const CREATE_PRODUCTS = gql`
+  mutation CreateProducts($products: [ProductInput!]!) {
+    createProducts(products: $products) {
+      count
+    }
+  }
+`;
 
 const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -44,8 +54,25 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
   const [editProductSellPrice, setEditProductSellPrice] = useState<number>(0);
   const [editProductCategory, setEditProductCategory] = useState<string>("");
 
-  const [updateProducts] = useMutation(UPDATE_PRODUCTS);
-  const [deleteProducts] = useMutation(DELETE_PRODUCTS);
+  const [newProductName, setNewProductName] = useState<string>("");
+  const [newProductDescription, setNewProductDescription] =
+    useState<string>("");
+  const [newProductBuyPrice, setNewProductBuyPrice] = useState<number>(0);
+  const [newProductSellPrice, setNewProductSellPrice] = useState<number>(0);
+  const [newProductCategory, setNewProductCategory] = useState<string>("");
+  const [newStock, setNewStock] = useState<number>(0);
+
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // State for dialog
+
+  const [updateProducts] = useMutation(UPDATE_PRODUCTS, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+  });
+  const [deleteProducts] = useMutation(DELETE_PRODUCTS, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+  });
+  const [createProducts] = useMutation(CREATE_PRODUCTS, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+  });
 
   const filteredProducts = data.filter((product) => {
     const matchesCategory =
@@ -55,6 +82,8 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
       .includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearchTerm;
   });
+
+  filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
 
   const handleSelectCategory = (categoryName: string) => {
     setSelectedCategory(categoryName);
@@ -74,7 +103,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
   const handleEditProduct = (product: Product) => {
     setEditProductId(product.id);
     setEditProductName(product.name);
-    setEditProductDescription(product.description);
+    setEditProductDescription(product.description || "");
     setEditProductBuyPrice(product.buyPrice);
     setEditProductSellPrice(product.sellPrice);
     setEditProductCategory(product.category?.name || "");
@@ -134,6 +163,35 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
     }
   };
 
+  const handleAddProduct = async () => {
+    try {
+      await createProducts({
+        variables: {
+          products: [
+            {
+              name: newProductName,
+              description: newProductDescription,
+              buyPrice: newProductBuyPrice,
+              sellPrice: newProductSellPrice,
+              categoryId: categories.find(
+                (category) => category.name === newProductCategory,
+              )?.id,
+              stock: newStock,
+            },
+          ],
+        },
+      });
+      setNewProductName("");
+      setNewProductDescription("");
+      setNewProductBuyPrice(0);
+      setNewProductSellPrice(0);
+      setNewProductCategory("");
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
+  };
+
   const getCellValue = (
     product: Product,
     accessor: string,
@@ -184,13 +242,138 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         </div>
       </section>
 
-      <Input
-        type="text"
-        placeholder="Search products by name"
-        value={searchTerm}
-        onChange={handleSearchTermChange}
-        className="w-56 p-2 border border-gray-300 mb-4"
-      />
+      <div className="flex gap-2 justify-between">
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="Search products by name"
+            value={searchTerm}
+            onChange={handleSearchTermChange}
+            className="w-56 p-2 border border-gray-300 mb-4"
+          />
+
+          <Button
+            variant="brand"
+            onClick={handleDeleteSelectedProducts}
+            disabled={!hasSelectedProducts}
+            className="h-10"
+          >
+            Delete Selected
+          </Button>
+        </div>
+
+        <Button
+          variant="brand"
+          onClick={() => setIsDialogOpen(true)}
+          className="h-10 flex items-center gap-2"
+        >
+          <IoMdAdd />
+          Add Product
+        </Button>
+      </div>
+
+      <PosDialog
+        open={isDialogOpen}
+        onOpenChange={() => setIsDialogOpen(false)}
+        title="Add New Product"
+        desc={
+          <div className="flex flex-wrap gap-2 mb-4">
+            <p className="pb-2 text-base">
+              Fill in the details of the new product below.
+            </p>
+            <div className="w-56">
+              <label className="block text-sm font-sm text-gray-700">
+                Product Name
+              </label>
+              <Input
+                type="text"
+                placeholder="Product Name"
+                value={newProductName}
+                onChange={(e) => setNewProductName(e.target.value)}
+                className="p-2 border border-gray-300"
+              />
+            </div>
+            <div className="w-56">
+              <label className="block text-sm font-sm text-gray-700">
+                Product Description
+              </label>
+              <Input
+                type="text"
+                placeholder="Product Description"
+                value={newProductDescription}
+                onChange={(e) => setNewProductDescription(e.target.value)}
+                className="p-2 border border-gray-300"
+              />
+            </div>
+            <div className="w-56">
+              <label className="block text-sm font-sm text-gray-700">
+                Buy Price
+              </label>
+              <Input
+                type="number"
+                placeholder="Buy Price"
+                value={newProductBuyPrice}
+                onChange={(e) => setNewProductBuyPrice(Number(e.target.value))}
+                className="p-2 border border-gray-300"
+              />
+            </div>
+            <div className="w-56">
+              <label className="block text-sm font-sm text-gray-700">
+                Sell Price
+              </label>
+              <Input
+                type="number"
+                placeholder="Sell Price"
+                value={newProductSellPrice}
+                onChange={(e) => setNewProductSellPrice(Number(e.target.value))}
+                className="p-2 border border-gray-300"
+              />
+            </div>
+            <div className="w-56">
+              <label className="block text-sm font-sm text-gray-700">
+                Category
+              </label>
+              <Select onValueChange={(value) => setNewProductCategory(value)}>
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={newProductCategory || "Select Category"}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectScrollUpButton />
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.name}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                  <SelectScrollDownButton />
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-56">
+              <label className="block text-sm font-sm text-gray-700">
+                Stock
+              </label>
+              <Input
+                type="number"
+                placeholder="Stock"
+                value={newStock}
+                onChange={(e) => setNewStock(Number(e.target.value))}
+                className="p-2 border border-gray-300"
+              />
+            </div>
+          </div>
+        }
+        onClick={handleAddProduct}
+        disableButton={
+          !newProductName ||
+          !newProductDescription ||
+          !newProductBuyPrice ||
+          !newProductSellPrice ||
+          !newProductCategory
+        }
+        button="Create"
+      ></PosDialog>
 
       <table className="min-w-full bg-white">
         <thead>
@@ -267,7 +450,9 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                   ) : column.accessor === "category.name" &&
                     editProductId === product.id ? (
                     <Select
-                      onValueChange={(value) => setEditProductCategory(value)}
+                      onValueChange={(value: SetStateAction<string>) =>
+                        setEditProductCategory(value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue
@@ -330,14 +515,6 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
           ))}
         </tbody>
       </table>
-
-      <Button
-        onClick={handleDeleteSelectedProducts}
-        disabled={!hasSelectedProducts}
-        variant="primary"
-      >
-        Delete Selected
-      </Button>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import { GET_CATEGORIES, GET_PRODUCTS } from "@/graphql/queries";
 import { Category, Product } from "@/lib/types/types";
 import Loading from "@/components/ui/Loading";
-import ProductTable from "@/components/ui/ProductTable";
+import ProductTable from "@/components/ProductTable";
 
 const ProductPage = () => {
   const {
