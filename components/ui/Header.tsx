@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import {
   SignInButton,
@@ -5,35 +6,56 @@ import {
   SignedIn,
   UserButton,
   OrganizationSwitcher,
+  useOrganization,
 } from "@clerk/nextjs";
 
 export default function Header() {
+  const { organization } = useOrganization();
+  const slug = organization?.slug;
+
+  const disabledLinkClass = "text-gray-400 pointer-events-none";
+  const activeLinkClass = "text-gray-700 hover:text-primary-700";
+
   return (
     <header className="bg-white border-gray-200 shadow-lg">
       <nav className="px-11 py-2.5 mx-auto">
         <div className="flex justify-between items-center">
-          <a href="/:slug/dashboard" className="flex items-center">
+          <a
+            href={slug ? `/${slug}/dashboard` : "#"}
+            className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
+          >
             <img
               src="/sarana.png"
               alt="Sarana Logo"
               className="mr-3 h-6 sm:h-9"
             />
           </a>
-          <a href="/:slug/dashboard" className="flex items-center">
-            <p className="text-sm font-normal">Dashboard</p>
-          </a>
-          <a href="/:slug/pos" className="flex items-center">
-            <p className="text-sm font-normal">Sales</p>
-          </a>
-          <a href="/:slug/product" className="flex items-center">
-            <p className="text-sm font-normal">Product</p>
-          </a>
+          <SignedIn>
+            <a
+              href={slug ? `/${slug}/dashboard` : "#"}
+              className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
+            >
+              <p className="text-sm font-normal">Dashboard</p>
+            </a>
+            <a
+              href={slug ? `/${slug}/pos` : "#"}
+              className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
+            >
+              <p className="text-sm font-normal">Sales</p>
+            </a>
+            <a
+              href={slug ? `/${slug}/product` : "#"}
+              className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
+            >
+              <p className="text-sm font-normal">Product</p>
+            </a>
+          </SignedIn>
           <div className="flex items-center lg:order-2 gap-4">
             <OrganizationSwitcher
               createOrganizationMode={"modal"}
               organizationProfileMode={"modal"}
-              afterCreateOrganizationUrl="/:slug/dashboard"
-              afterSelectOrganizationUrl="/:slug/dashboard"
+              afterCreateOrganizationUrl={slug ? `/${slug}/dashboard` : "#"}
+              afterSelectOrganizationUrl={slug ? `/${slug}/dashboard` : "#"}
               hidePersonal={true}
             />
             <SignedOut>
@@ -70,7 +92,7 @@ export default function Header() {
               >
                 <path
                   fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414z"
                   clipRule="evenodd"
                 ></path>
               </svg>
@@ -81,9 +103,7 @@ export default function Header() {
             id="mobile-menu-2"
           >
             <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-              {/* <li>
-                                <a href="/organization-profile" className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">Organisation</a>
-                            </li> */}
+              {/* Additional links can be added here if needed */}
             </ul>
           </div>
         </div>

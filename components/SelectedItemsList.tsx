@@ -107,15 +107,15 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
       <CardFooter className="sticky bottom-0 bg-white p-4 border-t">
         <div className="flex flex-col w-full">
           <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-xl">
+            <p className="font-bold text-left text-gray-900 text-lg">
               Subtotal:
             </p>
-            <p className="text-3xl text-left text-gray-900">
+            <p className="text-xl text-left text-gray-900">
               IDR {subtotal.toLocaleString()}
             </p>
           </div>
           <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-xl">
+            <p className="font-bold text-left text-gray-900 text-lg">
               Amount Paid:
             </p>
             <Input
@@ -127,14 +127,14 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
                 }
               }}
               onChange={handleAmountPaidChange}
-              className="border w-full h-8 text-gray-900 text-xl"
+              className="border w-full h-8 text-gray-900 text-lg"
             />
           </div>
           <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-xl">
+            <p className="font-bold text-left text-gray-900 text-lg">
               Return Money:
             </p>
-            <p className="text-3xl text-left text-gray-900">
+            <p className="text-xl text-left text-gray-900">
               IDR {returnMoney.toLocaleString()}
             </p>
           </div>
