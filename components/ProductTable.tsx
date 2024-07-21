@@ -50,29 +50,42 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
   const [editProductName, setEditProductName] = useState<string>("");
   const [editProductDescription, setEditProductDescription] =
     useState<string>("");
-  const [editProductBuyPrice, setEditProductBuyPrice] = useState<number>(0);
-  const [editProductSellPrice, setEditProductSellPrice] = useState<number>(0);
+  const [editProductBuyPrice, setEditProductBuyPrice] = useState<number | string>("");
+  const [editProductSellPrice, setEditProductSellPrice] = useState<number | string>("");
   const [editProductCategory, setEditProductCategory] = useState<string>("");
 
   const [newProductName, setNewProductName] = useState<string>("");
   const [newProductDescription, setNewProductDescription] =
     useState<string>("");
-  const [newProductBuyPrice, setNewProductBuyPrice] = useState<number>(0);
-  const [newProductSellPrice, setNewProductSellPrice] = useState<number>(0);
+  const [newProductBuyPrice, setNewProductBuyPrice] = useState<number | string>("");
+  const [newProductSellPrice, setNewProductSellPrice] = useState<number | string>("");
   const [newProductCategory, setNewProductCategory] = useState<string>("");
-  const [newStock, setNewStock] = useState<number>(0);
+  const [newStock, setNewStock] = useState<number | string>("");
 
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // State for dialog
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState<boolean>(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [deleteAction, setDeleteAction] = useState<() => void>(() => {});
 
   const [updateProducts] = useMutation(UPDATE_PRODUCTS, {
     refetchQueries: [{ query: GET_PRODUCTS }],
+    onCompleted: () => showSuccessDialog("Product updated successfully!"),
   });
   const [deleteProducts] = useMutation(DELETE_PRODUCTS, {
     refetchQueries: [{ query: GET_PRODUCTS }],
+    onCompleted: () => showSuccessDialog("Product(s) deleted successfully!"),
   });
   const [createProducts] = useMutation(CREATE_PRODUCTS, {
     refetchQueries: [{ query: GET_PRODUCTS }],
+    onCompleted: () => showSuccessDialog("Product added successfully!"),
   });
+
+  const showSuccessDialog = (message: string) => {
+    setSuccessMessage(message);
+    setIsSuccessDialogOpen(true);
+  };
 
   const filteredProducts = data.filter((product) => {
     const matchesCategory =
@@ -122,8 +135,8 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
               id: editProductId,
               name: editProductName,
               description: editProductDescription,
-              buyPrice: editProductBuyPrice,
-              sellPrice: editProductSellPrice,
+              buyPrice: Number(editProductBuyPrice),
+              sellPrice: Number(editProductSellPrice),
             },
           ],
         },
@@ -135,6 +148,12 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
   };
 
   const handleDeleteProduct = async (productId: string) => {
+    setProductToDelete(productId);
+    setDeleteAction(() => () => confirmDeleteProduct(productId));
+    setIsConfirmationDialogOpen(true);
+  };
+
+  const confirmDeleteProduct = async (productId: string) => {
     try {
       await deleteProducts({
         variables: { ids: [productId] },
@@ -146,10 +165,18 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
       });
     } catch (error) {
       console.error("Error deleting product:", error);
+    } finally {
+      setIsConfirmationDialogOpen(false);
+      setProductToDelete(null);
     }
   };
 
   const handleDeleteSelectedProducts = async () => {
+    setDeleteAction(() => confirmDeleteSelectedProducts);
+    setIsConfirmationDialogOpen(true);
+  };
+
+  const confirmDeleteSelectedProducts = async () => {
     const idsToDelete = Object.keys(selectedProducts).filter(
       (id) => selectedProducts[id],
     );
@@ -160,6 +187,8 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
       setSelectedProducts({});
     } catch (error) {
       console.error("Error deleting products:", error);
+    } finally {
+      setIsConfirmationDialogOpen(false);
     }
   };
 
@@ -171,21 +200,22 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
             {
               name: newProductName,
               description: newProductDescription,
-              buyPrice: newProductBuyPrice,
-              sellPrice: newProductSellPrice,
+              buyPrice: Number(newProductBuyPrice),
+              sellPrice: Number(newProductSellPrice),
               categoryId: categories.find(
                 (category) => category.name === newProductCategory,
               )?.id,
-              stock: newStock,
+              stock: Number(newStock),
             },
           ],
         },
       });
       setNewProductName("");
       setNewProductDescription("");
-      setNewProductBuyPrice(0);
-      setNewProductSellPrice(0);
+      setNewProductBuyPrice("");
+      setNewProductSellPrice("");
       setNewProductCategory("");
+      setNewStock("");
       setIsDialogOpen(false);
     } catch (error) {
       console.error("Error adding product:", error);
@@ -224,8 +254,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
           <Badge
             key="all"
             variant={selectedCategory === "All" ? "default" : "secondary"}
-            onClick={() => handleSelectCategory("All")}
-          >
+            onClick={() => handleSelectCategory("All")}>
             All
           </Badge>
           {categories.map((category) => (
@@ -234,8 +263,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
               variant={
                 selectedCategory === category.name ? "default" : "secondary"
               }
-              onClick={() => handleSelectCategory(category.name)}
-            >
+              onClick={() => handleSelectCategory(category.name)}>
               {category.name}
             </Badge>
           ))}
@@ -256,8 +284,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
             variant="brand"
             onClick={handleDeleteSelectedProducts}
             disabled={!hasSelectedProducts}
-            className="h-10"
-          >
+            className="h-10">
             Delete Selected
           </Button>
         </div>
@@ -265,8 +292,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         <Button
           variant="brand"
           onClick={() => setIsDialogOpen(true)}
-          className="h-10 flex items-center gap-2"
-        >
+          className="h-10 flex items-center gap-2">
           <IoMdAdd />
           Add Product
         </Button>
@@ -310,10 +336,10 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 Buy Price
               </label>
               <Input
-                type="number"
+                type="text"
                 placeholder="Buy Price"
                 value={newProductBuyPrice}
-                onChange={(e) => setNewProductBuyPrice(Number(e.target.value))}
+                onChange={(e) => setNewProductBuyPrice(e.target.value)}
                 className="p-2 border border-gray-300"
               />
             </div>
@@ -322,10 +348,10 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 Sell Price
               </label>
               <Input
-                type="number"
+                type="text"
                 placeholder="Sell Price"
                 value={newProductSellPrice}
-                onChange={(e) => setNewProductSellPrice(Number(e.target.value))}
+                onChange={(e) => setNewProductSellPrice(e.target.value)}
                 className="p-2 border border-gray-300"
               />
             </div>
@@ -355,10 +381,10 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 Stock
               </label>
               <Input
-                type="number"
+                type="text"
                 placeholder="Stock"
                 value={newStock}
-                onChange={(e) => setNewStock(Number(e.target.value))}
+                onChange={(e) => setNewStock(e.target.value)}
                 className="p-2 border border-gray-300"
               />
             </div>
@@ -370,10 +396,40 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
           !newProductDescription ||
           !newProductBuyPrice ||
           !newProductSellPrice ||
-          !newProductCategory
+          !newProductCategory ||
+          !newStock
         }
         button="Create"
-      ></PosDialog>
+      />
+
+      <PosDialog
+        open={isConfirmationDialogOpen}
+        onOpenChange={() => setIsConfirmationDialogOpen(false)}
+        title="Are you sure you want to delete this product?"
+        desc="This action cannot be undone."
+        onClick={deleteAction}
+        button="Delete"
+      />
+
+      <PosDialog
+        open={isSuccessDialogOpen}
+        onOpenChange={() => setIsSuccessDialogOpen(false)}
+        title="Success"
+        desc={
+          <div className="flex justify-center gap-y-2">
+            <div>
+             <img
+              src="/done.svg"
+              alt="Success Logo"
+              className="h-40 w-40"
+            />
+            {successMessage}
+            </div>
+          </div>
+        }
+        onClick={() => setIsSuccessDialogOpen(false)}
+        button={"Close"}
+      />
 
       <table className="min-w-full bg-white">
         <thead>
@@ -480,15 +536,13 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                     <Button
                       onClick={handleSaveProduct}
                       variant="outline-primary"
-                      className="border border-transparent hover:bg-transparent hover:text-gray-400"
-                    >
+                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
                       <IoSaveSharp className="h-5 w-5" />
                     </Button>
                     <Button
                       onClick={handleCancelEdit}
                       variant="outline-primary"
-                      className="border border-transparent hover:bg-transparent hover:text-gray-400"
-                    >
+                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
                       <IoMdClose className="h-5 w-5" />
                     </Button>
                   </div>
@@ -497,15 +551,13 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                     <Button
                       onClick={() => handleEditProduct(product)}
                       variant="outline-primary"
-                      className="border border-transparent hover:bg-transparent hover:text-gray-400"
-                    >
+                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
                       <MdEdit className="h-5 w-5" />
                     </Button>
                     <Button
                       onClick={() => handleDeleteProduct(product.id)}
                       variant="outline-primary"
-                      className="border border-transparent hover:bg-transparent hover:text-gray-400"
-                    >
+                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
                       <FaTrashCan className="h-5 w-5" />
                     </Button>
                   </div>
