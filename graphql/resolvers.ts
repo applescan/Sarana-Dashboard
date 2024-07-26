@@ -355,18 +355,6 @@ export const resolvers = {
                 },
             });
         },
-        itemsSold: async (parent: any, _: any, context: Context) => {
-            return await context.prisma.itemsSold.findMany({
-                where: {
-                    product: {
-                        categoryId: parent.id,
-                    },
-                },
-                include: {
-                    product: true,
-                },
-            });
-        },
     },
     Product: {
         category: async (parent: any, _: any, context: Context) => {

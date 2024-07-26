@@ -25,7 +25,7 @@ type Product {
   buyPrice: Float!
   sellPrice: Float!
   stock: Int!
-  category: Category
+  category: Category!
   orderItems: [OrderItem]
   itemsSold: [ItemsSold]
   itemsRestocked: [ItemsRestocked]
@@ -37,7 +37,6 @@ type Category {
   id: Int!
   name: String!
   products: [Product]
-  itemsSold: [ItemsSold]
   createdAt: String!
   updatedAt: String!
 }
@@ -137,7 +136,7 @@ input ProductInput {
   buyPrice: Float!  
   sellPrice: Float!  
   stock: Int!
-  categoryId: Int
+  categoryId: Int!
 }
 
 input ProductUpdateInput {
@@ -147,7 +146,7 @@ input ProductUpdateInput {
   buyPrice: Float 
   sellPrice: Float 
   stock: Int
-  categoryId: Int
+  categoryId: Int!
 }
 
 input CategoryInput {

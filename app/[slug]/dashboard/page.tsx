@@ -23,9 +23,9 @@ const DashboardPage = () => {
 
     const { loading, error, buildingSupplySalesData, categories, revenueData, itemsSold, itemsRestocked, totalRevenue, refetch } = useDashboardData(
         formatStartDate(selectedDate?.from),
-        formatEndDate(selectedDate?.to)
-    );
+        formatEndDate(selectedDate?.to),
 
+    );
     const handleDateChange = (date: DateRange | undefined) => {
         setSelectedDate(date);
         if (date?.from && date?.to) {

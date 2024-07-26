@@ -87,8 +87,8 @@ export const UPDATE_PRODUCTS = gql`
       id
       name
       description
-      buyPrice # Added buyPrice
-      sellPrice # Added sellPrice
+      buyPrice
+      sellPrice
       stock
       createdAt
       updatedAt
@@ -126,8 +126,8 @@ export const UPDATE_CATEGORIES = gql`
       products {
         id
         name
-        buyPrice # Updated to buyPrice
-        sellPrice # Updated to sellPrice
+        buyPrice
+        sellPrice
       }
     }
   }
