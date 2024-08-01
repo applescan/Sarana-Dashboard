@@ -1,10 +1,10 @@
-"use client";
-import React from "react";
-import { useQuery } from "@apollo/client";
-import { GET_CATEGORIES, GET_PRODUCTS } from "@/graphql/queries";
-import { Category, Product } from "@/lib/types/types";
-import Loading from "@/components/ui/Loading";
-import ProductTable from "@/components/ProductTable";
+'use client';
+import { useQuery } from '@apollo/client';
+import React from 'react';
+import ProductTable from '@/components/ProductTable';
+import Loading from '@/components/ui/Loading';
+import { GET_CATEGORIES, GET_PRODUCTS } from '@/graphql/queries';
+import { Category, Product } from '@/lib/types/types';
 
 const ProductPage = () => {
   const {
@@ -18,17 +18,17 @@ const ProductPage = () => {
 
   if (productsLoading || categoriesLoading) return <Loading />;
   if (productsError) {
-    console.error("Error fetching product data:", productsError);
+    console.error('Error fetching product data:', productsError);
     return <p>Error loading products</p>;
   }
 
   const columns = [
-    { Header: "Name", accessor: "name" },
-    { Header: "Description", accessor: "description" },
-    { Header: "Buy Price", accessor: "buyPrice" },
-    { Header: "Sell Price", accessor: "sellPrice" },
-    { Header: "Category", accessor: "category.name" },
-    { Header: "Stock", accessor: "stock" },
+    { Header: 'Name', accessor: 'name' },
+    { Header: 'Description', accessor: 'description' },
+    { Header: 'Buy Price', accessor: 'buyPrice' },
+    { Header: 'Sell Price', accessor: 'sellPrice' },
+    { Header: 'Category', accessor: 'category.name' },
+    { Header: 'Stock', accessor: 'stock' },
   ];
 
   return (

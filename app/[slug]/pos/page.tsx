@@ -1,13 +1,11 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
-import { Category, Product } from "@/lib/types/types";
-import { RECORD_ITEMS_SOLD, RECORD_REVENUE } from "@/graphql/mutations";
-import { GET_CATEGORIES, GET_PRODUCTS } from "@/graphql/queries";
-import ProductCard from "@/components/ProductCard";
-import { Badge } from "@/components/ui/Badge";
-import SelectedItemsList from "@/components/SelectedItemsList";
-import { Input } from "@/components/ui/Input";
+'use client';
+import { useQuery, useMutation } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import PosDialog from '@/components/PosDialog';
+import ProductCard from '@/components/ProductCard';
+import SelectedItemsList from '@/components/SelectedItemsList';
+import { Badge } from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
 import {
   Dialog,
   DialogContent,
@@ -16,10 +14,12 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/Dialog";
-import Button from "@/components/ui/Button";
-import Loading from "@/components/ui/Loading";
-import PosDialog from "@/components/PosDialog";
+} from '@/components/ui/Dialog';
+import { Input } from '@/components/ui/Input';
+import Loading from '@/components/ui/Loading';
+import { RECORD_ITEMS_SOLD, RECORD_REVENUE } from '@/graphql/mutations';
+import { GET_CATEGORIES, GET_PRODUCTS } from '@/graphql/queries';
+import { Category, Product } from '@/lib/types/types';
 
 const POSPage = () => {
   const {
@@ -33,16 +33,16 @@ const POSPage = () => {
   const [selectedItems, setSelectedItems] = useState<Record<string, number>>(
     {},
   );
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [isOutOfStockModalOpen, setIsOutOfStockModalOpen] =
     useState<boolean>(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
-  const [outOfStockProduct, setOutOfStockProduct] = useState<string>("");
-  const [amountPaid, setAmountPaid] = useState<string>("0");
+  const [outOfStockProduct, setOutOfStockProduct] = useState<string>('');
+  const [amountPaid, setAmountPaid] = useState<string>('0');
 
   useEffect(() => {
     if (productsError) {
-      console.error("Error fetching product data:", productsError);
+      console.error('Error fetching product data:', productsError);
     }
   }, [productsError]);
 
@@ -50,7 +50,7 @@ const POSPage = () => {
   const [recordRevenue] = useMutation(RECORD_REVENUE);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    "All",
+    'All',
   );
 
   // Function to handle product selection
@@ -114,7 +114,7 @@ const POSPage = () => {
 
     // Reset selected items and amount paid
     setSelectedItems({});
-    setAmountPaid("0");
+    setAmountPaid('0');
     setIsSuccessModalOpen(true);
   };
 
@@ -138,7 +138,7 @@ const POSPage = () => {
   // Filter products based on selected category and search term
   const filteredProducts = productsData?.products.filter((product) => {
     const matchesCategory =
-      selectedCategory === "All" || product.category?.name === selectedCategory;
+      selectedCategory === 'All' || product.category?.name === selectedCategory;
     const matchesSearchTerm = product.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -151,8 +151,8 @@ const POSPage = () => {
         <div className="flex flex-wrap gap-2">
           <Badge
             key="all"
-            variant={selectedCategory === "All" ? "default" : "secondary"}
-            onClick={() => handleSelectCategory("All")}
+            variant={selectedCategory === 'All' ? 'default' : 'secondary'}
+            onClick={() => handleSelectCategory('All')}
           >
             All
           </Badge>
@@ -160,7 +160,7 @@ const POSPage = () => {
             <Badge
               key={category.id}
               variant={
-                selectedCategory === category.name ? "default" : "secondary"
+                selectedCategory === category.name ? 'default' : 'secondary'
               }
               onClick={() => handleSelectCategory(category.name)}
             >
@@ -207,7 +207,7 @@ const POSPage = () => {
       <PosDialog
         open={isOutOfStockModalOpen}
         onOpenChange={() => setIsOutOfStockModalOpen}
-        title={"Out of Stock"}
+        title={'Out of Stock'}
         desc={`${outOfStockProduct} is out of stock and cannot be added to the cart.`}
         onClick={() => setIsOutOfStockModalOpen(false)}
         button="Close"

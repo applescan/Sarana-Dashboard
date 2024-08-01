@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode } from 'react';
+import Button from './ui/Button';
 import {
   Dialog,
   DialogClose,
@@ -7,8 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/Dialog";
-import Button from "./ui/Button";
+} from './ui/Dialog';
 
 export type PosDialog = {
   open: boolean;

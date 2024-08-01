@@ -1,15 +1,11 @@
-import React, { useState, FC, ChangeEvent, SetStateAction } from "react";
-import { useMutation, gql } from "@apollo/client";
-import { Product, Category } from "@/lib/types/types";
-import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
-import Button from "@/components/ui/Button";
-import { DELETE_PRODUCTS, UPDATE_PRODUCTS } from "@/graphql/mutations";
-import { MdEdit } from "react-icons/md";
-import { FaTrashCan } from "react-icons/fa6";
-import { IoSaveSharp } from "react-icons/io5";
-import { IoMdAdd, IoMdClose } from "react-icons/io";
-import PosDialog from "./PosDialog";
+import { useMutation } from '@apollo/client';
+import { Protect } from '@clerk/nextjs';
+import React, { useState, FC, ChangeEvent, SetStateAction } from 'react';
+import { FaTrashCan } from 'react-icons/fa6';
+import { IoMdAdd, IoMdClose } from 'react-icons/io';
+import { IoSaveSharp } from 'react-icons/io5';
+import { MdEdit } from 'react-icons/md';
+import PosDialog from './PosDialog';
 import {
   Select,
   SelectContent,
@@ -18,8 +14,17 @@ import {
   SelectScrollUpButton,
   SelectTrigger,
   SelectValue,
-} from "./ui/Select";
-import { GET_PRODUCTS } from "@/graphql/queries";
+} from './ui/Select';
+import { Badge } from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import {
+  CREATE_PRODUCTS,
+  DELETE_PRODUCTS,
+  UPDATE_PRODUCTS,
+} from '@/graphql/mutations';
+import { GET_PRODUCTS } from '@/graphql/queries';
+import { Product, Category } from '@/lib/types/types';
 
 export type Column = {
   Header: string;
@@ -32,54 +37,57 @@ export type ProductTableProps = {
   categories: Category[];
 };
 
-const CREATE_PRODUCTS = gql`
-  mutation CreateProducts($products: [ProductInput!]!) {
-    createProducts(products: $products) {
-      count
-    }
-  }
-`;
-
 const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedProducts, setSelectedProducts] = useState<
     Record<string, boolean>
   >({});
   const [editProductId, setEditProductId] = useState<string | null>(null);
-  const [editProductName, setEditProductName] = useState<string>("");
+  const [editProductName, setEditProductName] = useState<string>('');
   const [editProductDescription, setEditProductDescription] =
-    useState<string>("");
-  const [editProductBuyPrice, setEditProductBuyPrice] = useState<number | string>("");
-  const [editProductSellPrice, setEditProductSellPrice] = useState<number | string>("");
-  const [editProductCategory, setEditProductCategory] = useState<string>("");
+    useState<string>('');
+  const [editProductBuyPrice, setEditProductBuyPrice] = useState<
+    number | string
+  >('');
+  const [editProductSellPrice, setEditProductSellPrice] = useState<
+    number | string
+  >('');
+  const [editProductCategory, setEditProductCategory] = useState<string>('');
 
-  const [newProductName, setNewProductName] = useState<string>("");
+  const [newProductName, setNewProductName] = useState<string>('');
   const [newProductDescription, setNewProductDescription] =
-    useState<string>("");
-  const [newProductBuyPrice, setNewProductBuyPrice] = useState<number | string>("");
-  const [newProductSellPrice, setNewProductSellPrice] = useState<number | string>("");
-  const [newProductCategory, setNewProductCategory] = useState<string>("");
-  const [newStock, setNewStock] = useState<number | string>("");
+    useState<string>('');
+  const [newProductBuyPrice, setNewProductBuyPrice] = useState<number | string>(
+    '',
+  );
+  const [newProductSellPrice, setNewProductSellPrice] = useState<
+    number | string
+  >('');
+  const [newProductCategory, setNewProductCategory] = useState<string>('');
+  const [newStock, setNewStock] = useState<number | string>('');
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState<boolean>(false);
-  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState<boolean>(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] =
+    useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [deleteAction, setDeleteAction] = useState<() => void>(() => {});
 
   const [updateProducts] = useMutation(UPDATE_PRODUCTS, {
     refetchQueries: [{ query: GET_PRODUCTS }],
-    onCompleted: () => showSuccessDialog("Product updated successfully!"),
+    onCompleted: () => showSuccessDialog('Product updated successfully!'),
   });
   const [deleteProducts] = useMutation(DELETE_PRODUCTS, {
     refetchQueries: [{ query: GET_PRODUCTS }],
-    onCompleted: () => showSuccessDialog("Product(s) deleted successfully!"),
+    onCompleted: () => showSuccessDialog('Product(s) deleted successfully!'),
   });
   const [createProducts] = useMutation(CREATE_PRODUCTS, {
     refetchQueries: [{ query: GET_PRODUCTS }],
-    onCompleted: () => showSuccessDialog("Product added successfully!"),
+    onCompleted: () => showSuccessDialog('Product added successfully!'),
   });
 
   const showSuccessDialog = (message: string) => {
@@ -89,7 +97,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
 
   const filteredProducts = data.filter((product) => {
     const matchesCategory =
-      selectedCategory === "All" || product.category?.name === selectedCategory;
+      selectedCategory === 'All' || product.category?.name === selectedCategory;
     const matchesSearchTerm = product.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -116,10 +124,10 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
   const handleEditProduct = (product: Product) => {
     setEditProductId(product.id);
     setEditProductName(product.name);
-    setEditProductDescription(product.description || "");
+    setEditProductDescription(product.description || '');
     setEditProductBuyPrice(product.buyPrice);
     setEditProductSellPrice(product.sellPrice);
-    setEditProductCategory(product.category?.name || "");
+    setEditProductCategory(product.category?.name || '');
   };
 
   const handleCancelEdit = () => {
@@ -143,7 +151,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
       });
       setEditProductId(null);
     } catch (error) {
-      console.error("Error updating product:", error);
+      console.error('Error updating product:', error);
     }
   };
 
@@ -164,7 +172,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         return updatedSelectedProducts;
       });
     } catch (error) {
-      console.error("Error deleting product:", error);
+      console.error('Error deleting product:', error);
     } finally {
       setIsConfirmationDialogOpen(false);
       setProductToDelete(null);
@@ -186,7 +194,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
       });
       setSelectedProducts({});
     } catch (error) {
-      console.error("Error deleting products:", error);
+      console.error('Error deleting products:', error);
     } finally {
       setIsConfirmationDialogOpen(false);
     }
@@ -210,15 +218,15 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
           ],
         },
       });
-      setNewProductName("");
-      setNewProductDescription("");
-      setNewProductBuyPrice("");
-      setNewProductSellPrice("");
-      setNewProductCategory("");
-      setNewStock("");
+      setNewProductName('');
+      setNewProductDescription('');
+      setNewProductBuyPrice('');
+      setNewProductSellPrice('');
+      setNewProductCategory('');
+      setNewStock('');
       setIsDialogOpen(false);
     } catch (error) {
-      console.error("Error adding product:", error);
+      console.error('Error adding product:', error);
     }
   };
 
@@ -226,21 +234,24 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
     product: Product,
     accessor: string,
   ): React.ReactNode => {
-    const keys = accessor.split(".");
-    let value: any = product;
+    const keys = accessor.split('.');
+    let value: unknown = product;
     for (const key of keys) {
-      value = value[key];
-      if (value === undefined) {
-        return "";
+      if (typeof value === 'object' && value !== null && key in value) {
+        value = (value as Record<string, unknown>)[key];
+      } else {
+        return '';
       }
     }
+
     if (
-      typeof value === "number" &&
-      (accessor === "buyPrice" || accessor === "sellPrice")
+      typeof value === 'number' &&
+      (accessor === 'buyPrice' || accessor === 'sellPrice')
     ) {
       return `IDR ${value.toLocaleString()}`;
     }
-    return typeof value === "object" ? JSON.stringify(value) : value;
+
+    return value as React.ReactNode;
   };
 
   const hasSelectedProducts = Object.values(selectedProducts).some(
@@ -253,17 +264,19 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         <div className="flex flex-wrap gap-2">
           <Badge
             key="all"
-            variant={selectedCategory === "All" ? "default" : "secondary"}
-            onClick={() => handleSelectCategory("All")}>
+            variant={selectedCategory === 'All' ? 'default' : 'secondary'}
+            onClick={() => handleSelectCategory('All')}
+          >
             All
           </Badge>
           {categories.map((category) => (
             <Badge
               key={category.id}
               variant={
-                selectedCategory === category.name ? "default" : "secondary"
+                selectedCategory === category.name ? 'default' : 'secondary'
               }
-              onClick={() => handleSelectCategory(category.name)}>
+              onClick={() => handleSelectCategory(category.name)}
+            >
               {category.name}
             </Badge>
           ))}
@@ -279,23 +292,27 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
             onChange={handleSearchTermChange}
             className="w-56 p-2 border border-gray-300 mb-4"
           />
-
+          <Protect condition={(has) => has({ role: 'org:admin' })}>
+            <Button
+              variant="brand"
+              onClick={handleDeleteSelectedProducts}
+              disabled={!hasSelectedProducts}
+              className="h-10"
+            >
+              Delete Selected
+            </Button>
+          </Protect>
+        </div>
+        <Protect condition={(has) => has({ role: 'org:admin' })}>
           <Button
             variant="brand"
-            onClick={handleDeleteSelectedProducts}
-            disabled={!hasSelectedProducts}
-            className="h-10">
-            Delete Selected
+            onClick={() => setIsDialogOpen(true)}
+            className="h-10 flex items-center gap-2"
+          >
+            <IoMdAdd />
+            Add Product
           </Button>
-        </div>
-
-        <Button
-          variant="brand"
-          onClick={() => setIsDialogOpen(true)}
-          className="h-10 flex items-center gap-2">
-          <IoMdAdd />
-          Add Product
-        </Button>
+        </Protect>
       </div>
 
       <PosDialog
@@ -362,7 +379,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
               <Select onValueChange={(value) => setNewProductCategory(value)}>
                 <SelectTrigger>
                   <SelectValue
-                    placeholder={newProductCategory || "Select Category"}
+                    placeholder={newProductCategory || 'Select Category'}
                   />
                 </SelectTrigger>
                 <SelectContent>
@@ -418,25 +435,23 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         desc={
           <div className="flex justify-center gap-y-2">
             <div>
-             <img
-              src="/done.svg"
-              alt="Success Logo"
-              className="h-40 w-40"
-            />
-            {successMessage}
+              <img src="/done.svg" alt="Success Logo" className="h-40 w-40" />
+              {successMessage}
             </div>
           </div>
         }
         onClick={() => setIsSuccessDialogOpen(false)}
-        button={"Close"}
+        button={'Close'}
       />
 
       <table className="min-w-full bg-white">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b border-gray-200 text-left">
-              Select
-            </th>
+            <Protect condition={(has) => has({ role: 'org:admin' })}>
+              <th className="py-2 px-4 border-b border-gray-200 text-left">
+                Select
+              </th>
+            </Protect>
             {columns.map((column) => (
               <th
                 key={column.accessor}
@@ -445,27 +460,31 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 {column.Header}
               </th>
             ))}
-            <th className="py-2 px-4 border-b border-gray-200 text-left">
-              Actions
-            </th>
+            <Protect condition={(has) => has({ role: 'org:admin' })}>
+              <th className="py-2 px-4 border-b border-gray-200 text-left">
+                Actions
+              </th>
+            </Protect>
           </tr>
         </thead>
         <tbody>
           {filteredProducts.map((product) => (
             <tr key={product.id}>
-              <td className="py-2 px-4 border-b border-gray-200">
-                <input
-                  type="checkbox"
-                  checked={!!selectedProducts[product.id]}
-                  onChange={() => handleCheckboxChange(product.id)}
-                />
-              </td>
+              <Protect condition={(has) => has({ role: 'org:admin' })}>
+                <td className="py-2 px-4 border-b border-gray-200">
+                  <input
+                    type="checkbox"
+                    checked={!!selectedProducts[product.id]}
+                    onChange={() => handleCheckboxChange(product.id)}
+                  />
+                </td>
+              </Protect>
               {columns.map((column) => (
                 <td
                   key={column.accessor}
                   className="py-2 px-4 border-b border-gray-200"
                 >
-                  {column.accessor === "name" &&
+                  {column.accessor === 'name' &&
                   editProductId === product.id ? (
                     <Input
                       type="text"
@@ -473,7 +492,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                       onChange={(e) => setEditProductName(e.target.value)}
                       className="border w-full"
                     />
-                  ) : column.accessor === "description" &&
+                  ) : column.accessor === 'description' &&
                     editProductId === product.id ? (
                     <Input
                       type="text"
@@ -483,7 +502,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                       }
                       className="border w-full"
                     />
-                  ) : column.accessor === "buyPrice" &&
+                  ) : column.accessor === 'buyPrice' &&
                     editProductId === product.id ? (
                     <Input
                       type="number"
@@ -493,7 +512,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                       }
                       className="border w-full"
                     />
-                  ) : column.accessor === "sellPrice" &&
+                  ) : column.accessor === 'sellPrice' &&
                     editProductId === product.id ? (
                     <Input
                       type="number"
@@ -503,7 +522,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                       }
                       className="border w-full"
                     />
-                  ) : column.accessor === "category.name" &&
+                  ) : column.accessor === 'category.name' &&
                     editProductId === product.id ? (
                     <Select
                       onValueChange={(value: SetStateAction<string>) =>
@@ -512,7 +531,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                     >
                       <SelectTrigger>
                         <SelectValue
-                          placeholder={editProductCategory || "Select Category"}
+                          placeholder={editProductCategory || 'Select Category'}
                         />
                       </SelectTrigger>
                       <SelectContent>
@@ -530,39 +549,45 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                   )}
                 </td>
               ))}
-              <td className="py-2 px-4 border-b border-gray-200">
-                {editProductId === product.id ? (
-                  <div>
-                    <Button
-                      onClick={handleSaveProduct}
-                      variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
-                      <IoSaveSharp className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      onClick={handleCancelEdit}
-                      variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
-                      <IoMdClose className="h-5 w-5" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <Button
-                      onClick={() => handleEditProduct(product)}
-                      variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
-                      <MdEdit className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteProduct(product.id)}
-                      variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800">
-                      <FaTrashCan className="h-5 w-5" />
-                    </Button>
-                  </div>
-                )}
-              </td>
+              <Protect condition={(has) => has({ role: 'org:admin' })}>
+                <td className="py-2 px-4 border-b border-gray-200">
+                  {editProductId === product.id ? (
+                    <div>
+                      <Button
+                        onClick={handleSaveProduct}
+                        variant="outline-primary"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      >
+                        <IoSaveSharp className="h-5 w-5" />
+                      </Button>
+                      <Button
+                        onClick={handleCancelEdit}
+                        variant="outline-primary"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      >
+                        <IoMdClose className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Button
+                        onClick={() => handleEditProduct(product)}
+                        variant="outline-primary"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      >
+                        <MdEdit className="h-5 w-5" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDeleteProduct(product.id)}
+                        variant="outline-primary"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      >
+                        <FaTrashCan className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  )}
+                </td>
+              </Protect>
             </tr>
           ))}
         </tbody>
