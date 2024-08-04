@@ -18,7 +18,7 @@ export default function Header() {
 
   return (
     <header className="bg-white border-gray-200 shadow-lg fixed w-full z-10">
-      <nav className="px-4 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <nav className="px-10 py-3 mx-auto">
         <div className="flex justify-between items-center">
           <a
             href={slug ? `/${slug}/dashboard` : '#'}

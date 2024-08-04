@@ -15,7 +15,11 @@ import {
 } from './ui/Select';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { CREATE_ORDERS, DELETE_ORDERS } from '@/graphql/mutations';
+import {
+  CREATE_ORDERS,
+  DELETE_ORDERS,
+  MARK_ORDER_AS_RECEIVED,
+} from '@/graphql/mutations';
 import { GET_ORDERS } from '@/graphql/queries';
 import { Order, Category, Product } from '@/lib/types/types';
 
@@ -48,9 +52,9 @@ const OrderTable: FC<OrderTableProps> = ({
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] =
     useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
   const [deleteAction, setDeleteAction] = useState<() => void>(() => {});
+
   const [deleteOrders] = useMutation(DELETE_ORDERS, {
     refetchQueries: [{ query: GET_ORDERS }],
     onCompleted: () => showSuccessDialog('Order(s) deleted successfully!'),
@@ -58,6 +62,10 @@ const OrderTable: FC<OrderTableProps> = ({
   const [createOrders] = useMutation(CREATE_ORDERS, {
     refetchQueries: [{ query: GET_ORDERS }],
     onCompleted: () => showSuccessDialog('Order added successfully!'),
+  });
+  const [markOrderAsReceived] = useMutation(MARK_ORDER_AS_RECEIVED, {
+    refetchQueries: [{ query: GET_ORDERS }],
+    onCompleted: () => showSuccessDialog('Order marked as received!'),
   });
 
   const showSuccessDialog = (message: string) => {
@@ -141,12 +149,31 @@ const OrderTable: FC<OrderTableProps> = ({
     }
   };
 
+  const handleMarkOrderAsReceived = async (orderId: number) => {
+    try {
+      await markOrderAsReceived({
+        variables: { orderId },
+      });
+    } catch (error) {
+      console.error('Error marking order as received:', error);
+    }
+  };
+
   const getCellValue = (order: Order, accessor: string): React.ReactNode => {
     if (accessor === 'orderItems.product.name') {
       return order.orderItems.map((item) => item.product.name).join(', ');
     }
     if (accessor === 'orderItems.quantity') {
       return order.orderItems.map((item) => item.quantity).join(', ');
+    }
+    if (accessor === 'status') {
+      return (
+        <span
+          className={`badge ${order.status === 'RECEIVED' ? 'bg-green-500' : 'bg-red-500'} text-white`}
+        >
+          {order.status}
+        </span>
+      );
     }
     const keys = accessor.split('.');
     let value: unknown = order;
@@ -326,7 +353,7 @@ const OrderTable: FC<OrderTableProps> = ({
               ))}
               <Protect condition={(has) => has({ role: 'org:admin' })}>
                 <td className="py-2 px-4 border-b border-gray-200">
-                  <div>
+                  <div className="flex gap-2">
                     <Button
                       onClick={() => handleDeleteOrder(order.id.toString())}
                       variant="outline-primary"
@@ -334,6 +361,15 @@ const OrderTable: FC<OrderTableProps> = ({
                     >
                       <FaTrashCan className="h-5 w-5" />
                     </Button>
+                    {order.status !== 'RECEIVED' && (
+                      <Button
+                        onClick={() => handleMarkOrderAsReceived(order.id)}
+                        variant="outline-primary"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      >
+                        Mark as Received
+                      </Button>
+                    )}
                   </div>
                 </td>
               </Protect>

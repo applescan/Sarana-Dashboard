@@ -11,6 +11,7 @@ model Order {
   id           Int          @id @default(autoincrement())
   totalAmount  Float
   orderItems   OrderItem[]
+  status       String        @default("PENDING")
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }

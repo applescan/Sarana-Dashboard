@@ -236,6 +236,33 @@ export const resolvers = {
 
       return { count: createdOrders.length };
     },
+    markOrderAsReceived: async (
+      _: unknown,
+      args: { orderId: number },
+      context: Context,
+    ) => {
+      const order = await context.prisma.order.update({
+        where: { id: args.orderId },
+        data: { status: 'RECEIVED' },
+        include: { orderItems: { include: { product: true } } },
+      });
+      await Promise.all(
+        order.orderItems.map(async (item) => {
+          await context.prisma.product.update({
+            where: { id: item.productId },
+            data: { stock: { increment: item.quantity } },
+          });
+          await context.prisma.itemsRestocked.create({
+            data: {
+              productId: item.productId,
+              quantity: item.quantity,
+            },
+          });
+        }),
+      );
+
+      return order;
+    },
     updateOrders: async (
       _: unknown,
       args: { orders: { id: number; totalAmount: number }[] },

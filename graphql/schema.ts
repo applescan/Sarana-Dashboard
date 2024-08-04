@@ -3,7 +3,8 @@ export const typeDefs = `#graphql
 type Order {
   id: Int!
   totalAmount: Float!
-  orderItems: [OrderItem]
+  orderItems: [OrderItem!]!
+  status: String!
   createdAt: String!
   updatedAt: String!
 }
@@ -86,6 +87,7 @@ type Query {
 
 type Mutation {
   createOrders(orders: [OrderInput!]!): BatchPayload!
+  markOrderAsReceived(orderId: Int!): Order!
   updateOrders(orders: [OrderUpdateInput!]!): [Order]
   deleteOrders(ids: [Int!]!): BatchPayload!
 

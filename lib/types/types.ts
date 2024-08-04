@@ -2,6 +2,7 @@ export interface Order {
   id: number;
   totalAmount: number;
   orderItems: OrderItem[];
+  status: string;
   createdAt: string;
   updatedAt: string;
 }

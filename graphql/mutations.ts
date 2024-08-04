@@ -8,6 +8,22 @@ export const CREATE_ORDERS = gql`
   }
 `;
 
+export const MARK_ORDER_AS_RECEIVED = gql`
+  mutation MarkOrderAsReceived($orderId: Int!) {
+    markOrderAsReceived(orderId: $orderId) {
+      id
+      status
+      orderItems {
+        product {
+          id
+          name
+          stock
+        }
+      }
+    }
+  }
+`;
+
 export const UPDATE_ORDERS = gql`
   mutation UpdateOrders($orders: [OrderUpdateInput!]!) {
     updateOrders(orders: $orders) {
