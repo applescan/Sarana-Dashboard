@@ -1,9 +1,7 @@
-import {
-  ClerkProvider,
-} from "@clerk/nextjs";
-import "./globals.css";
-import Header from "../components/ui/Header";
-import Providers from "@/components/Providers";
+import { ClerkProvider } from '@clerk/nextjs';
+import './globals.css';
+import Header from '../components/ui/Header';
+import Providers from '@/components/Providers';
 
 export default function RootLayout({
   children,
@@ -11,14 +9,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider >
+    <ClerkProvider>
       <Providers>
         <html lang="en">
           <body>
-            <header>
-            </header>
             <Header />
-            <main className="p-12">{children}</main>
+            <main className="pt-20 px-12 pb-12">{children}</main>
           </body>
         </html>
       </Providers>
