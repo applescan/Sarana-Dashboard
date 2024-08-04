@@ -65,7 +65,6 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
     number | string
   >('');
   const [newProductCategory, setNewProductCategory] = useState<string>('');
-  const [newStock, setNewStock] = useState<number | string>('');
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
@@ -213,7 +212,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
               categoryId: categories.find(
                 (category) => category.name === newProductCategory,
               )?.id,
-              stock: Number(newStock),
+              stock: 0,
             },
           ],
         },
@@ -223,7 +222,6 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
       setNewProductBuyPrice('');
       setNewProductSellPrice('');
       setNewProductCategory('');
-      setNewStock('');
       setIsDialogOpen(false);
     } catch (error) {
       console.error('Error adding product:', error);
@@ -338,15 +336,24 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
             </div>
             <div className="w-56">
               <label className="block text-sm font-sm text-gray-700">
-                Product Description
+                Category
               </label>
-              <Input
-                type="text"
-                placeholder="Product Description"
-                value={newProductDescription}
-                onChange={(e) => setNewProductDescription(e.target.value)}
-                className="p-2 border border-gray-300"
-              />
+              <Select onValueChange={(value) => setNewProductCategory(value)}>
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={newProductCategory || 'Select Category'}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectScrollUpButton />
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.name}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                  <SelectScrollDownButton />
+                </SelectContent>
+              </Select>
             </div>
             <div className="w-56">
               <label className="block text-sm font-sm text-gray-700">
@@ -372,36 +379,15 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 className="p-2 border border-gray-300"
               />
             </div>
-            <div className="w-56">
+            <div className="w-full">
               <label className="block text-sm font-sm text-gray-700">
-                Category
-              </label>
-              <Select onValueChange={(value) => setNewProductCategory(value)}>
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={newProductCategory || 'Select Category'}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectScrollUpButton />
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.name}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                  <SelectScrollDownButton />
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-56">
-              <label className="block text-sm font-sm text-gray-700">
-                Stock
+                Product Description
               </label>
               <Input
                 type="text"
-                placeholder="Stock"
-                value={newStock}
-                onChange={(e) => setNewStock(e.target.value)}
+                placeholder="Product Description"
+                value={newProductDescription}
+                onChange={(e) => setNewProductDescription(e.target.value)}
                 className="p-2 border border-gray-300"
               />
             </div>
@@ -413,8 +399,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
           !newProductDescription ||
           !newProductBuyPrice ||
           !newProductSellPrice ||
-          !newProductCategory ||
-          !newStock
+          !newProductCategory
         }
         button="Create"
       />

@@ -207,12 +207,34 @@ export const resolvers = {
   Mutation: {
     createOrders: async (
       _: unknown,
-      args: { orders: Prisma.OrderCreateManyInput[] },
+      args: {
+        orders: {
+          totalAmount: number;
+          orderItems: { quantity: number; price: number; productId: string }[];
+        }[];
+      },
       context: Context,
     ) => {
-      return await context.prisma.order.createMany({
-        data: args.orders,
-      });
+      const createdOrders = await Promise.all(
+        args.orders.map(async (order) => {
+          return await context.prisma.order.create({
+            data: {
+              totalAmount: order.totalAmount,
+              orderItems: {
+                create: order.orderItems.map((item) => ({
+                  quantity: item.quantity,
+                  price: item.price,
+                  product: {
+                    connect: { id: item.productId },
+                  },
+                })),
+              },
+            },
+          });
+        }),
+      );
+
+      return { count: createdOrders.length };
     },
     updateOrders: async (
       _: unknown,
@@ -238,29 +260,34 @@ export const resolvers = {
     },
     createOrderItems: async (
       _: unknown,
-      args: { orderItems: Prisma.OrderItemCreateManyInput[] },
+      args: {
+        orderItems: {
+          quantity: number;
+          price: number;
+          orderId: number;
+          productId: string;
+        }[];
+      },
       context: Context,
     ) => {
-      return await context.prisma.$transaction(async (prisma) => {
-        const createdOrderItems = await prisma.orderItem.createMany({
-          data: args.orderItems,
-        });
-
-        const updateStockPromises = args.orderItems.map((item) =>
-          prisma.product.update({
-            where: { id: item.productId },
+      const createdOrderItems = await Promise.all(
+        args.orderItems.map(async (orderItem) => {
+          return await context.prisma.orderItem.create({
             data: {
-              stock: {
-                decrement: item.quantity,
+              quantity: orderItem.quantity,
+              price: orderItem.price,
+              order: {
+                connect: { id: orderItem.orderId },
+              },
+              product: {
+                connect: { id: orderItem.productId },
               },
             },
-          }),
-        );
+          });
+        }),
+      );
 
-        await Promise.all(updateStockPromises);
-
-        return createdOrderItems;
-      });
+      return { count: createdOrderItems.length };
     },
     updateOrderItems: async (
       _: unknown,
@@ -286,12 +313,38 @@ export const resolvers = {
     },
     createProducts: async (
       _: unknown,
-      args: { products: Prisma.ProductCreateManyInput[] },
+      args: {
+        products: {
+          id: string;
+          name: string;
+          description?: string;
+          buyPrice: number;
+          sellPrice: number;
+          stock: number;
+          categoryId: number;
+        }[];
+      },
       context: Context,
     ) => {
-      return await context.prisma.product.createMany({
-        data: args.products,
-      });
+      const createdProducts = await Promise.all(
+        args.products.map(async (product) => {
+          return await context.prisma.product.create({
+            data: {
+              id: product.id,
+              name: product.name,
+              description: product.description,
+              buyPrice: product.buyPrice,
+              sellPrice: product.sellPrice,
+              stock: product.stock,
+              category: {
+                connect: { id: product.categoryId },
+              },
+            },
+          });
+        }),
+      );
+
+      return { count: createdProducts.length };
     },
     updateProducts: async (
       _: unknown,
@@ -334,12 +387,20 @@ export const resolvers = {
     },
     createCategories: async (
       _: unknown,
-      args: { categories: Prisma.CategoryCreateManyInput[] },
+      args: { categories: { name: string }[] },
       context: Context,
     ) => {
-      return await context.prisma.category.createMany({
-        data: args.categories,
-      });
+      const createdCategories = await Promise.all(
+        args.categories.map(async (category) => {
+          return await context.prisma.category.create({
+            data: {
+              name: category.name,
+            },
+          });
+        }),
+      );
+
+      return { count: createdCategories.length };
     },
     updateCategories: async (
       _: unknown,
@@ -365,64 +426,87 @@ export const resolvers = {
     },
     recordItemsSold: async (
       _: unknown,
-      args: { itemsSold: Prisma.ItemsSoldCreateManyInput[] },
+      args: { itemsSold: { productId: string; quantity: number }[] },
       context: Context,
     ) => {
-      return await context.prisma.$transaction(async (prisma) => {
-        const recordedItemsSold = await prisma.itemsSold.createMany({
-          data: args.itemsSold,
-        });
-
-        const updateStockPromises = args.itemsSold.map((item) =>
-          prisma.product.update({
-            where: { id: item.productId },
+      const recordedItemsSold = await Promise.all(
+        args.itemsSold.map(async (item) => {
+          return await context.prisma.itemsSold.create({
             data: {
-              stock: {
-                decrement: item.quantity,
+              quantity: item.quantity,
+              product: {
+                connect: { id: item.productId },
               },
             },
-          }),
-        );
+          });
+        }),
+      );
 
-        await Promise.all(updateStockPromises);
+      const updateStockPromises = args.itemsSold.map((item) =>
+        context.prisma.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        }),
+      );
 
-        return recordedItemsSold;
-      });
+      await Promise.all(updateStockPromises);
+
+      return { count: recordedItemsSold.length };
     },
     recordRevenue: async (
       _: unknown,
-      args: { revenue: Prisma.RevenueCreateManyInput[] },
+      args: { revenue: { amount: number; date: string }[] },
       context: Context,
     ) => {
-      return await context.prisma.revenue.createMany({
-        data: args.revenue,
-      });
+      const recordedRevenue = await Promise.all(
+        args.revenue.map(async (rev) => {
+          return await context.prisma.revenue.create({
+            data: {
+              amount: rev.amount,
+              date: new Date(rev.date),
+            },
+          });
+        }),
+      );
+
+      return { count: recordedRevenue.length };
     },
     recordItemsRestocked: async (
       _: unknown,
-      args: { itemsRestocked: Prisma.ItemsRestockedCreateManyInput[] },
+      args: { itemsRestocked: { productId: string; quantity: number }[] },
       context: Context,
     ) => {
-      return await context.prisma.$transaction(async (prisma) => {
-        const recordedItemsRestocked = await prisma.itemsRestocked.createMany({
-          data: args.itemsRestocked,
-        });
-
-        const updateStockPromises = args.itemsRestocked.map((item) =>
-          prisma.product.update({
-            where: { id: item.productId },
+      const recordedItemsRestocked = await Promise.all(
+        args.itemsRestocked.map(async (item) => {
+          return await context.prisma.itemsRestocked.create({
             data: {
-              stock: {
-                increment: item.quantity,
+              quantity: item.quantity,
+              product: {
+                connect: { id: item.productId },
               },
             },
-          }),
-        );
+          });
+        }),
+      );
 
-        await Promise.all(updateStockPromises);
+      const updateStockPromises = args.itemsRestocked.map((item) =>
+        context.prisma.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              increment: item.quantity,
+            },
+          },
+        }),
+      );
 
-        return recordedItemsRestocked;
-      });
+      await Promise.all(updateStockPromises);
+
+      return { count: recordedItemsRestocked.length };
     },
   },
   Category: {

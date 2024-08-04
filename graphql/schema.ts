@@ -119,7 +119,6 @@ input OrderUpdateInput {
 input OrderItemInput {
   quantity: Int!
   price: Float!
-  orderId: Int
   productId: String!
 }
 

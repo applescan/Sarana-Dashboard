@@ -1,27 +1,26 @@
-'use client'
-import React from "react";
+'use client';
 import {
   SignInButton,
   SignedOut,
   SignedIn,
   UserButton,
-  OrganizationSwitcher,
   useOrganization,
-} from "@clerk/nextjs";
+} from '@clerk/nextjs';
+import React from 'react';
 
 export default function Header() {
   const { organization } = useOrganization();
   const slug = organization?.slug;
 
-  const disabledLinkClass = "text-gray-400 pointer-events-none";
-  const activeLinkClass = "text-gray-700 hover:text-primary-700";
+  const disabledLinkClass = 'text-gray-400 pointer-events-none';
+  const activeLinkClass = 'text-gray-700 hover:text-primary-700';
 
   return (
     <header className="bg-white border-gray-200 shadow-lg">
       <nav className="px-11 py-2.5 mx-auto">
         <div className="flex justify-between items-center">
           <a
-            href={slug ? `/${slug}/dashboard` : "#"}
+            href={slug ? `/${slug}/dashboard` : '#'}
             className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
           >
             <img
@@ -32,32 +31,32 @@ export default function Header() {
           </a>
           <SignedIn>
             <a
-              href={slug ? `/${slug}/dashboard` : "#"}
+              href={slug ? `/${slug}/dashboard` : '#'}
               className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
             >
               <p className="text-sm font-normal">Dashboard</p>
             </a>
             <a
-              href={slug ? `/${slug}/pos` : "#"}
+              href={slug ? `/${slug}/pos` : '#'}
               className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
             >
               <p className="text-sm font-normal">Sales</p>
             </a>
             <a
-              href={slug ? `/${slug}/product` : "#"}
+              href={slug ? `/${slug}/product` : '#'}
               className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
             >
               <p className="text-sm font-normal">Product</p>
             </a>
           </SignedIn>
           <div className="flex items-center lg:order-2 gap-4">
-            <OrganizationSwitcher
-              createOrganizationMode={"modal"}
-              organizationProfileMode={"modal"}
-              afterCreateOrganizationUrl={slug ? `/${slug}/dashboard` : "#"}
-              afterSelectOrganizationUrl={slug ? `/${slug}/dashboard` : "#"}
+            {/* <OrganizationSwitcher
+              createOrganizationMode={'modal'}
+              organizationProfileMode={'modal'}
+              afterCreateOrganizationUrl={slug ? `/${slug}/dashboard` : '#'}
+              afterSelectOrganizationUrl={slug ? `/${slug}/dashboard` : '#'}
               hidePersonal={true}
-            />
+            /> */}
             <SignedOut>
               <SignInButton />
             </SignedOut>
