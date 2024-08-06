@@ -231,7 +231,7 @@ const POSPage = () => {
             <DialogClose asChild>
               <Button
                 onClick={() => setIsSuccessModalOpen(false)}
-                className="bg-primary"
+                variant="brand"
               >
                 Close
               </Button>

@@ -33,7 +33,7 @@ const Button = ({
       case 'primary':
         return 'bg-gray-400 hover:bg-gray-600 text-white';
       case 'brand':
-        return 'bg-primary hover:bg-gray-600 text-white';
+        return 'bg-primary hover:bg-indigo-600 text-white';
       case 'danger':
         return 'bg-red-500 hover:bg-red-700 text-white';
       case 'success':
@@ -41,7 +41,7 @@ const Button = ({
       case 'warning':
         return 'bg-amber-500 hover:bg-amber-700 text-white';
       case 'outline-primary':
-        return 'bg-white text-gray-500 border border-gray-500 hover:text-white hover:bg-gray-600';
+        return 'bg-white text-gray-500 border border-gray-400 hover:text-gray-500 hover:bg-indigo-50';
     }
   };
 

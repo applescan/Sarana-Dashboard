@@ -1,16 +1,16 @@
-import React from "react";
+import React from 'react';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
+import Button from './ui/Button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/Card";
-import { Product } from "@/lib/types/types";
-import { Input } from "./ui/Input";
-import Button from "./ui/Button";
-import { IoIosCloseCircleOutline } from "react-icons/io";
-import { formatNumberWithCommas } from "@/lib/utils";
+} from './ui/Card';
+import { Input } from './ui/Input';
+import { Product } from '@/lib/types/types';
+import { formatNumberWithCommas } from '@/lib/utils';
 
 type SelectedItemsListProps = {
   selectedItems: Record<string, number>;
@@ -44,8 +44,8 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
   };
 
   const handleAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/,/g, ""); // Remove existing commas
-    if (!isNaN(parseFloat(value)) || value === "") {
+    const value = e.target.value.replace(/,/g, ''); // Remove existing commas
+    if (!isNaN(parseFloat(value)) || value === '') {
       onAmountPaidChange(value);
     }
   };
@@ -122,8 +122,8 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
               type="text"
               value={formatNumberWithCommas(amountPaid)}
               onFocus={(e) => {
-                if (e.target.value === "0") {
-                  e.target.value = "";
+                if (e.target.value === '0') {
+                  e.target.value = '';
                 }
               }}
               onChange={handleAmountPaidChange}
@@ -143,7 +143,7 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
             variant="brand"
             disabled={
               !Object.keys(selectedItems).length ||
-              parseFloat(amountPaid.replace(/,/g, "")) < subtotal
+              parseFloat(amountPaid.replace(/,/g, '')) < subtotal
             }
           >
             Proceed

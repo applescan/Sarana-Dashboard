@@ -15,8 +15,8 @@ module.exports = {
       },
       colors: {
         primary: '#5271FF',
-      }
+      },
     },
   },
   plugins: [],
-}
+};
