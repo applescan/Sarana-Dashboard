@@ -30,6 +30,7 @@ export const GET_ORDERS = gql`
       totalAmount
       createdAt
       updatedAt
+      status
       orderItems {
         id
         quantity

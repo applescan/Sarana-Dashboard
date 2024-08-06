@@ -14,10 +14,12 @@ export const MARK_ORDER_AS_RECEIVED = gql`
       id
       status
       orderItems {
+        id
+        quantity
+        price
         product {
           id
           name
-          stock
         }
       }
     }

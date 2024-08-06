@@ -52,6 +52,7 @@ const OrderTable: FC<OrderTableProps> = ({
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] =
     useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
   const [deleteAction, setDeleteAction] = useState<() => void>(() => {});
 
@@ -353,7 +354,7 @@ const OrderTable: FC<OrderTableProps> = ({
               ))}
               <Protect condition={(has) => has({ role: 'org:admin' })}>
                 <td className="py-2 px-4 border-b border-gray-200">
-                  <div className="flex gap-2">
+                  <div className="flex gap-4 justify-evenly">
                     <Button
                       onClick={() => handleDeleteOrder(order.id.toString())}
                       variant="outline-primary"
@@ -361,15 +362,16 @@ const OrderTable: FC<OrderTableProps> = ({
                     >
                       <FaTrashCan className="h-5 w-5" />
                     </Button>
-                    {order.status !== 'RECEIVED' && (
-                      <Button
-                        onClick={() => handleMarkOrderAsReceived(order.id)}
-                        variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
-                      >
-                        Mark as Received
-                      </Button>
-                    )}
+                    <Button
+                      onClick={() => handleMarkOrderAsReceived(order.id)}
+                      variant="outline-primary"
+                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      disabled={order.status === 'RECEIVED'}
+                    >
+                      {order.status === 'RECEIVED'
+                        ? 'Received'
+                        : 'Mark as Received'}
+                    </Button>
                   </div>
                 </td>
               </Protect>
