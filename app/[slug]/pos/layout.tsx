@@ -12,10 +12,5 @@ export default async function Page({
     return auth().redirectToSignIn();
   }
 
-  return (
-    <section>
-      <h1 className="text-3xl font-bold pb-8">Product List</h1>
-      {children}
-    </section>
-  );
+  return <section>{children}</section>;
 }

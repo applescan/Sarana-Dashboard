@@ -1,6 +1,7 @@
 'use client';
 import { useQuery } from '@apollo/client';
 import React from 'react';
+import GlobalError from '@/app/global-error';
 import OrderTable, { Column } from '@/components/OrderTable';
 import Loading from '@/components/ui/Loading';
 import { GET_ORDERS, GET_PRODUCTS, GET_CATEGORIES } from '@/graphql/queries';
@@ -23,11 +24,7 @@ const ParentComponent: React.FC = () => {
   } = useQuery(GET_CATEGORIES);
 
   if (ordersLoading || productsLoading || categoriesLoading) return <Loading />;
-  if (ordersError) return <p>Error loading orders: {ordersError.message}</p>;
-  if (productsError)
-    return <p>Error loading products: {productsError.message}</p>;
-  if (categoriesError)
-    return <p>Error loading categories: {categoriesError.message}</p>;
+  if (ordersError || productsError || categoriesError) return <GlobalError />;
 
   const columns: Column[] = [
     { Header: 'Order ID', accessor: 'id' },

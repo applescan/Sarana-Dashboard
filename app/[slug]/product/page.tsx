@@ -1,6 +1,7 @@
 'use client';
 import { useQuery } from '@apollo/client';
 import React from 'react';
+import GlobalError from '@/app/global-error';
 import ProductTable from '@/components/ProductTable';
 import Loading from '@/components/ui/Loading';
 import { GET_CATEGORIES, GET_PRODUCTS } from '@/graphql/queries';
@@ -15,11 +16,10 @@ const ProductPage = () => {
   const { data: categoriesData, loading: categoriesLoading } = useQuery<{
     categories: Category[];
   }>(GET_CATEGORIES);
-
   if (productsLoading || categoriesLoading) return <Loading />;
   if (productsError) {
     console.error('Error fetching product data:', productsError);
-    return <p>Error loading products</p>;
+    return <GlobalError />;
   }
 
   const columns = [

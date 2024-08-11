@@ -365,7 +365,7 @@ const OrderTable: FC<OrderTableProps> = ({
                     <Button
                       onClick={() => handleMarkOrderAsReceived(order.id)}
                       variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800 min-w-[150px]"
                       disabled={order.status === 'RECEIVED'}
                     >
                       {order.status === 'RECEIVED'

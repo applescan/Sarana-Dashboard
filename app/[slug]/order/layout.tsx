@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 
 export default async function Page({
   children,
@@ -7,7 +7,10 @@ export default async function Page({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
-  if (!user) return <div>Not signed in</div>;
+
+  if (!user) {
+    return auth().redirectToSignIn();
+  }
 
   return (
     <section>
