@@ -322,63 +322,68 @@ const OrderTable: FC<OrderTableProps> = ({
         onClick={() => setIsSuccessDialogOpen(false)}
         button={'Close'}
       />
-
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column.accessor}
-                className="py-2 px-4 border-b border-gray-200 text-left"
-              >
-                {column.Header}
-              </th>
-            ))}
-            <Protect condition={(has) => has({ role: 'org:admin' })}>
-              <th className="py-2 px-4 border-b border-gray-200 text-left">
-                Actions
-              </th>
-            </Protect>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredOrders.map((order) => (
-            <tr key={order.id}>
+      {filteredOrders.length > 0 ? (
+        <table className="min-w-full bg-white">
+          <thead>
+            <tr>
               {columns.map((column) => (
-                <td
+                <th
                   key={column.accessor}
-                  className="py-2 px-4 border-b border-gray-200"
+                  className="py-2 px-4 border-b border-gray-200 text-left"
                 >
-                  {getCellValue(order, column.accessor)}
-                </td>
+                  {column.Header}
+                </th>
               ))}
               <Protect condition={(has) => has({ role: 'org:admin' })}>
-                <td className="py-2 px-4 border-b border-gray-200">
-                  <div className="flex gap-4 justify-evenly">
-                    <Button
-                      onClick={() => handleDeleteOrder(order.id.toString())}
-                      variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
-                    >
-                      <FaTrashCan className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      onClick={() => handleMarkOrderAsReceived(order.id)}
-                      variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800 min-w-[150px]"
-                      disabled={order.status === 'RECEIVED'}
-                    >
-                      {order.status === 'RECEIVED'
-                        ? 'Received'
-                        : 'Mark as Received'}
-                    </Button>
-                  </div>
-                </td>
+                <th className="py-2 px-4 border-b border-gray-200 text-left">
+                  Actions
+                </th>
               </Protect>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredOrders.map((order) => (
+              <tr key={order.id}>
+                {columns.map((column) => (
+                  <td
+                    key={column.accessor}
+                    className="py-2 px-4 border-b border-gray-200"
+                  >
+                    {getCellValue(order, column.accessor)}
+                  </td>
+                ))}
+                <Protect condition={(has) => has({ role: 'org:admin' })}>
+                  <td className="py-2 px-4 border-b border-gray-200">
+                    <div className="flex gap-4 justify-evenly">
+                      <Button
+                        onClick={() => handleDeleteOrder(order.id.toString())}
+                        variant="outline-primary"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                      >
+                        <FaTrashCan className="h-5 w-5" />
+                      </Button>
+                      <Button
+                        onClick={() => handleMarkOrderAsReceived(order.id)}
+                        variant="outline-primary"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800 min-w-[150px]"
+                        disabled={order.status === 'RECEIVED'}
+                      >
+                        {order.status === 'RECEIVED'
+                          ? 'Received'
+                          : 'Mark as Received'}
+                      </Button>
+                    </div>
+                  </td>
+                </Protect>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="text-center py-4">
+          <p className="text-gray-500">No orders yet.</p>
+        </div>
+      )}
     </div>
   );
 };
