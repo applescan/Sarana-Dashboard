@@ -24,8 +24,8 @@ export const GET_DASHBOARD_DATA = gql`
 `;
 
 export const GET_ORDERS = gql`
-  query Orders {
-    orders {
+  query Orders($startDate: String, $endDate: String) {
+    orders(startDate: $startDate, endDate: $endDate) {
       id
       totalAmount
       createdAt

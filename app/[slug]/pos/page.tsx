@@ -138,37 +138,37 @@ const POSPage = () => {
   return (
     <div>
       <section className="pb-5">
-        <div className="flex flex-wrap gap-2">
-          <Badge
-            key="all"
-            variant={selectedCategory === 'All' ? 'default' : 'secondary'}
-            onClick={() => handleSelectCategory('All')}
-          >
-            All
-          </Badge>
-          {categoriesData?.categories.map((category) => (
-            <Badge
-              key={category.id}
-              variant={
-                selectedCategory === category.name ? 'default' : 'secondary'
-              }
-              onClick={() => handleSelectCategory(category.name)}
-            >
-              {category.name}
-            </Badge>
-          ))}
-        </div>
+        <Input
+          type="text"
+          placeholder="Search products by name"
+          value={searchTerm}
+          onChange={handleSearchTermChange}
+          className="w-56 p-2 border border-gray-300"
+        />
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4">
         <div className="flex flex-col gap-2">
-          <Input
-            type="text"
-            placeholder="Search products by name"
-            value={searchTerm}
-            onChange={handleSearchTermChange}
-            className="w-56 p-2 border border-gray-300"
-          />
+          <div className="flex flex-wrap gap-2">
+            <Badge
+              key="all"
+              variant={selectedCategory === 'All' ? 'default' : 'secondary'}
+              onClick={() => handleSelectCategory('All')}
+            >
+              All
+            </Badge>
+            {categoriesData?.categories.map((category) => (
+              <Badge
+                key={category.id}
+                variant={
+                  selectedCategory === category.name ? 'default' : 'secondary'
+                }
+                onClick={() => handleSelectCategory(category.name)}
+              >
+                {category.name}
+              </Badge>
+            ))}
+          </div>
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredProducts?.map((product) => (
               <ProductCard
