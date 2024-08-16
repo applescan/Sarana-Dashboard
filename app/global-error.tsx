@@ -4,11 +4,11 @@ import Button from '../components/ui/Button';
 
 const GlobalError: React.FC = () => {
   return (
-    <div className="w-full h-screen flex flex-col md:flex-row justify-center items-center gap-20">
+    <div className="w-full h-[70vh] flex flex-col md:flex-row justify-between items-center gap-20">
       <img
         src="/404.png"
         alt="404 Error"
-        className="w-full md:w-1/2 h-auto md:h-full object-contain"
+        className="w-1/2 h-auto object-contain"
       />
       <div className="w-full md:w-1/2 p-4 md:p-8">
         <h1 className="font-extrabold text-6xl pb-2">Oops!</h1>
