@@ -1,5 +1,5 @@
 'use client';
-import { startOfDay, endOfDay } from 'date-fns';
+import { startOfDay, endOfDay, startOfMonth, endOfMonth } from 'date-fns';
 import React, { useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { FaBoxesPacking, FaMoneyBillWave } from 'react-icons/fa6';
@@ -7,23 +7,29 @@ import { MdWidgets } from 'react-icons/md';
 import GlobalError from '@/app/global-error';
 import RevenueChart from '@/components/RevenueChart';
 import SalesByCategoryChart from '@/components/SalesByCategoryChart';
+import AIInsightDialog from '@/components/SalesInsight';
 import StatsCard from '@/components/StatsCard';
+import Button from '@/components/ui/Button';
 import { DatePickerWithRange } from '@/components/ui/DatePicker';
 import Loading from '@/components/ui/Loading';
 import { useDashboardData } from '@/hook/useDashboardData';
 
 const DashboardPage: React.FC = () => {
+  const today = new Date();
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date(),
+    from: startOfMonth(today),
+    to: endOfMonth(today),
   });
-  const [isRange, setIsRange] = useState(false);
-
+  const [isRange, setIsRange] = useState(true);
   const formatStartDate = (date: Date | undefined) =>
     date ? startOfDay(date).toISOString() : undefined;
   const formatEndDate = (date: Date | undefined) =>
     date ? endOfDay(date).toISOString() : undefined;
+  const [isAIInsightDialogOpen, setIsAIInsightDialogOpen] = useState(false);
 
+  const handleAIInsightDialogOpen = () => {
+    setIsAIInsightDialogOpen(true);
+  };
   const {
     loading,
     error,
@@ -60,6 +66,14 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div>
+      <div className="flex justify-end my-4">
+        <Button onClick={handleAIInsightDialogOpen}>Get AI Insights</Button>
+      </div>
+
+      <AIInsightDialog
+        isOpen={isAIInsightDialogOpen}
+        onOpenChange={setIsAIInsightDialogOpen}
+      />
       <div className="flex items-center mb-4">
         <input
           type="checkbox"
@@ -97,11 +111,11 @@ const DashboardPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="p-6 rounded-lg shadow-md">
-          <h2>Revenue Stats</h2>
+        <div className="p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
+          <h2>All Time Revenue Stats</h2>
           <RevenueChart categories={categories} data={revenueData} />
         </div>
-        <div className="p-6 rounded-lg shadow-md">
+        <div className="p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
           <h2>Sales by Category</h2>
           <SalesByCategoryChart data={buildingSupplySalesData} />
         </div>
