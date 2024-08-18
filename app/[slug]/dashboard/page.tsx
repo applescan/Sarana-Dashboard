@@ -7,9 +7,8 @@ import { MdWidgets } from 'react-icons/md';
 import GlobalError from '@/app/global-error';
 import RevenueChart from '@/components/RevenueChart';
 import SalesByCategoryChart from '@/components/SalesByCategoryChart';
-import AIInsightDialog from '@/components/SalesInsight';
+import AIInsight from '@/components/SalesInsight';
 import StatsCard from '@/components/StatsCard';
-import Button from '@/components/ui/Button';
 import { DatePickerWithRange } from '@/components/ui/DatePicker';
 import Loading from '@/components/ui/Loading';
 import { useDashboardData } from '@/hook/useDashboardData';
@@ -21,15 +20,11 @@ const DashboardPage: React.FC = () => {
     to: endOfMonth(today),
   });
   const [isRange, setIsRange] = useState(true);
-  const formatStartDate = (date: Date | undefined) =>
-    date ? startOfDay(date).toISOString() : undefined;
-  const formatEndDate = (date: Date | undefined) =>
-    date ? endOfDay(date).toISOString() : undefined;
-  const [isAIInsightDialogOpen, setIsAIInsightDialogOpen] = useState(false);
+  const formatStartDate = (date: Date | undefined): string =>
+    date ? startOfDay(date).toISOString() : '';
+  const formatEndDate = (date: Date | undefined): string =>
+    date ? endOfDay(date).toISOString() : '';
 
-  const handleAIInsightDialogOpen = () => {
-    setIsAIInsightDialogOpen(true);
-  };
   const {
     loading,
     error,
@@ -65,32 +60,29 @@ const DashboardPage: React.FC = () => {
   if (error) return <GlobalError />;
 
   return (
-    <div>
-      <div className="flex justify-end my-4">
-        <Button onClick={handleAIInsightDialogOpen}>Get AI Insights</Button>
+    <div className="relative p-4">
+      <div className="flex justify-between mb-8">
+        <div>
+          <div className="mb-4">
+            <input
+              type="checkbox"
+              id="range-checkbox"
+              checked={isRange}
+              onChange={handleRangeToggle}
+              className="mr-2"
+            />
+            <label htmlFor="range-checkbox" className="text-xs">
+              Enable Range Selection
+            </label>
+          </div>
+          <DatePickerWithRange
+            selectedDate={selectedDate}
+            onDateChange={handleDateChange}
+            isRange={isRange}
+          />
+        </div>
+        <AIInsight startDate={selectedDate?.from} endDate={selectedDate?.to} />
       </div>
-
-      <AIInsightDialog
-        isOpen={isAIInsightDialogOpen}
-        onOpenChange={setIsAIInsightDialogOpen}
-      />
-      <div className="flex items-center mb-4">
-        <input
-          type="checkbox"
-          id="range-checkbox"
-          checked={isRange}
-          onChange={handleRangeToggle}
-          className="mr-2"
-        />
-        <label htmlFor="range-checkbox" className="text-xs">
-          Enable Range Selection
-        </label>
-      </div>
-      <DatePickerWithRange
-        selectedDate={selectedDate}
-        onDateChange={handleDateChange}
-        isRange={isRange}
-      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
         <StatsCard

@@ -1,143 +1,140 @@
+import { useQuery } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
-import { IoSend } from 'react-icons/io5';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/Dialog';
-import Loading from '@/components/ui/Loading';
-import { useDashboardData } from '@/hook/useDashboardData';
+  GET_DASHBOARD_DATA,
+  GET_ORDERS,
+  GET_ITEMS_SOLD,
+  GET_ITEMS_RESTOCKED,
+  GET_PRODUCTS,
+} from '@/graphql/queries';
+import {
+  Category,
+  ItemsRestocked,
+  ItemsSold,
+  Revenue,
+} from '@/lib/types/types';
 
-type AIInsightDialogProps = {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+type AIInsightProps = {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
 };
 
-const AIInsightDialog: React.FC<AIInsightDialogProps> = ({
-  isOpen,
-  onOpenChange,
-}) => {
-  const [aiChatInput, setAIChatInput] = useState('');
+const AIInsight: React.FC<AIInsightProps> = ({ startDate, endDate }) => {
   const [aiChatResponse, setAIChatResponse] = useState('');
-  const { loading, error, itemsSold, itemsRestocked, totalRevenue } =
-    useDashboardData();
+
+  // Fetch dashboard data
+  const { loading: dashboardLoading, data: dashboardData } = useQuery(
+    GET_DASHBOARD_DATA,
+    { variables: { startDate, endDate } },
+  );
+
+  // Fetch order data
+  const { loading: ordersLoading, data: ordersData } = useQuery(GET_ORDERS, {
+    variables: { startDate, endDate },
+  });
+
+  // Fetch items sold data
+  const { loading: itemsSoldLoading, data: itemsSoldData } =
+    useQuery(GET_ITEMS_SOLD);
+
+  // Fetch items restocked data
+  const { loading: itemsRestockedLoading, data: itemsRestockedData } =
+    useQuery(GET_ITEMS_RESTOCKED);
+
+  // Fetch products data
+  const { loading: productsLoading, data: productsData } =
+    useQuery(GET_PRODUCTS);
+
+  const loading =
+    dashboardLoading ||
+    ordersLoading ||
+    itemsSoldLoading ||
+    itemsRestockedLoading ||
+    productsLoading;
 
   useEffect(() => {
-    if (isOpen) {
-      // Set default query and send it when the dialog opens
-      const defaultInput = `Give insights on which items to sell more based on current data:
-      - Items Sold: ${itemsSold}
-      - Items Restocked: ${itemsRestocked}
-      - Total Revenue: IDR ${totalRevenue.toLocaleString()}`;
+    if (
+      dashboardData &&
+      ordersData &&
+      itemsSoldData &&
+      itemsRestockedData &&
+      productsData
+    ) {
+      const defaultInput = `Provide insights based on the following data:
+      - Items Sold: ${dashboardData.itemsSold.reduce(
+        (acc: number, item: ItemsSold) => acc + item.quantity,
+        0,
+      )}
+      - Items Restocked: ${dashboardData.itemsRestocked.reduce(
+        (acc: number, item: ItemsRestocked) => acc + item.quantity,
+        0,
+      )}
+      - Total Revenue: IDR ${dashboardData.revenues
+        .reduce((acc: number, revenue: Revenue) => acc + revenue.amount, 0)
+        .toLocaleString()}
+      - Orders: ${ordersData.orders.length}
+      - Best Selling Products: ${itemsSoldData.itemsSold
+        .slice(0, 3)
+        .map((item: ItemsSold) => item.product.name)
+        .join(', ')}
+      - Categories: ${dashboardData.categories
+        .map((category: Category) => category.name)
+        .join(', ')}`;
       sendAIRequest(defaultInput);
     }
-  }, [isOpen, itemsSold, itemsRestocked, totalRevenue]);
+  }, [
+    dashboardData,
+    ordersData,
+    itemsSoldData,
+    itemsRestockedData,
+    productsData,
+  ]);
 
   const sendAIRequest = async (input: string) => {
-    // Making AI request
-    await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [
-          { role: 'user', content: input + ' in 3 sentences or less.' },
-        ],
-      }),
-    })
-      .then(async (response) => {
-        if (!response.body) {
-          throw new Error('Failed to get a response body');
-        }
-        const reader = response.body.getReader();
-        setAIChatResponse('');
-
-        // Process the stream
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            break; // Exit the loop when the stream is finished
-          }
-
-          // Decode the stream chunk to a string and update the response state
-          const currentChunk = new TextDecoder().decode(value);
-          setAIChatResponse((prev) => prev + currentChunk);
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to fetch AI chat response:', error);
-        setAIChatResponse('Failed to communicate with AI.');
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            { role: 'user', content: input + ' in 3 sentences or less.' },
+          ],
+        }),
       });
-  };
 
-  const handleAIChatSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiChatInput.trim()) {
-      alert('Please enter a question for the AI.');
-      return;
-    }
-    sendAIRequest(aiChatInput);
-    setAIChatInput(''); // Clear the input box after submission
-  };
+      if (!response.body) {
+        throw new Error('Failed to get a response body');
+      }
 
-  const handleClose = (isOpen: boolean) => {
-    if (!isOpen) {
+      const reader = response.body.getReader();
       setAIChatResponse('');
-      setAIChatInput(''); // Clear the input when closing the dialog
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const currentChunk = new TextDecoder().decode(value);
+        setAIChatResponse((prev) => prev + currentChunk);
+      }
+    } catch (error) {
+      console.error('Failed to fetch AI chat response:', error);
+      setAIChatResponse('Failed to communicate with AI.');
     }
-    onOpenChange(isOpen);
   };
 
-  if (loading) return <Loading />;
-  if (error) return <div>Error loading data.</div>;
+  if (loading) return;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="h-5/6">
-        <DialogHeader>
-          <DialogTitle>AI-Powered Sales Insight</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col items-center overflow-auto">
-          <div className="mb-4 w-full">
-            {aiChatResponse && (
-              <div className="mt-4">
-                <label
-                  htmlFor="aiResponse"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  AI Response:
-                </label>
-                <div className="mt-1 text-sm">{aiChatResponse}</div>
-              </div>
-            )}
-          </div>
-          <form
-            onSubmit={handleAIChatSubmit}
-            className="flex flex-col gap-2 w-full"
-          >
-            <label
-              htmlFor="aiInput"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Ask the AI:
-            </label>
-            <textarea
-              id="aiInput"
-              value={aiChatInput}
-              onChange={(e) => setAIChatInput(e.target.value)}
-              className="mt-1 block w-full py-2 px-3 border border-purple-800/30 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Ask the AI for sales insights..."
-            />
-            <div className="flex items-center gap-2 justify-between mt-2">
-              <button type="submit" className="text-pink-600">
-                <IoSend className="h-6 w-6" />
-              </button>
-            </div>
-          </form>
+    <div className="relative p-4 bg-white rounded-lg shadow-lg border border-gray-200 w-1/2">
+      {aiChatResponse ? (
+        <div className="absolute top-0 right-0 p-4 bg-blue-500 text-white rounded-lg shadow-md border border-gray-200">
+          <p>{aiChatResponse}</p>
         </div>
-      </DialogContent>
-    </Dialog>
+      ) : (
+        <p className="text-gray-500">Generating insights...</p>
+      )}
+    </div>
   );
 };
 
-export default AIInsightDialog;
+export default AIInsight;
