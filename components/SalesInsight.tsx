@@ -122,17 +122,32 @@ const AIInsight: React.FC<AIInsightProps> = ({ startDate, endDate }) => {
     }
   };
 
-  if (loading) return;
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="relative p-4 bg-white rounded-lg shadow-lg border border-gray-200 w-1/2">
-      {aiChatResponse ? (
-        <div className="absolute top-0 right-0 p-4 bg-blue-500 text-white rounded-lg shadow-md border border-gray-200">
-          <p>{aiChatResponse}</p>
-        </div>
-      ) : (
-        <p className="text-gray-500">Generating insights...</p>
-      )}
+    <div className="flex gap-4 justify-between">
+      <div>
+        <iframe
+          src="https://lottie.host/embed/3d0a9402-f9ed-4345-b334-d4e7b6454ce3/KVNu0XHNaS.json"
+          style={{
+            width: '150px',
+            height: '100%',
+            border: 'none',
+          }}
+        ></iframe>
+      </div>
+      <div className="mb-4">
+        {aiChatResponse ? (
+          <div className="p-4 bg-secondary rounded-lg shadow-md border border-gray-200">
+            <h1 className="text-gray-800 font-bold text-lg">
+              AI Sales Insight
+            </h1>
+            <p>{aiChatResponse}</p>
+          </div>
+        ) : (
+          <p className="text-gray-500">Generating insights...</p>
+        )}
+      </div>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import RevenueChart from '@/components/RevenueChart';
 import SalesByCategoryChart from '@/components/SalesByCategoryChart';
 import AIInsight from '@/components/SalesInsight';
 import StatsCard from '@/components/StatsCard';
+import Button from '@/components/ui/Button';
 import { DatePickerWithRange } from '@/components/ui/DatePicker';
 import Loading from '@/components/ui/Loading';
 import { useDashboardData } from '@/hook/useDashboardData';
@@ -20,6 +21,8 @@ const DashboardPage: React.FC = () => {
     to: endOfMonth(today),
   });
   const [isRange, setIsRange] = useState(true);
+  const [showAIInsight, setShowAIInsight] = useState(true);
+
   const formatStartDate = (date: Date | undefined): string =>
     date ? startOfDay(date).toISOString() : '';
   const formatEndDate = (date: Date | undefined): string =>
@@ -56,12 +59,16 @@ const DashboardPage: React.FC = () => {
     });
   };
 
+  const toggleAIInsight = () => {
+    setShowAIInsight((prev) => !prev);
+  };
+
   if (loading) return <Loading />;
   if (error) return <GlobalError />;
 
   return (
     <div className="relative p-4">
-      <div className="flex justify-between mb-8">
+      <div className="relative flex justify-between mb-2">
         <div>
           <div className="mb-4">
             <input
@@ -81,10 +88,33 @@ const DashboardPage: React.FC = () => {
             isRange={isRange}
           />
         </div>
-        <AIInsight startDate={selectedDate?.from} endDate={selectedDate?.to} />
+      </div>
+      <div className="relative mb-4">
+        {showAIInsight && (
+          <div>
+            <Button
+              onClick={toggleAIInsight}
+              className="absolute -top-12 right-2 text-gray-800"
+            >
+              {showAIInsight ? 'Hide' : 'Show'}
+            </Button>
+            <AIInsight
+              startDate={selectedDate?.from}
+              endDate={selectedDate?.to}
+            />
+          </div>
+        )}
+        {!showAIInsight && (
+          <Button
+            onClick={toggleAIInsight}
+            className="absolute -top-12 right-2 text-gray-800 font-medium"
+          >
+            Show AI Sales Insights
+          </Button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8">
         <StatsCard
           icon={<FaBoxesPacking className="h-9 w-9" />}
           desc="Items Sold"
