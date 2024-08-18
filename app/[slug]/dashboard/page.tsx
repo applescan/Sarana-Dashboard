@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
     to: endOfMonth(today),
   });
   const [isRange, setIsRange] = useState(true);
-  const [showAIInsight, setShowAIInsight] = useState(true);
+  const [showAIInsight, setShowAIInsight] = useState(false);
 
   const formatStartDate = (date: Date | undefined): string =>
     date ? startOfDay(date).toISOString() : '';
@@ -67,7 +67,7 @@ const DashboardPage: React.FC = () => {
   if (error) return <GlobalError />;
 
   return (
-    <div className="relative p-4">
+    <div>
       <div className="relative flex justify-between mb-2">
         <div>
           <div className="mb-4">
@@ -109,7 +109,7 @@ const DashboardPage: React.FC = () => {
             onClick={toggleAIInsight}
             className="absolute -top-12 right-2 text-gray-800 font-medium"
           >
-            Show AI Sales Insights
+            ✨ Show AI Sales Insights
           </Button>
         )}
       </div>

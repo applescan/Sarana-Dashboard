@@ -35,12 +35,11 @@ export async function POST(req: Request) {
     model: 'gpt-4o-mini',
     max_tokens: 4096,
     messages,
-    temperature: 0.7,
+    temperature: 0.2,
     stream: true,
   });
 
   const stream = OpenAIStream(res, {
-    // This function is called when the API returns a response
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100);
       const id = json.id ?? ids;
