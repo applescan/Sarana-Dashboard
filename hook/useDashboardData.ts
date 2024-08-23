@@ -1,7 +1,12 @@
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { GET_DASHBOARD_DATA, GET_REVENUES } from '../graphql/queries';
-import { ItemsRestocked, ItemsSold, Revenue } from '@/lib/types/types';
+import {
+  Category,
+  ItemsRestocked,
+  ItemsSold,
+  Revenue,
+} from '@/lib/types/types';
 
 export const useDashboardData = (startDate?: string, endDate?: string) => {
   const today = new Date();
@@ -83,16 +88,17 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
     loading,
     error,
     buildingSupplySalesData:
-      data?.categories?.map((category: any) => ({
+      data?.categories?.map((category: Category) => ({
         value:
           data.itemsSold
             ?.filter(
-              (item: unknown) =>
+              (item: ItemsSold) =>
                 item.product &&
                 item.product.category &&
                 item.product.category.name === category.name,
             )
-            .reduce((sum: number, item: any) => sum + item.quantity, 0) || 0,
+            .reduce((sum: number, item: ItemsSold) => sum + item.quantity, 0) ||
+          0,
         name: category.name,
       })) || [],
     categories: revenueDataByMonth.map((data) => data.month),

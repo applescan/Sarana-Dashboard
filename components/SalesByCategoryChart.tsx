@@ -40,7 +40,7 @@ const SalesByCategoryChart = ({ data }: SalesByCategoryChartProps) => {
         labelLine: {
           show: false,
         },
-        data: data, // Using data from props
+        data: data,
       },
     ],
   };
