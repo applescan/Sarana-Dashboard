@@ -103,8 +103,6 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
     return matchesCategory && matchesSearchTerm;
   });
 
-  filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
-
   const handleSelectCategory = (categoryName: string) => {
     setSelectedCategory(categoryName);
   };

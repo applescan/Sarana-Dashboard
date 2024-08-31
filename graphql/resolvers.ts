@@ -52,6 +52,9 @@ export const resolvers = {
           itemsSold: true,
           itemsRestocked: true,
         },
+        orderBy: {
+          name: 'asc',
+        },
       });
     },
     product: async (_: unknown, args: { id: string }, context: Context) => {

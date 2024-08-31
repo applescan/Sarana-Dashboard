@@ -21,7 +21,7 @@ type AIInsightProps = {
 
 const AIInsight: React.FC<AIInsightProps> = ({ startDate, endDate }) => {
   const [aiChatResponse, setAIChatResponse] = useState('');
-
+  console.log(startDate, endDate);
   // Fetch dashboard data
   const { loading: dashboardLoading, data: dashboardData } = useQuery(
     GET_DASHBOARD_DATA,

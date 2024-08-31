@@ -65,6 +65,7 @@ const DashboardPage: React.FC = () => {
 
   if (loading) return <Loading />;
   if (error) return <GlobalError />;
+  console.log(selectedDate);
 
   return (
     <div>
@@ -100,7 +101,7 @@ const DashboardPage: React.FC = () => {
             </Button>
             <AIInsight
               startDate={selectedDate?.from}
-              endDate={selectedDate?.to}
+              endDate={isRange ? selectedDate?.to : selectedDate?.from}
             />
           </div>
         )}
