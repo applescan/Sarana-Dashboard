@@ -13,7 +13,7 @@ export default async function Page({
   }
 
   return (
-    <section>
+    <section className="pb-10">
       <h1 className="text-3xl font-bold pb-8">Order List</h1>
       {children}
     </section>

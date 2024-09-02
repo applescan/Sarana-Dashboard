@@ -94,10 +94,13 @@ const OrderPage: React.FC = () => {
       />
 
       <OrderTable
+        key={ordersData.orders.length}
         columns={columns}
         data={ordersData.orders}
         categories={categoriesData.categories}
         products={productsData.products}
+        startDate={formatStartDate(selectedDate?.from)}
+        endDate={formatStartDate(selectedDate?.to)}
       />
     </div>
   );

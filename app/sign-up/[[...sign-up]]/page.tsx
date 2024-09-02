@@ -10,7 +10,7 @@ export default function Page() {
         backgroundSize: 'cover',
       }}
     >
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center my-auto h-[90vh]">
         <SignUp path="/sign-up" afterSignOutUrl="/" />
       </div>
     </div>

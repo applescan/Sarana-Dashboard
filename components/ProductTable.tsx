@@ -358,7 +358,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 Buy Price
               </label>
               <Input
-                type="text"
+                type="number"
                 placeholder="Buy Price"
                 value={newProductBuyPrice}
                 onChange={(e) => setNewProductBuyPrice(e.target.value)}
@@ -370,7 +370,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 Sell Price
               </label>
               <Input
-                type="text"
+                type="number"
                 placeholder="Sell Price"
                 value={newProductSellPrice}
                 onChange={(e) => setNewProductSellPrice(e.target.value)}

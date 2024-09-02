@@ -12,5 +12,5 @@ export default async function Page({
     return auth().redirectToSignIn();
   }
 
-  return <section>{children}</section>;
+  return <section className="pb-10">{children}</section>;
 }

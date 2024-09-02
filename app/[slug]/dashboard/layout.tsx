@@ -18,7 +18,7 @@ export default async function Page({
   const orgName = response.name;
 
   return (
-    <section>
+    <section className="pb-10">
       <h1 className="text-3xl font-bold pb-8">{orgName} Dashboard</h1>
       {children}
     </section>

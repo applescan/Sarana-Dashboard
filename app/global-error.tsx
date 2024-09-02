@@ -13,7 +13,10 @@ const GlobalError: React.FC = () => {
       <div className="w-full md:w-1/2 p-4 md:p-8">
         <h1 className="font-extrabold text-6xl pb-2">Oops!</h1>
         <p>Sorry for the inconvenience, maybe try reloading this page again.</p>
-        <Button variant="brand" className="h-10 text-sm font-normal mt-4">
+        <Button
+          variant="outline-primary"
+          className="h-10 text-sm font-normal mt-4"
+        >
           <a href={'/'}>Go back home</a>
         </Button>
       </div>

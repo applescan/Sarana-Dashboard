@@ -33,6 +33,8 @@ export type OrderTableProps = {
   data: Order[];
   categories: Category[];
   products: Product[];
+  startDate: string | undefined;
+  endDate: string | undefined;
 };
 
 const OrderTable: FC<OrderTableProps> = ({
@@ -40,6 +42,8 @@ const OrderTable: FC<OrderTableProps> = ({
   data,
   categories,
   products,
+  startDate,
+  endDate,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
@@ -53,19 +57,34 @@ const OrderTable: FC<OrderTableProps> = ({
     useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
+  const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
   const [deleteAction, setDeleteAction] = useState<() => void>(() => {});
-
   const [deleteOrders] = useMutation(DELETE_ORDERS, {
-    refetchQueries: [{ query: GET_ORDERS }],
+    refetchQueries: [
+      {
+        query: GET_ORDERS,
+        variables: { startDate: startDate, endDate: endDate },
+      },
+    ],
     onCompleted: () => showSuccessDialog('Order(s) deleted successfully!'),
   });
   const [createOrders] = useMutation(CREATE_ORDERS, {
-    refetchQueries: [{ query: GET_ORDERS }],
+    refetchQueries: [
+      {
+        query: GET_ORDERS,
+        variables: { startDate: startDate, endDate: endDate },
+      },
+    ],
     onCompleted: () => showSuccessDialog('Order added successfully!'),
   });
+
   const [markOrderAsReceived] = useMutation(MARK_ORDER_AS_RECEIVED, {
-    refetchQueries: [{ query: GET_ORDERS }],
+    refetchQueries: [
+      {
+        query: GET_ORDERS,
+        variables: { startDate: startDate, endDate: endDate },
+      },
+    ],
     onCompleted: () => showSuccessDialog('Order marked as received!'),
   });
 
@@ -94,13 +113,13 @@ const OrderTable: FC<OrderTableProps> = ({
     setOrderQuantity(value < 0 ? 0 : value);
   };
 
-  const handleDeleteOrder = async (orderId: string) => {
+  const handleDeleteOrder = async (orderId: number) => {
     setOrderToDelete(orderId);
     setDeleteAction(() => () => confirmDeleteOrder(orderId));
     setIsConfirmationDialogOpen(true);
   };
 
-  const confirmDeleteOrder = async (orderId: string) => {
+  const confirmDeleteOrder = async (orderId: number) => {
     try {
       await deleteOrders({
         variables: { ids: [orderId] },
@@ -356,7 +375,7 @@ const OrderTable: FC<OrderTableProps> = ({
                   <td className="py-2 px-4 border-b border-gray-200">
                     <div className="flex gap-4 justify-evenly">
                       <Button
-                        onClick={() => handleDeleteOrder(order.id.toString())}
+                        onClick={() => handleDeleteOrder(order.id)}
                         variant="outline-primary"
                         className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
                       >
@@ -365,7 +384,7 @@ const OrderTable: FC<OrderTableProps> = ({
                       <Button
                         onClick={() => handleMarkOrderAsReceived(order.id)}
                         variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800 min-w-[150px]"
+                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800 w-[170px]"
                         disabled={order.status === 'RECEIVED'}
                       >
                         {order.status === 'RECEIVED'
