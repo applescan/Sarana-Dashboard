@@ -7,15 +7,18 @@ Welcome to **Sarana Point of Sales System**! Tailored specifically for my parent
 ## Key Features
 
 ### Dashboard
+
 - **Real-Time Updates**: Get immediate insights into current items sold, items restocked, and revenue.
 - **AI Insights**: Tap a button to reveal AI-powered insights into the current sales period, making data-driven decisions a breeze.
 
 ### Product Management
+
 - **Search & Filter**: Effortlessly find products or sort by category to quickly locate what you need.
 - **Stock Monitoring**: Check stock levels at a glance to keep your inventory in check.
 - **Admin Controls**: Admins can seamlessly add new products, edit existing ones, or delete items as needed.
 
 ### Order Management
+
 - **Order Search**: Quickly search through orders or select a date range from the calendar to view order history.
 - **Admin Actions**: Admins can add new orders or remove existing ones with ease.
 - **Mark as Received**: Admins can mark orders as received, automatically updating stock levels to reflect new inventory.
@@ -34,3 +37,4 @@ Welcome to **Sarana Point of Sales System**! Tailored specifically for my parent
 
    ```bash
    git clone https://github.com/applescan/Sarana-Dashboard
+   ```
