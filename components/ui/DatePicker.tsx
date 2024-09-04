@@ -31,6 +31,17 @@ export function DatePickerWithRange({
 }: DatePickerWithRangeProps) {
   const today = new Date();
   const defaultDateRange = { from: today, to: today };
+  const handleRangeSelect = (range: DateRange | undefined) => {
+    if (range) {
+      handleDateChange(range);
+    }
+  };
+
+  const handleSingleSelect = (date: Date | undefined) => {
+    if (date) {
+      handleDateChange({ from: date, to: date });
+    }
+  };
 
   const [date, setDate] = useState<DateRange | undefined>(
     selectedDate || defaultDateRange,
@@ -152,21 +163,27 @@ export function DatePickerWithRange({
                 </div>
               )}
               <div className="rounded-md border">
-                <Calendar
-                  initialFocus
-                  mode={isRange ? 'range' : 'single'}
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={(range) => {
-                    if (range) {
-                      handleDateChange(
-                        isRange ? range : { from: range, to: range },
-                      );
-                    }
-                  }}
-                  numberOfMonths={2}
-                  disabled={{ after: today }}
-                />
+                {isRange ? (
+                  <Calendar
+                    initialFocus={true}
+                    mode="range"
+                    defaultMonth={date?.from}
+                    selected={date as DateRange | undefined}
+                    onSelect={handleRangeSelect}
+                    numberOfMonths={2}
+                    disabled={{ after: today }}
+                  />
+                ) : (
+                  <Calendar
+                    initialFocus={true}
+                    mode="single"
+                    defaultMonth={date?.from}
+                    selected={date?.from}
+                    onSelect={handleSingleSelect}
+                    numberOfMonths={2}
+                    disabled={{ after: today }}
+                  />
+                )}
               </div>
             </div>
           </SelectContent>
