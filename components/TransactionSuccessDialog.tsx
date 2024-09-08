@@ -27,9 +27,9 @@ const TransactionSuccessModal: FC<TransactionSuccessModalProps> = ({
             <img
               src="/buy.gif"
               alt="Transaction Successful"
-              className="w-1/2 sm:w-1/3 md:w-1/4 h-auto mx-auto"
+              className="w-1/2 h-auto mx-auto"
             />
-            <DialogTitle className="text-lg sm:text-xl md:text-2xl text-gray-900 pt-4">
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl text-gray-900 pt-4 text-center">
               Transaction Successful
             </DialogTitle>
           </DialogDescription>

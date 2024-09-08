@@ -13,7 +13,7 @@ const SalesByCategoryChart = ({ data }: SalesByCategoryChartProps) => {
       trigger: 'item',
     },
     legend: {
-      bottom: '0%',
+      top: '5%',
       left: 'center',
     },
     series: [
