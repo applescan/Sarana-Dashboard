@@ -19,38 +19,36 @@ The application is available in both Indonesian and English to cater to the loca
 </table>
 
 ## Screenshots
-![](https://github.com/applescan/sarana-dashboard/blob/main/sarana-dashboard.jpg)
+![](https://github.com/applescan/Sarana-Dashboard/blob/main/public/sarana-dashboard.jpg)
+![](https://github.com/applescan/Sarana-Dashboard/blob/main/public/sarana-dashboard-1.jpg)
+![](https://github.com/applescan/Sarana-Dashboard/blob/main/public/sarana-dashboard-2.jpg)
 
 ## Key Features
 
 ### Dashboard
 
-- **Real-Time Updates**: Get immediate insights into current items sold, items restocked, and revenue.
-- **AI Insights**: Tap a button to reveal AI-powered insights into the current sales period, making data-driven decisions a breeze.
+- **Real-Time Updates**: See what’s hot and what’s not with instant insights into sales, stock, and revenue. 🔍
+- **AI Insights**: Discover trends and make smart decisions with AI-powered wisdom. 🤖✨
 
 ### Product Management
 
-- **Search & Filter**: Effortlessly find products or sort by category to quickly locate what you need.
-- **Stock Monitoring**: Check stock levels at a glance to keep your inventory in check.
-- **Admin Controls**: Admins can seamlessly add new products, edit existing ones, or delete items as needed.
-
+- **Search & Filter**: Find exactly what you’re looking for in seconds with powerful search and filter options. 🕵️‍♂️
+- **Stock Monitoring**: Keep your shelves stocked and your customers happy with real-time stock updates. 📦
+- **Admin Controls**: Manage products effortlessly – add, edit, or delete items with a few clicks. 🛠️
 
 ### Order Management
 
-- **Order Search**: Quickly search through orders or select a date range from the calendar to view order history.
-- **Admin Actions**: Admins can add new orders or remove existing ones with ease.
-- **Mark as Received**: Admins can mark orders as received, automatically updating stock levels to reflect new inventory.
+- **Order Search**: Quickly dig through orders or pick a date range to view your sales history. 📅
+- **Admin Actions**: Add, update, or remove orders without breaking a sweat. 🧑‍💼
+- **Mark as Received**: Update stock levels automatically by marking orders as received. ✅
 
 ## Technology Stack
 
-- **User Management**: **Clerk**
-- **Framework**: **Next.js**
-- **Backend**: **Prisma, Apollo, and GraphQL**
-- **AI Insights**: **OpenAI**
-- **Styling**: **Tailwind CSS** and **ShadCN**
-
-## Demo
-Here is a working live demo :  https://sarana-dashboard.vercel.app/
+- **User Management**: **Clerk** – Your key to smooth, secure logins. 🔑
+- **Framework**: **Next.js** – Building fast, modern web experiences. ⚡
+- **Backend**: **Prisma, Apollo, and GraphQL** – Powering a flexible and robust backend. 💪
+- **AI Insights**: **OpenAI** – Making your data smarter with AI. 🤓
+- **Styling**: **Tailwind CSS** and **ShadCN** – Bringing a touch of modern design to your interface. 🎨
 
 ### Built with
 •	Next.js
@@ -65,6 +63,9 @@ Here is a working live demo :  https://sarana-dashboard.vercel.app/
 •	Typescript
 •	Supabase
 •	Node.js
+
+## Demo
+Here is a working live demo:  https://sarana-dashboard.vercel.app/
 
 ## Author
 
