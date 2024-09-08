@@ -13,7 +13,8 @@ const SalesByCategoryChart = ({ data }: SalesByCategoryChartProps) => {
       trigger: 'item',
     },
     legend: {
-      top: '5%',
+      top: '20px',
+      bottom: '20px',
       left: 'center',
     },
     series: [
@@ -41,12 +42,13 @@ const SalesByCategoryChart = ({ data }: SalesByCategoryChartProps) => {
           show: false,
         },
         data: data,
+        top: '20%',
       },
     ],
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
+    <div className="w-full max-w-4xl mx-auto">
       <ReactECharts
         option={option}
         style={{ height: 'calc(100vh - 200px)', maxHeight: '450px' }}
