@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { Protect } from '@clerk/nextjs';
-import React, { useState, FC, ChangeEvent } from 'react';
+import React, { useState, FC, ChangeEvent, ReactNode } from 'react';
 import { FaTrashCan } from 'react-icons/fa6';
 import { IoMdAdd } from 'react-icons/io';
 import PosDialog from './PosDialog';
@@ -49,21 +49,12 @@ const OrderTable: FC<OrderTableProps> = ({
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [orderQuantity, setOrderQuantity] = useState<number | string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
-
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
-    useState<boolean>(false);
-  const [isSuccessDialogOpen, setIsSuccessDialogOpen] =
-    useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
   const [deleteAction, setDeleteAction] = useState<() => void>(() => {});
   const [deleteOrders] = useMutation(DELETE_ORDERS, {
     refetchQueries: [
       {
         query: GET_ORDERS,
-        variables: { startDate: startDate, endDate: endDate },
+        variables: { startDate, endDate },
       },
     ],
     onCompleted: () => showSuccessDialog('Order(s) deleted successfully!'),
@@ -72,52 +63,28 @@ const OrderTable: FC<OrderTableProps> = ({
     refetchQueries: [
       {
         query: GET_ORDERS,
-        variables: { startDate: startDate, endDate: endDate },
+        variables: { startDate, endDate },
       },
     ],
     onCompleted: () => showSuccessDialog('Order added successfully!'),
   });
-
   const [markOrderAsReceived] = useMutation(MARK_ORDER_AS_RECEIVED, {
     refetchQueries: [
       {
         query: GET_ORDERS,
-        variables: { startDate: startDate, endDate: endDate },
+        variables: { startDate, endDate },
       },
     ],
     onCompleted: () => showSuccessDialog('Order marked as received!'),
   });
-
-  const showSuccessDialog = (message: string) => {
-    setSuccessMessage(message);
-    setIsSuccessDialogOpen(true);
-  };
-
-  const filteredOrders = data.filter((order) => {
-    const matchesSearchTerm = order.orderItems.some((item) =>
-      item.product.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    return matchesSearchTerm;
-  });
-
-  const handleSelectCategory = (categoryName: string) => {
-    setSelectedCategory(categoryName);
-  };
-
-  const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    setOrderQuantity(value < 0 ? 0 : value);
-  };
-
-  const handleDeleteOrder = async (orderId: number) => {
-    setOrderToDelete(orderId);
-    setDeleteAction(() => () => confirmDeleteOrder(orderId));
-    setIsConfirmationDialogOpen(true);
-  };
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState<boolean>(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] =
+    useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [orderToDelete, setOrderToDelete] = useState<number | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string>('');
 
   const confirmDeleteOrder = async (orderId: number) => {
     try {
@@ -149,7 +116,7 @@ const OrderTable: FC<OrderTableProps> = ({
         variables: {
           orders: [
             {
-              totalAmount: totalAmount,
+              totalAmount,
               orderItems: [
                 {
                   productId: selectedProduct,
@@ -169,6 +136,12 @@ const OrderTable: FC<OrderTableProps> = ({
     }
   };
 
+  const handleDeleteOrder = async (orderId: number) => {
+    setOrderToDelete(orderId);
+    setDeleteAction(() => () => confirmDeleteOrder(orderId));
+    setIsConfirmationDialogOpen(true);
+  };
+
   const handleMarkOrderAsReceived = async (orderId: number) => {
     try {
       await markOrderAsReceived({
@@ -179,7 +152,20 @@ const OrderTable: FC<OrderTableProps> = ({
     }
   };
 
-  const getCellValue = (order: Order, accessor: string): React.ReactNode => {
+  const handleQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setOrderQuantity(value < 0 ? 0 : value);
+  };
+
+  const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSelectCategory = (categoryName: string) => {
+    setSelectedCategory(categoryName);
+  };
+
+  const getCellValue = (order: Order, accessor: string): ReactNode => {
     if (accessor === 'orderItems.product.name') {
       return order.orderItems.map((item) => item.product.name).join(', ');
     }
@@ -213,21 +199,31 @@ const OrderTable: FC<OrderTableProps> = ({
       return new Date(parseInt(value)).toLocaleString();
     }
 
-    return value as React.ReactNode;
+    return value as ReactNode;
   };
+
+  const showSuccessDialog = (message: string) => {
+    setSuccessMessage(message);
+    setIsSuccessDialogOpen(true);
+  };
+
+  const filteredOrders = data.filter((order) => {
+    const matchesSearchTerm = order.orderItems.some((item) =>
+      item.product.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    return matchesSearchTerm;
+  });
 
   return (
     <div>
-      <div className="flex gap-2 justify-between">
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search orders by item name"
-            value={searchTerm}
-            onChange={handleSearchTermChange}
-            className="w-56 p-2 border border-gray-300 mb-4"
-          />
-        </div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-2 mb-4">
+        <Input
+          type="text"
+          placeholder="Search orders by item name"
+          value={searchTerm}
+          onChange={handleSearchTermChange}
+          className="w-full sm:w-56 p-2 border border-gray-300 mb-4 sm:mb-0"
+        />
         <Protect condition={(has) => has({ role: 'org:admin' })}>
           <Button
             variant="brand"
@@ -245,69 +241,74 @@ const OrderTable: FC<OrderTableProps> = ({
         onOpenChange={() => setIsDialogOpen(false)}
         title="Add New Order"
         desc={
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-col gap-2 mb-4">
             <p className="pb-2 text-base">
               Fill in the details of the new order below.
             </p>
-            <div className="w-56">
-              <label className="block text-sm font-sm text-gray-700">
-                Category
-              </label>
-              <Select onValueChange={(value) => handleSelectCategory(value)}>
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={selectedCategory || 'Select Category'}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectScrollUpButton />
-                  <SelectItem value="All">All</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.name}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                  <SelectScrollDownButton />
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-56">
-              <label className="block text-sm font-sm text-gray-700">
-                Product
-              </label>
-              <Select onValueChange={(value) => setSelectedProduct(value)}>
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={selectedProduct || 'Select Product'}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectScrollUpButton />
-                  {products
-                    .filter(
-                      (product) =>
-                        selectedCategory === 'All' ||
-                        product.category?.name === selectedCategory,
-                    )
-                    .map((product) => (
-                      <SelectItem key={product.id} value={product.id}>
-                        {product.name}
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+              <div className="w-full sm:w-56">
+                <label className="block text-sm font-sm text-gray-700">
+                  Category
+                </label>
+                <Select onValueChange={(value) => handleSelectCategory(value)}>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={selectedCategory || 'Select Category'}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectScrollUpButton />
+                    <SelectItem value="All">All</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.name}>
+                        {category.name}
                       </SelectItem>
                     ))}
-                  <SelectScrollDownButton />
-                </SelectContent>
-              </Select>
+                    <SelectScrollDownButton />
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-full sm:w-56">
+                <label className="block text-sm font-sm text-gray-700">
+                  Product
+                </label>
+                <Select
+                  onValueChange={(value) => setSelectedProduct(value)}
+                  value={selectedProduct || ''}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={selectedProduct || 'Select Product'}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectScrollUpButton />
+                    {products
+                      .filter(
+                        (product) =>
+                          selectedCategory === 'All' ||
+                          product.category.name === selectedCategory,
+                      )
+                      .map((product) => (
+                        <SelectItem key={product.id} value={product.id}>
+                          {product.name}
+                        </SelectItem>
+                      ))}
+                    <SelectScrollDownButton />
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="w-56">
+            <div>
               <label className="block text-sm font-sm text-gray-700">
                 Quantity
               </label>
               <Input
                 type="number"
-                placeholder="Quantity"
                 value={orderQuantity}
                 onChange={handleQuantityChange}
-                className="p-2 border border-gray-300"
+                placeholder="Enter quantity"
+                className="w-full sm:w-56 p-2 border border-gray-300"
               />
             </div>
           </div>
@@ -315,6 +316,15 @@ const OrderTable: FC<OrderTableProps> = ({
         onClick={handleAddOrder}
         disableButton={!selectedProduct || !orderQuantity}
         button="Create"
+      />
+
+      <PosDialog
+        open={isSuccessDialogOpen}
+        onOpenChange={() => setIsSuccessDialogOpen(false)}
+        title="Success"
+        desc={<p>{successMessage}</p>}
+        onClick={() => setIsSuccessDialogOpen(false)}
+        button={'Close'}
       />
 
       <PosDialog
@@ -326,83 +336,66 @@ const OrderTable: FC<OrderTableProps> = ({
         button="Delete"
       />
 
-      <PosDialog
-        open={isSuccessDialogOpen}
-        onOpenChange={() => setIsSuccessDialogOpen(false)}
-        title="Success"
-        desc={
-          <div className="flex justify-center gap-y-2">
-            <div>
-              <img src="/done.svg" alt="Success Logo" className="h-40 w-40" />
-              {successMessage}
-            </div>
-          </div>
-        }
-        onClick={() => setIsSuccessDialogOpen(false)}
-        button={'Close'}
-      />
-      {filteredOrders.length > 0 ? (
-        <table className="min-w-full bg-white">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px] border border-gray-300">
           <thead>
-            <tr>
+            <tr className="bg-gray-100 text-left">
               {columns.map((column) => (
                 <th
-                  key={column.accessor}
-                  className="py-2 px-4 border-b border-gray-200 text-left"
+                  key={column.Header}
+                  className="p-2 border-b border-gray-300"
                 >
                   {column.Header}
                 </th>
               ))}
-              <Protect condition={(has) => has({ role: 'org:admin' })}>
-                <th className="py-2 px-4 border-b border-gray-200 text-left">
-                  Actions
-                </th>
-              </Protect>
+              <th className="p-2 border-b border-gray-300">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map((order) => (
-              <tr key={order.id}>
-                {columns.map((column) => (
-                  <td
-                    key={column.accessor}
-                    className="py-2 px-4 border-b border-gray-200"
-                  >
-                    {getCellValue(order, column.accessor)}
-                  </td>
-                ))}
-                <Protect condition={(has) => has({ role: 'org:admin' })}>
-                  <td className="py-2 px-4 border-b border-gray-200">
-                    <div className="flex gap-4 justify-evenly">
-                      <Button
-                        onClick={() => handleDeleteOrder(order.id)}
-                        variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
-                      >
-                        <FaTrashCan className="h-5 w-5" />
-                      </Button>
-                      <Button
-                        onClick={() => handleMarkOrderAsReceived(order.id)}
-                        variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800 w-[170px]"
-                        disabled={order.status === 'RECEIVED'}
-                      >
-                        {order.status === 'RECEIVED'
-                          ? 'Received'
-                          : 'Mark as Received'}
-                      </Button>
-                    </div>
-                  </td>
-                </Protect>
+            {filteredOrders.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + 1} className="p-2 text-center">
+                  No orders found.
+                </td>
               </tr>
-            ))}
+            ) : (
+              filteredOrders.map((order) => (
+                <tr key={order.id}>
+                  {columns.map((column) => (
+                    <td
+                      key={column.accessor}
+                      className="px-4 border-b border-gray-200"
+                    >
+                      {getCellValue(order, column.accessor)}
+                    </td>
+                  ))}
+                  <td className="p-3 border-b border-gray-200 flex gap-2 justify-between">
+                    <Protect condition={(has) => has({ role: 'org:admin' })}>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => handleDeleteOrder(order.id)}
+                        className="p-1"
+                      >
+                        <FaTrashCan />
+                      </Button>
+                    </Protect>
+                    <Button
+                      onClick={() => handleMarkOrderAsReceived(order.id)}
+                      variant="outline-primary"
+                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800 w-[170px]"
+                      disabled={order.status === 'RECEIVED'}
+                    >
+                      {order.status === 'RECEIVED'
+                        ? 'Received'
+                        : 'Mark as Received'}
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-      ) : (
-        <div className="text-center py-4">
-          <p className="text-gray-500">No orders yet.</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

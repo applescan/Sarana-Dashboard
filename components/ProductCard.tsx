@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ComponentType, FC } from 'react';
 import {
   FaWrench,
   FaLightbulb,
@@ -20,10 +20,7 @@ type ProductCardProps = {
 };
 
 // Mapping of category IDs to icons
-const categoryIcons: Record<
-  number,
-  React.ComponentType<{ className?: string }>
-> = {
+const categoryIcons: Record<number, ComponentType<{ className?: string }>> = {
   1: GiWoodBeam,
   2: FaTint,
   3: FaPlug,
@@ -36,7 +33,7 @@ const categoryIcons: Record<
   10: FaHammer,
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
+const ProductCard: FC<ProductCardProps> = ({ product, onSelect }) => {
   const Icon = categoryIcons[product.category.id];
 
   return (

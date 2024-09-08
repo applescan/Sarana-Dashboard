@@ -2,10 +2,14 @@ import React from 'react';
 
 export default function Loading() {
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center">
-      <div className="flex flex-col items-center pb-4">
-        <img src="/loading.gif" alt="loading" className="w-[200px] h-[200px]" />
-        <p className="font-bold text-xl">Loading...</p>
+    <div className="fixed inset-0 flex justify-center items-center bg-white z-50">
+      <div className="flex flex-col items-center p-4">
+        <img
+          src="/loading.gif"
+          alt="loading"
+          className="w-32 h-32 md:w-48 md:h-48"
+        />
+        <p className="font-bold text-lg md:text-xl mt-4">Loading...</p>
       </div>
     </div>
   );

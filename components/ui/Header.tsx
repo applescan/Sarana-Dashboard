@@ -18,17 +18,13 @@ export default function Header() {
 
   return (
     <header className="bg-white border-gray-200 shadow-lg fixed w-full z-10">
-      <nav className="px-10 py-3 mx-auto">
+      <nav className="px-4 py-3 mx-auto">
         <div className="flex justify-between items-center">
           <a
             href={slug ? `/${slug}/dashboard` : '#'}
             className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
           >
-            <img
-              src="/sarana.png"
-              alt="Sarana Logo"
-              className="mr-3 h-6 sm:h-9"
-            />
+            <img src="/sarana.png" alt="Sarana Logo" className="h-12" />
           </a>
           <div className="flex items-center lg:hidden">
             <button
@@ -110,7 +106,7 @@ export default function Header() {
           className={`${menuOpen ? 'block' : 'hidden'} lg:hidden absolute top-14 left-0 right-0 bg-white shadow-lg z-20`}
           id="mobile-menu"
         >
-          <div className="pt-2  space-y-1">
+          <div className="pt-2 space-y-1">
             <SignedIn>
               <a
                 href={slug ? `/${slug}/dashboard` : '#'}

@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import {
   GET_DASHBOARD_DATA,
   GET_ORDERS,
@@ -19,29 +19,23 @@ type AIInsightProps = {
   endDate: Date | undefined;
 };
 
-const AIInsight: React.FC<AIInsightProps> = ({ startDate, endDate }) => {
+const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
   const [aiChatResponse, setAIChatResponse] = useState('');
-  console.log(startDate, endDate);
-  // Fetch dashboard data
   const { loading: dashboardLoading, data: dashboardData } = useQuery(
     GET_DASHBOARD_DATA,
     { variables: { startDate, endDate } },
   );
 
-  // Fetch order data
   const { loading: ordersLoading, data: ordersData } = useQuery(GET_ORDERS, {
     variables: { startDate, endDate },
   });
 
-  // Fetch items sold data
   const { loading: itemsSoldLoading, data: itemsSoldData } =
     useQuery(GET_ITEMS_SOLD);
 
-  // Fetch items restocked data
   const { loading: itemsRestockedLoading, data: itemsRestockedData } =
     useQuery(GET_ITEMS_RESTOCKED);
 
-  // Fetch products data
   const { loading: productsLoading, data: productsData } =
     useQuery(GET_PRODUCTS);
 

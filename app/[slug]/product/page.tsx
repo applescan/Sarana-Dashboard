@@ -13,10 +13,13 @@ const ProductPage = () => {
     loading: productsLoading,
     error: productsError,
   } = useQuery<{ products: Product[] }>(GET_PRODUCTS);
+
   const { data: categoriesData, loading: categoriesLoading } = useQuery<{
     categories: Category[];
   }>(GET_CATEGORIES);
+
   if (productsLoading || categoriesLoading) return <Loading />;
+
   if (productsError) {
     console.error('Error fetching product data:', productsError);
     return <GlobalError />;
@@ -32,14 +35,12 @@ const ProductPage = () => {
   ];
 
   return (
-    <div>
-      <div>
-        <ProductTable
-          columns={columns}
-          data={productsData?.products || []}
-          categories={categoriesData?.categories || []}
-        />
-      </div>
+    <div className="overflow-x-auto">
+      <ProductTable
+        columns={columns}
+        data={productsData?.products || []}
+        categories={categoriesData?.categories || []}
+      />
     </div>
   );
 };

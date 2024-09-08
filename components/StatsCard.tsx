@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ type StatsCardProps = {
   value: string;
 };
 
-const StatsCard: React.FC<StatsCardProps> = ({ icon: Icon, desc, value }) => {
+const StatsCard: FC<StatsCardProps> = ({ icon: Icon, desc, value }) => {
   return (
     <Card className="flex flex-col">
       <CardHeader>{Icon}</CardHeader>

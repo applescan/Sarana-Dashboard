@@ -1,21 +1,13 @@
 'use client';
-import { useQuery, useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
+
 import GlobalError from '@/app/global-error';
 import PosDialog from '@/components/PosDialog';
 import ProductCard from '@/components/ProductCard';
 import SelectedItemsList from '@/components/SelectedItemsList';
+import TransactionSuccessDialog from '@/components/TransactionSuccessDialog';
 import { Badge } from '@/components/ui/Badge';
-import Button from '@/components/ui/Button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
 import Loading from '@/components/ui/Loading';
 import { RECORD_ITEMS_SOLD, RECORD_REVENUE } from '@/graphql/mutations';
@@ -23,46 +15,48 @@ import { GET_CATEGORIES, GET_PRODUCTS } from '@/graphql/queries';
 import { Category, Product } from '@/lib/types/types';
 
 const POSPage = () => {
-  const [selectedItems, setSelectedItems] = useState<Record<string, number>>(
-    {},
-  );
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [amountPaid, setAmountPaid] = useState<string>('');
   const [isOutOfStockModalOpen, setIsOutOfStockModalOpen] =
     useState<boolean>(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
   const [outOfStockProduct, setOutOfStockProduct] = useState<string>('');
-  const [amountPaid, setAmountPaid] = useState<string>('0');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     'All',
   );
+  const [selectedItems, setSelectedItems] = useState<Record<string, number>>(
+    {},
+  );
+
+  const {
+    data: categoriesData,
+    error: categoriesError,
+    loading: categoriesLoading,
+  } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
 
   const {
     data: productsData,
-    loading: productsLoading,
     error: productsError,
+    loading: productsLoading,
   } = useQuery<{ products: Product[] }>(GET_PRODUCTS);
-  const {
-    data: categoriesData,
-    loading: categoriesLoading,
-    error: categoriesError,
-  } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
 
   const [recordItemsSold] = useMutation(RECORD_ITEMS_SOLD);
   const [recordRevenue] = useMutation(RECORD_REVENUE);
 
-  if (productsLoading || categoriesLoading) return <Loading />;
-  if (productsError || categoriesError) return <GlobalError />;
+  if (categoriesLoading || productsLoading) return <Loading />;
+  if (categoriesError || productsError) return <GlobalError />;
 
-  const handleSelectProduct = (product: Product) => {
-    if (product.stock > 0) {
-      setSelectedItems((prevItems) => ({
-        ...prevItems,
-        [product.id]: (prevItems[product.id] || 0) + 1,
-      }));
-    } else {
-      setOutOfStockProduct(product.name);
-      setIsOutOfStockModalOpen(true);
-    }
+  const filteredProducts = productsData?.products.filter((product) => {
+    const matchesCategory =
+      selectedCategory === 'All' || product.category?.name === selectedCategory;
+    const matchesSearchTerm = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearchTerm;
+  });
+
+  const handleAmountPaidChange = (value: string) => {
+    setAmountPaid(value);
   };
 
   const handleQuantityChange = (productId: string, quantity: number) => {
@@ -71,25 +65,6 @@ const POSPage = () => {
       [productId]: quantity,
     }));
   };
-
-  const handleRemoveItem = (productId: string) => {
-    setSelectedItems((prevItems) => {
-      const newItems = { ...prevItems };
-      delete newItems[productId];
-      return newItems;
-    });
-  };
-
-  const subtotal = Object.entries(selectedItems).reduce(
-    (total, [productId, quantity]) => {
-      const product = productsData?.products.find((p) => p.id === productId);
-      return total + (product ? product.sellPrice * quantity : 0);
-    },
-    0,
-  );
-
-  const returnMoney =
-    parseFloat(amountPaid) > subtotal ? parseFloat(amountPaid) - subtotal : 0;
 
   const handleRecordItemsSold = async () => {
     const itemsSold = Object.entries(selectedItems).map(
@@ -110,30 +85,48 @@ const POSPage = () => {
     await recordRevenue({ variables: { revenue: newRevenue } });
 
     setSelectedItems({});
-    setAmountPaid('0');
+    setAmountPaid('');
     setIsSuccessModalOpen(true);
   };
 
-  const handleSelectCategory = (categoryName: string) => {
-    setSelectedCategory(categoryName);
-  };
-
-  const handleAmountPaidChange = (value: string) => {
-    setAmountPaid(value);
+  const handleRemoveItem = (productId: string) => {
+    setSelectedItems((prevItems) => {
+      const newItems = { ...prevItems };
+      delete newItems[productId];
+      return newItems;
+    });
   };
 
   const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredProducts = productsData?.products.filter((product) => {
-    const matchesCategory =
-      selectedCategory === 'All' || product.category?.name === selectedCategory;
-    const matchesSearchTerm = product.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearchTerm;
-  });
+  const handleSelectCategory = (categoryName: string) => {
+    setSelectedCategory(categoryName);
+  };
+
+  const handleSelectProduct = (product: Product) => {
+    if (product.stock > 0) {
+      setSelectedItems((prevItems) => ({
+        ...prevItems,
+        [product.id]: (prevItems[product.id] || 0) + 1,
+      }));
+    } else {
+      setOutOfStockProduct(product.name);
+      setIsOutOfStockModalOpen(true);
+    }
+  };
+
+  const subtotal = Object.entries(selectedItems).reduce(
+    (total, [productId, quantity]) => {
+      const product = productsData?.products.find((p) => p.id === productId);
+      return total + (product ? product.sellPrice * quantity : 0);
+    },
+    0,
+  );
+
+  const returnMoney =
+    parseFloat(amountPaid) > subtotal ? parseFloat(amountPaid) - subtotal : 0;
 
   return (
     <div>
@@ -203,32 +196,10 @@ const POSPage = () => {
         onClick={() => setIsOutOfStockModalOpen(false)}
       />
 
-      <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
-        <DialogContent>
-          <DialogHeader className="flex items-center">
-            <DialogDescription>
-              <img
-                src="/buy.gif"
-                alt="Transaction Successful"
-                className="h-[200px] w-[200px]"
-              />
-              <DialogTitle className="text-xl text-gray-900 pt-2">
-                Transaction Successful
-              </DialogTitle>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="p-0">
-            <DialogClose asChild>
-              <Button
-                onClick={() => setIsSuccessModalOpen(false)}
-                variant="brand"
-              >
-                Close
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TransactionSuccessDialog
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+      />
     </div>
   );
 };

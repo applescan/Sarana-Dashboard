@@ -7,73 +7,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Order {
-  id           Int          @id @default(autoincrement())
-  totalAmount  Float
-  orderItems   OrderItem[]
-  status       String        @default("PENDING")
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-}
-
-model OrderItem {
-  id        Int      @id @default(autoincrement())
-  quantity  Int
-  price     Float
-  orderId   Int
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Product {
-  id             String          @id @default(uuid())
-  name           String
-  description    String?
-  buyPrice       Float
-  sellPrice      Float
-  stock          Int
-  categoryId     Int
-  category       Category        @relation(fields: [categoryId], references: [id])
-  orderItems     OrderItem[]
-  itemsSold      ItemsSold[]
-  itemsRestocked ItemsRestocked[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-}
-
 model Category {
-  id          Int          @id @default(autoincrement())
-  name        String
-  products    Product[]    
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-model Revenue {
-  id        Int      @id @default(autoincrement())
-  amount    Float
-  date      DateTime @default(now())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ItemsSold {
   id        Int      @id @default(autoincrement())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
-  createdAt DateTime @default(now())
+  name      String
+  products  Product[]
   updatedAt DateTime @updatedAt
 }
 
 model ItemsRestocked {
-  id        Int      @id @default(autoincrement())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
   createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  updatedAt DateTime @updatedAt
+}
+
+model ItemsSold {
+  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  createdAt    DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  orderItems   OrderItem[]
+  status       String   @default("PENDING")
+  totalAmount  Float
+  updatedAt    DateTime @updatedAt
+}
+
+model OrderItem {
+  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+  price     Float
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  buyPrice       Float
+  category       Category        @relation(fields: [categoryId], references: [id])
+  categoryId     Int
+  createdAt      DateTime        @default(now())
+  description    String?
+  id             String          @id @default(uuid())
+  itemsRestocked ItemsRestocked[]
+  itemsSold      ItemsSold[]
+  name           String
+  orderItems     OrderItem[]
+  sellPrice      Float
+  stock          Int
+  updatedAt      DateTime        @updatedAt
+}
+
+model Revenue {
+  amount    Float
+  createdAt DateTime @default(now())
+  date      DateTime @default(now())
+  id        Int      @id @default(autoincrement())
   updatedAt DateTime @updatedAt
 }

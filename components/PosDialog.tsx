@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { FC, ReactNode } from 'react';
 import Button from './ui/Button';
 import {
   Dialog,
@@ -20,7 +20,7 @@ export type PosDialog = {
   disableButton?: boolean;
 };
 
-const PosDialog: React.FC<PosDialog> = ({
+const PosDialog: FC<PosDialog> = ({
   open,
   onOpenChange,
   title,

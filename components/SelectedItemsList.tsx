@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent, FC } from 'react';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import Button from './ui/Button';
 import {
@@ -24,7 +24,7 @@ type SelectedItemsListProps = {
   subtotal: number;
 };
 
-const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
+const SelectedItemsList: FC<SelectedItemsListProps> = ({
   selectedItems,
   products,
   onQuantityChange,
@@ -43,24 +43,24 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
     }
   };
 
-  const handleAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/,/g, ''); // Remove existing commas
+  const handleAmountPaidChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/,/g, '');
     if (!isNaN(parseFloat(value)) || value === '') {
       onAmountPaidChange(value);
     }
   };
 
   return (
-    <Card className="sticky top-16 h-[90vh] flex flex-col bg-white border border-gray-300 text-gray-900 text-left cursor-pointer">
+    <Card className="w-full max-w-lg mx-auto sticky top-16 bg-white border border-gray-300 text-gray-900 text-left cursor-pointer">
       <CardHeader>
-        <CardTitle className="text-gray-900 text-left text-2xl mb-4">
+        <CardTitle className="text-gray-900 text-left text-xl md:text-2xl mb-4">
           Selected Items
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow overflow-auto items-center">
+      <CardContent className="flex-grow overflow-auto">
         {Object.keys(selectedItems).length === 0 ? (
-          <div className="my-auto flex h-full">
-            <p className="text-left text-gray-400 text-sm font-light pt-10">
+          <div className="my-auto flex h-full justify-center items-center">
+            <p className="text-gray-400 text-sm font-light">
               No items selected
             </p>
           </div>
@@ -71,32 +71,34 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
             return (
               <div
                 key={productId}
-                className="mb-4 text-gray-900 text-left text-xl flex items-center justify-between"
+                className="mb-4 text-gray-900 text-left text-base md:text-xl flex flex-col md:flex-row items-center justify-between"
               >
-                <div className="flex flex-col w-full">
-                  <div className="flex justify-between">
-                    <p className="text-base">{product.name}</p>
-                    <button
-                      onClick={() => onRemoveItem(productId)}
-                      className="ml-4 text-gray-400"
-                    >
-                      <IoIosCloseCircleOutline />
-                    </button>
-                  </div>
-                  <div className="flex gap-2 justify-between items-center">
-                    <Input
-                      type="number"
-                      value={quantity}
-                      onChange={(e) =>
-                        handleQuantityChange(productId, e.target.value)
-                      }
-                      max={product.stock}
-                      min={1}
-                      className="border w-1/2 h-8"
-                    />
-                    <p className="text-gray-900 text-base">
-                      IDR {(product.sellPrice * quantity).toLocaleString()}
-                    </p>
+                <div className="flex flex-col w-full md:flex-row items-center justify-between">
+                  <div className="flex flex-col w-full md:w-3/4">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm md:text-base">{product.name}</p>
+                      <button
+                        onClick={() => onRemoveItem(productId)}
+                        className="ml-2 text-gray-400"
+                      >
+                        <IoIosCloseCircleOutline />
+                      </button>
+                    </div>
+                    <div className="flex gap-2 justify-between items-center mt-2">
+                      <Input
+                        type="number"
+                        value={quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(productId, e.target.value)
+                        }
+                        max={product.stock}
+                        min={1}
+                        className="border w-full md:w-1/2 h-8 text-sm md:text-base"
+                      />
+                      <p className="text-gray-900 text-sm md:text-base">
+                        IDR {(product.sellPrice * quantity).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -104,18 +106,18 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
           })
         )}
       </CardContent>
-      <CardFooter className="sticky bottom-0 bg-white p-4 border-t">
+      <CardFooter className="bg-white p-4 border-t">
         <div className="flex flex-col w-full">
           <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-lg">
+            <p className="font-bold text-gray-900 text-base md:text-lg">
               Subtotal:
             </p>
-            <p className="text-xl text-left text-gray-900">
+            <p className="text-lg md:text-xl text-gray-900">
               IDR {subtotal.toLocaleString()}
             </p>
           </div>
           <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-lg">
+            <p className="font-bold text-gray-900 text-base md:text-lg">
               Amount Paid:
             </p>
             <Input
@@ -127,14 +129,14 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
                 }
               }}
               onChange={handleAmountPaidChange}
-              className="border w-full h-8 text-gray-900 text-lg"
+              className="border w-full h-8 text-gray-900 text-base md:text-lg"
             />
           </div>
           <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-lg">
+            <p className="font-bold text-gray-900 text-base md:text-lg">
               Return Money:
             </p>
-            <p className="text-xl text-left text-gray-900">
+            <p className="text-lg md:text-xl text-gray-900">
               IDR {returnMoney.toLocaleString()}
             </p>
           </div>
@@ -145,6 +147,7 @@ const SelectedItemsList: React.FC<SelectedItemsListProps> = ({
               !Object.keys(selectedItems).length ||
               parseFloat(amountPaid.replace(/,/g, '')) < subtotal
             }
+            className="mt-4"
           >
             Proceed
           </Button>

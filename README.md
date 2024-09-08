@@ -1,8 +1,25 @@
 # Sarana Point of Sales System
 
-## Overview
+<table>
+<tr>
+<td>
+
+<h4>About This Project</h4>
 
 Welcome to **Sarana Point of Sales System**! Tailored specifically for my parent's shop, Sarana addresses the challenges of their previous complex system by offering a streamlined, easy-to-use interface. Designed for handling cash payments and simplified needs, Sarana is your go-to solution for efficient point-of-sale management.
+
+<h4>Why is This Problem Valuable to Address?</h4>
+
+I developed Sarana Point of Sales System to assist with my family’s small business, where a user-friendly and straightforward POS system was needed. The previous system was overly complex and difficult to manage, which made daily operations more challenging than necessary. Sarana was created to address these issues by providing a simple, intuitive interface that aligns perfectly with their specific needs.
+
+The application is available in both Indonesian and English to cater to the local context in Indonesia, ensuring that the system is accessible and useful for my parents' business. Every feature in the app is designed with their operational quirks and requirements in mind, making Sarana a customized solution that simplifies their point-of-sale management while enhancing efficiency.
+
+</td>
+</tr>
+</table>
+
+## Screenshots
+![](https://github.com/applescan/sarana-dashboard/blob/main/sarana-dashboard.jpg)
 
 ## Key Features
 
@@ -17,6 +34,7 @@ Welcome to **Sarana Point of Sales System**! Tailored specifically for my parent
 - **Stock Monitoring**: Check stock levels at a glance to keep your inventory in check.
 - **Admin Controls**: Admins can seamlessly add new products, edit existing ones, or delete items as needed.
 
+
 ### Order Management
 
 - **Order Search**: Quickly search through orders or select a date range from the calendar to view order history.
@@ -25,16 +43,33 @@ Welcome to **Sarana Point of Sales System**! Tailored specifically for my parent
 
 ## Technology Stack
 
-- **User Management**: **Clerk** – For secure and easy user login and management.
-- **Framework**: **Next.js** – For building the React application.
-- **Backend**: **Prisma, Apollo, and GraphQL** – For a robust and flexible backend.
-- **AI Insights**: **OpenAI** – To provide actionable sales insights.
-- **Styling**: **Tailwind CSS** and **ShadCN** – For modern and responsive design.
+- **User Management**: **Clerk**
+- **Framework**: **Next.js**
+- **Backend**: **Prisma, Apollo, and GraphQL**
+- **AI Insights**: **OpenAI**
+- **Styling**: **Tailwind CSS** and **ShadCN**
 
-## Installation and Setup
+## Demo
+Here is a working live demo :  https://sarana-dashboard.vercel.app/
 
-1. **Clone the Repository**
+### Built with
+•	Next.js
+•	Prisma
+•	Clerk
+•	Canva
+•	Echarts
+•	Figma
+•	React
+•	Tailwind CSS
+•	GraphQL
+•	Typescript
+•	Supabase
+•	Node.js
 
-   ```bash
-   git clone https://github.com/applescan/Sarana-Dashboard
-   ```
+## Author
+
+- Website - https://applescan.github.io/Portfolio-Website/
+
+## License
+
+MIT © Felicia Fel

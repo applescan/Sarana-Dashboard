@@ -21,7 +21,6 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
     0,
   ).toISOString();
 
-  // Default to today if no date is provided
   if (!startDate) {
     startDate = startOfMonth;
   }
@@ -33,17 +32,14 @@ export const useDashboardData = (startDate?: string, endDate?: string) => {
     variables: { startDate, endDate },
   });
 
-  // Fetch revenue data for the entire month
   const { data: monthlyRevenueData } = useQuery(GET_REVENUES);
 
-  // Log error if present
   useEffect(() => {
     if (error) {
       console.error('Error fetching dashboard data:', error);
     }
   }, [error]);
 
-  // Aggregate revenue data by month
   const revenueDataByMonth: { month: string; totalRevenue: number }[] = [];
   if (monthlyRevenueData?.revenues) {
     monthlyRevenueData.revenues.forEach((revenue: Revenue) => {

@@ -3,15 +3,13 @@ import { SignUp } from '@clerk/nextjs';
 export default function Page() {
   return (
     <div
-      style={{
-        backgroundImage: `url("/sign-up.png")`,
-        height: '100%',
-        backgroundRepeat: 'repeat',
-        backgroundSize: 'cover',
-      }}
+      className="relative min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: `url("/sign-up.png")` }}
     >
-      <div className="flex justify-center items-center my-auto h-[90vh]">
-        <SignUp path="/sign-up" afterSignOutUrl="/" />
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <div className="max-w-md w-full">
+          <SignUp path="/sign-up" afterSignOutUrl="/" />
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,10 @@
 'use client';
-import { startOfDay, endOfDay, startOfMonth, endOfMonth } from 'date-fns';
-import React, { useState } from 'react';
+import { endOfDay, endOfMonth, startOfDay, startOfMonth } from 'date-fns';
+import React, { FC, useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { FaBoxesPacking, FaMoneyBillWave } from 'react-icons/fa6';
 import { MdWidgets } from 'react-icons/md';
+
 import GlobalError from '@/app/global-error';
 import RevenueChart from '@/components/RevenueChart';
 import SalesByCategoryChart from '@/components/SalesByCategoryChart';
@@ -14,30 +15,30 @@ import { DatePickerWithRange } from '@/components/ui/DatePicker';
 import Loading from '@/components/ui/Loading';
 import { useDashboardData } from '@/hook/useDashboardData';
 
-const DashboardPage: React.FC = () => {
+const DashboardPage: FC = () => {
   const today = new Date();
+  const [isRange, setIsRange] = useState(true);
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>({
     from: startOfMonth(today),
     to: endOfMonth(today),
   });
-  const [isRange, setIsRange] = useState(true);
   const [showAIInsight, setShowAIInsight] = useState(false);
 
-  const formatStartDate = (date: Date | undefined): string =>
-    date ? startOfDay(date).toISOString() : '';
   const formatEndDate = (date: Date | undefined): string =>
     date ? endOfDay(date).toISOString() : '';
+  const formatStartDate = (date: Date | undefined): string =>
+    date ? startOfDay(date).toISOString() : '';
 
   const {
-    loading,
-    error,
     buildingSupplySalesData,
     categories,
-    revenueData,
-    itemsSold,
+    error,
     itemsRestocked,
-    totalRevenue,
+    itemsSold,
+    loading,
     refetch,
+    revenueData,
+    totalRevenue,
   } = useDashboardData(
     formatStartDate(selectedDate?.from),
     formatEndDate(selectedDate?.to),
@@ -65,13 +66,12 @@ const DashboardPage: React.FC = () => {
 
   if (loading) return <Loading />;
   if (error) return <GlobalError />;
-  console.log(selectedDate);
 
   return (
     <div>
-      <div className="relative flex justify-between mb-2">
-        <div>
-          <div className="mb-4">
+      <div className="relative flex flex-col md:flex-row justify-between mb-4">
+        <div className="mb-4 md:mb-0">
+          <div className="flex items-center mb-4">
             <input
               type="checkbox"
               id="range-checkbox"
@@ -79,7 +79,7 @@ const DashboardPage: React.FC = () => {
               onChange={handleRangeToggle}
               className="mr-2"
             />
-            <label htmlFor="range-checkbox" className="text-xs">
+            <label htmlFor="range-checkbox" className="text-xs md:text-sm">
               Enable Range Selection
             </label>
           </div>
@@ -90,12 +90,13 @@ const DashboardPage: React.FC = () => {
           />
         </div>
       </div>
-      <div className="relative mb-4">
+
+      <div className="relative mb-6">
         {showAIInsight && (
           <div>
             <Button
               onClick={toggleAIInsight}
-              className="absolute -top-12 right-2 text-gray-800"
+              className="absolute -top-10 right-2 text-gray-800"
             >
               {showAIInsight ? 'Hide' : 'Show'}
             </Button>
@@ -108,38 +109,40 @@ const DashboardPage: React.FC = () => {
         {!showAIInsight && (
           <Button
             onClick={toggleAIInsight}
-            className="absolute -top-12 right-2 text-gray-800 font-medium"
+            className="absolute -top-10 right-2 text-gray-800 font-medium"
           >
             ✨ Show AI Sales Insights
           </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 pb-8">
         <StatsCard
-          icon={<FaBoxesPacking className="h-9 w-9" />}
+          icon={<FaBoxesPacking className="h-7 w-7 md:h-9 md:w-9" />}
           desc="Items Sold"
           value={itemsSold.toString()}
         />
         <StatsCard
-          icon={<MdWidgets className="h-9 w-9" />}
+          icon={<MdWidgets className="h-7 w-7 md:h-9 md:w-9" />}
           desc="Items Restocked"
           value={itemsRestocked.toString()}
         />
         <StatsCard
-          icon={<FaMoneyBillWave className="h-9 w-9" />}
+          icon={<FaMoneyBillWave className="h-7 w-7 md:h-9 md:w-9" />}
           desc="Sales Revenue"
           value={`IDR ${totalRevenue.toLocaleString()}`}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div className="p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
-          <h2>All Time Revenue Stats</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+        <div className="p-4 md:p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
+          <h2 className="text-sm md:text-lg font-medium">
+            All Time Revenue Stats
+          </h2>
           <RevenueChart categories={categories} data={revenueData} />
         </div>
-        <div className="p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
-          <h2>Sales by Category</h2>
+        <div className="p-4 md:p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
+          <h2 className="text-sm md:text-lg font-medium">Sales by Category</h2>
           <SalesByCategoryChart data={buildingSupplySalesData} />
         </div>
       </div>

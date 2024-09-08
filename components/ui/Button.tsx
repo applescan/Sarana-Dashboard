@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface IButtonProps
+export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
   children?: React.ReactNode;
@@ -24,22 +24,14 @@ const Button = ({
   type = 'button',
   disabled,
   ...props
-}: IButtonProps) => {
+}: ButtonProps) => {
   const getVariant = () => {
     if (disabled) {
       return 'bg-gray-200 text-gray-500 cursor-not-allowed';
     }
     switch (variant) {
-      case 'primary':
-        return 'bg-gray-400 hover:bg-gray-600 text-white';
       case 'brand':
         return 'bg-primary hover:bg-indigo-600 text-white';
-      case 'danger':
-        return 'bg-red-500 hover:bg-red-700 text-white';
-      case 'success':
-        return 'bg-green-500 hover:bg-green-700 text-white';
-      case 'warning':
-        return 'bg-amber-500 hover:bg-amber-700 text-white';
       case 'outline-primary':
         return 'bg-white text-gray-500 border border-gray-400 hover:text-gray-500 hover:bg-indigo-50';
     }

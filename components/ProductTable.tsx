@@ -1,10 +1,17 @@
 import { useMutation } from '@apollo/client';
 import { Protect } from '@clerk/nextjs';
-import React, { useState, FC, ChangeEvent, SetStateAction } from 'react';
+import React, {
+  useState,
+  FC,
+  ChangeEvent,
+  SetStateAction,
+  ReactNode,
+} from 'react';
 import { FaTrashCan } from 'react-icons/fa6';
 import { IoMdAdd, IoMdClose } from 'react-icons/io';
 import { IoSaveSharp } from 'react-icons/io5';
 import { MdEdit } from 'react-icons/md';
+import ProductFormDialog from './AddNewProductDialog';
 import PosDialog from './PosDialog';
 import {
   Select,
@@ -38,11 +45,6 @@ export type ProductTableProps = {
 };
 
 const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedProducts, setSelectedProducts] = useState<
-    Record<string, boolean>
-  >({});
   const [editProductId, setEditProductId] = useState<string | null>(null);
   const [editProductName, setEditProductName] = useState<string>('');
   const [editProductDescription, setEditProductDescription] =
@@ -54,16 +56,16 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
     number | string
   >('');
   const [editProductCategory, setEditProductCategory] = useState<string>('');
-
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedProducts, setSelectedProducts] = useState<
+    Record<string, boolean>
+  >({});
   const [newProductName, setNewProductName] = useState<string>('');
   const [newProductDescription, setNewProductDescription] =
     useState<string>('');
-  const [newProductBuyPrice, setNewProductBuyPrice] = useState<number | string>(
-    '',
-  );
-  const [newProductSellPrice, setNewProductSellPrice] = useState<
-    number | string
-  >('');
+  const [newProductBuyPrice, setNewProductBuyPrice] = useState<string>('');
+  const [newProductSellPrice, setNewProductSellPrice] = useState<string>('');
   const [newProductCategory, setNewProductCategory] = useState<string>('');
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -226,10 +228,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
     }
   };
 
-  const getCellValue = (
-    product: Product,
-    accessor: string,
-  ): React.ReactNode => {
+  const getCellValue = (product: Product, accessor: string): ReactNode => {
     const keys = accessor.split('.');
     let value: unknown = product;
     for (const key of keys) {
@@ -247,7 +246,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
       return `IDR ${value.toLocaleString()}`;
     }
 
-    return value as React.ReactNode;
+    return value as ReactNode;
   };
 
   const hasSelectedProducts = Object.values(selectedProducts).some(
@@ -256,30 +255,28 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
 
   return (
     <div>
-      <section className="pb-5">
-        <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 pb-5">
+        <Badge
+          key="all"
+          variant={selectedCategory === 'All' ? 'default' : 'secondary'}
+          onClick={() => handleSelectCategory('All')}
+        >
+          All
+        </Badge>
+        {categories.map((category) => (
           <Badge
-            key="all"
-            variant={selectedCategory === 'All' ? 'default' : 'secondary'}
-            onClick={() => handleSelectCategory('All')}
+            key={category.id}
+            variant={
+              selectedCategory === category.name ? 'default' : 'secondary'
+            }
+            onClick={() => handleSelectCategory(category.name)}
           >
-            All
+            {category.name}
           </Badge>
-          {categories.map((category) => (
-            <Badge
-              key={category.id}
-              variant={
-                selectedCategory === category.name ? 'default' : 'secondary'
-              }
-              onClick={() => handleSelectCategory(category.name)}
-            >
-              {category.name}
-            </Badge>
-          ))}
-        </div>
-      </section>
+        ))}
+      </div>
 
-      <div className="flex gap-2 justify-between">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-2 mb-2">
         <div className="flex gap-2">
           <Input
             type="text"
@@ -311,95 +308,31 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         </Protect>
       </div>
 
-      <PosDialog
-        open={isDialogOpen}
+      <ProductFormDialog
+        isOpen={isDialogOpen}
         onOpenChange={() => setIsDialogOpen(false)}
         title="Add New Product"
-        desc={
-          <div className="flex flex-wrap gap-2 mb-4">
-            <p className="pb-2 text-base">
-              Fill in the details of the new product below.
-            </p>
-            <div className="w-56">
-              <label className="block text-sm font-sm text-gray-700">
-                Product Name
-              </label>
-              <Input
-                type="text"
-                placeholder="Product Name"
-                value={newProductName}
-                onChange={(e) => setNewProductName(e.target.value)}
-                className="p-2 border border-gray-300"
-              />
-            </div>
-            <div className="w-56">
-              <label className="block text-sm font-sm text-gray-700">
-                Category
-              </label>
-              <Select onValueChange={(value) => setNewProductCategory(value)}>
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={newProductCategory || 'Select Category'}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectScrollUpButton />
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.name}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                  <SelectScrollDownButton />
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-56">
-              <label className="block text-sm font-sm text-gray-700">
-                Buy Price
-              </label>
-              <Input
-                type="number"
-                placeholder="Buy Price"
-                value={newProductBuyPrice}
-                onChange={(e) => setNewProductBuyPrice(e.target.value)}
-                className="p-2 border border-gray-300"
-              />
-            </div>
-            <div className="w-56">
-              <label className="block text-sm font-sm text-gray-700">
-                Sell Price
-              </label>
-              <Input
-                type="number"
-                placeholder="Sell Price"
-                value={newProductSellPrice}
-                onChange={(e) => setNewProductSellPrice(e.target.value)}
-                className="p-2 border border-gray-300"
-              />
-            </div>
-            <div className="w-full">
-              <label className="block text-sm font-sm text-gray-700">
-                Product Description
-              </label>
-              <Input
-                type="text"
-                placeholder="Product Description"
-                value={newProductDescription}
-                onChange={(e) => setNewProductDescription(e.target.value)}
-                className="p-2 border border-gray-300"
-              />
-            </div>
-          </div>
-        }
-        onClick={handleAddProduct}
-        disableButton={
+        description="Fill in the details of the new product below."
+        categories={categories}
+        productName={newProductName}
+        productCategory={newProductCategory}
+        productBuyPrice={newProductBuyPrice}
+        productSellPrice={newProductSellPrice}
+        productDescription={newProductDescription}
+        onProductNameChange={setNewProductName}
+        onProductCategoryChange={setNewProductCategory}
+        onProductBuyPriceChange={setNewProductBuyPrice}
+        onProductSellPriceChange={setNewProductSellPrice}
+        onProductDescriptionChange={setNewProductDescription}
+        onSubmit={handleAddProduct}
+        isSubmitDisabled={
           !newProductName ||
           !newProductDescription ||
           !newProductBuyPrice ||
           !newProductSellPrice ||
           !newProductCategory
         }
-        button="Create"
+        submitButtonLabel="Create"
       />
 
       <PosDialog
@@ -427,154 +360,158 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         button={'Close'}
       />
 
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr>
-            <Protect condition={(has) => has({ role: 'org:admin' })}>
-              <th className="py-2 px-4 border-b border-gray-200 text-left">
-                Select
-              </th>
-            </Protect>
-            {columns.map((column) => (
-              <th
-                key={column.accessor}
-                className="py-2 px-4 border-b border-gray-200 text-left"
-              >
-                {column.Header}
-              </th>
-            ))}
-            <Protect condition={(has) => has({ role: 'org:admin' })}>
-              <th className="py-2 px-4 border-b border-gray-200 text-left">
-                Actions
-              </th>
-            </Protect>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredProducts.map((product) => (
-            <tr key={product.id}>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px] border border-gray-300">
+          <thead>
+            <tr className="bg-gray-100 text-left">
               <Protect condition={(has) => has({ role: 'org:admin' })}>
-                <td className="py-2 px-4 border-b border-gray-200">
-                  <input
-                    type="checkbox"
-                    checked={!!selectedProducts[product.id]}
-                    onChange={() => handleCheckboxChange(product.id)}
-                  />
-                </td>
+                <th className="py-2 px-4 border-b border-gray-200 text-left">
+                  Select
+                </th>
               </Protect>
               {columns.map((column) => (
-                <td
+                <th
                   key={column.accessor}
-                  className="py-2 px-4 border-b border-gray-200"
+                  className="py-2 px-4 border-b border-gray-200 text-left"
                 >
-                  {column.accessor === 'name' &&
-                  editProductId === product.id ? (
-                    <Input
-                      type="text"
-                      value={editProductName}
-                      onChange={(e) => setEditProductName(e.target.value)}
-                      className="border w-full"
-                    />
-                  ) : column.accessor === 'description' &&
-                    editProductId === product.id ? (
-                    <Input
-                      type="text"
-                      value={editProductDescription}
-                      onChange={(e) =>
-                        setEditProductDescription(e.target.value)
-                      }
-                      className="border w-full"
-                    />
-                  ) : column.accessor === 'buyPrice' &&
-                    editProductId === product.id ? (
-                    <Input
-                      type="number"
-                      value={editProductBuyPrice}
-                      onChange={(e) =>
-                        setEditProductBuyPrice(Number(e.target.value))
-                      }
-                      className="border w-full"
-                    />
-                  ) : column.accessor === 'sellPrice' &&
-                    editProductId === product.id ? (
-                    <Input
-                      type="number"
-                      value={editProductSellPrice}
-                      onChange={(e) =>
-                        setEditProductSellPrice(Number(e.target.value))
-                      }
-                      className="border w-full"
-                    />
-                  ) : column.accessor === 'category.name' &&
-                    editProductId === product.id ? (
-                    <Select
-                      onValueChange={(value: SetStateAction<string>) =>
-                        setEditProductCategory(value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={editProductCategory || 'Select Category'}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectScrollUpButton />
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.name}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                        <SelectScrollDownButton />
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    getCellValue(product, column.accessor)
-                  )}
-                </td>
+                  {column.Header}
+                </th>
               ))}
               <Protect condition={(has) => has({ role: 'org:admin' })}>
-                <td className="py-2 px-4 border-b border-gray-200">
-                  {editProductId === product.id ? (
-                    <div>
-                      <Button
-                        onClick={handleSaveProduct}
-                        variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
-                      >
-                        <IoSaveSharp className="h-5 w-5" />
-                      </Button>
-                      <Button
-                        onClick={handleCancelEdit}
-                        variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
-                      >
-                        <IoMdClose className="h-5 w-5" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Button
-                        onClick={() => handleEditProduct(product)}
-                        variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
-                      >
-                        <MdEdit className="h-5 w-5" />
-                      </Button>
-                      <Button
-                        onClick={() => handleDeleteProduct(product.id)}
-                        variant="outline-primary"
-                        className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
-                      >
-                        <FaTrashCan className="h-5 w-5" />
-                      </Button>
-                    </div>
-                  )}
-                </td>
+                <th className="py-2 px-4 border-b border-gray-200 text-left">
+                  Actions
+                </th>
               </Protect>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredProducts.map((product) => (
+              <tr key={product.id}>
+                <Protect condition={(has) => has({ role: 'org:admin' })}>
+                  <td className="py-2 px-4 border-b border-gray-200">
+                    <input
+                      type="checkbox"
+                      checked={!!selectedProducts[product.id]}
+                      onChange={() => handleCheckboxChange(product.id)}
+                    />
+                  </td>
+                </Protect>
+                {columns.map((column) => (
+                  <td
+                    key={column.accessor}
+                    className="py-2 px-4 border-b border-gray-200"
+                  >
+                    {column.accessor === 'name' &&
+                    editProductId === product.id ? (
+                      <Input
+                        type="text"
+                        value={editProductName}
+                        onChange={(e) => setEditProductName(e.target.value)}
+                        className="border w-full"
+                      />
+                    ) : column.accessor === 'description' &&
+                      editProductId === product.id ? (
+                      <Input
+                        type="text"
+                        value={editProductDescription}
+                        onChange={(e) =>
+                          setEditProductDescription(e.target.value)
+                        }
+                        className="border w-full"
+                      />
+                    ) : column.accessor === 'buyPrice' &&
+                      editProductId === product.id ? (
+                      <Input
+                        type="number"
+                        value={editProductBuyPrice}
+                        onChange={(e) =>
+                          setEditProductBuyPrice(Number(e.target.value))
+                        }
+                        className="border w-full"
+                      />
+                    ) : column.accessor === 'sellPrice' &&
+                      editProductId === product.id ? (
+                      <Input
+                        type="number"
+                        value={editProductSellPrice}
+                        onChange={(e) =>
+                          setEditProductSellPrice(Number(e.target.value))
+                        }
+                        className="border w-full"
+                      />
+                    ) : column.accessor === 'category.name' &&
+                      editProductId === product.id ? (
+                      <Select
+                        onValueChange={(value: SetStateAction<string>) =>
+                          setEditProductCategory(value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={
+                              editProductCategory || 'Select Category'
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectScrollUpButton />
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.name}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                          <SelectScrollDownButton />
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      getCellValue(product, column.accessor)
+                    )}
+                  </td>
+                ))}
+                <Protect condition={(has) => has({ role: 'org:admin' })}>
+                  <td className="py-2 px-4 border-b border-gray-200">
+                    {editProductId === product.id ? (
+                      <div>
+                        <Button
+                          onClick={handleSaveProduct}
+                          variant="outline-primary"
+                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                        >
+                          <IoSaveSharp className="h-5 w-5" />
+                        </Button>
+                        <Button
+                          onClick={handleCancelEdit}
+                          variant="outline-primary"
+                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                        >
+                          <IoMdClose className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div>
+                        <Button
+                          onClick={() => handleEditProduct(product)}
+                          variant="outline-primary"
+                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                        >
+                          <MdEdit className="h-5 w-5" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDeleteProduct(product.id)}
+                          variant="outline-primary"
+                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
+                        >
+                          <FaTrashCan className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    )}
+                  </td>
+                </Protect>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

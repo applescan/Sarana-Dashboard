@@ -8,7 +8,7 @@ interface Props {
 
 const Providers = ({ children }: Props) => {
   const client = new ApolloClient({
-    uri: 'https://sarana-dashboard.vercel.app/api/graphql',
+    uri: 'http://localhost:3000/api/graphql',
     cache: new InMemoryCache(),
   });
 

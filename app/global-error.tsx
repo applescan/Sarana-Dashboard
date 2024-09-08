@@ -1,22 +1,21 @@
 'use client';
-import React from 'react';
+import React, { FC } from 'react';
 import Button from '../components/ui/Button';
 
-const GlobalError: React.FC = () => {
+const GlobalError: FC = () => {
   return (
-    <div className="w-full h-[70vh] flex flex-col md:flex-row justify-between items-center gap-20">
+    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen px-4 py-8 bg-gray-100">
       <img
         src="/404.png"
         alt="404 Error"
-        className="w-1/2 h-auto object-contain"
+        className="w-full max-w-md h-auto object-contain mb-8 md:mb-0 md:w-1/2"
       />
-      <div className="w-full md:w-1/2 p-4 md:p-8">
-        <h1 className="font-extrabold text-6xl pb-2">Oops!</h1>
-        <p>Sorry for the inconvenience, maybe try reloading this page again.</p>
-        <Button
-          variant="outline-primary"
-          className="h-10 text-sm font-normal mt-4"
-        >
+      <div className="w-full max-w-md text-center md:text-left md:w-1/2 md:pl-8">
+        <h1 className="font-extrabold text-4xl md:text-6xl mb-4">Oops!</h1>
+        <p className="mb-4">
+          Sorry for the inconvenience. Maybe try reloading this page again.
+        </p>
+        <Button variant="outline-primary" className="h-10 text-sm font-normal">
           <a href={'/'}>Go back home</a>
         </Button>
       </div>

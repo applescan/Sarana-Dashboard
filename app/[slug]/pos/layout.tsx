@@ -1,10 +1,11 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
+import { ReactNode } from 'react';
 
 export default async function Page({
   children,
 }: {
   params: { slug: string };
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const user = await currentUser();
 

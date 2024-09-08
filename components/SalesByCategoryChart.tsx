@@ -21,7 +21,7 @@ const SalesByCategoryChart = ({ data }: SalesByCategoryChartProps) => {
         name: 'Sales by Category',
         type: 'pie',
         radius: ['40%', '70%'],
-        avoidLabelOverlap: false,
+        avoidLabelOverlap: true,
         padAngle: 5,
         itemStyle: {
           borderRadius: 10,
@@ -45,7 +45,14 @@ const SalesByCategoryChart = ({ data }: SalesByCategoryChartProps) => {
     ],
   };
 
-  return <ReactECharts option={option} style={{ height: 450 }} />;
+  return (
+    <div className="w-full max-w-4xl mx-auto px-4">
+      <ReactECharts
+        option={option}
+        style={{ height: 'calc(100vh - 200px)', maxHeight: '450px' }}
+      />
+    </div>
+  );
 };
 
 export default SalesByCategoryChart;
