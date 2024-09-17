@@ -8,7 +8,11 @@ export default function Page() {
     >
       <div className="flex items-center justify-center min-h-screen px-4">
         <div className="max-w-md w-full">
-          <SignIn path="/sign-in" afterSignOutUrl="/" />
+          <SignIn
+            path="/sign-in"
+            afterSignOutUrl="/sign-in"
+            fallbackRedirectUrl="/sign-in"
+          />
         </div>
       </div>
     </div>
