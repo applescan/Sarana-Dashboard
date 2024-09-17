@@ -1,6 +1,10 @@
-import { SignIn } from '@clerk/nextjs';
+'use client';
+import { SignIn, useOrganization } from '@clerk/nextjs';
 
 export default function Page() {
+  const { organization } = useOrganization();
+  const slug = organization?.slug || 'sarana';
+
   return (
     <div
       className="relative min-h-screen bg-cover bg-center"
@@ -11,7 +15,7 @@ export default function Page() {
           <SignIn
             path="/sign-in"
             afterSignOutUrl="/sign-in"
-            fallbackRedirectUrl="/sign-in"
+            fallbackRedirectUrl={`/${slug}/pos`}
           />
         </div>
       </div>
