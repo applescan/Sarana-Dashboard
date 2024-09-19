@@ -1,5 +1,5 @@
 'use client';
-import { useAuth, useOrganization } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Loading from '@/components/ui/Loading';
@@ -7,8 +7,7 @@ import Loading from '@/components/ui/Loading';
 export default function Home() {
   const { isSignedIn } = useAuth();
   const router = useRouter();
-  const { organization } = useOrganization();
-  const slug = organization?.slug;
+  const slug = 'sarana';
 
   useEffect(() => {
     if (isSignedIn) {

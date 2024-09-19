@@ -1,16 +1,9 @@
 'use client';
-import {
-  SignInButton,
-  SignedOut,
-  SignedIn,
-  UserButton,
-  useOrganization,
-} from '@clerk/nextjs';
+import { SignInButton, SignedOut, SignedIn, UserButton } from '@clerk/nextjs';
 import React, { useState } from 'react';
 
 export default function Header() {
-  const { organization } = useOrganization();
-  const slug = organization?.slug;
+  const slug = 'sarana';
 
   const disabledLinkClass = 'text-gray-400 pointer-events-none';
   const activeLinkClass = 'text-gray-700 hover:text-primary-700';
