@@ -15,29 +15,43 @@ import {
 } from '@/lib/types/types';
 
 type AIInsightProps = {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
+  startDate?: Date;
+  endDate?: Date;
 };
 
 const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
   const [aiChatResponse, setAIChatResponse] = useState('');
-  const { loading: dashboardLoading, data: dashboardData } = useQuery(
-    GET_DASHBOARD_DATA,
-    { variables: { startDate, endDate } },
-  );
+  const [aiError, setAIError] = useState<string | null>(null);
 
-  const { loading: ordersLoading, data: ordersData } = useQuery(GET_ORDERS, {
-    variables: { startDate, endDate },
-  });
+  const {
+    loading: dashboardLoading,
+    data: dashboardData,
+    error: dashboardError,
+  } = useQuery(GET_DASHBOARD_DATA, { variables: { startDate, endDate } });
 
-  const { loading: itemsSoldLoading, data: itemsSoldData } =
-    useQuery(GET_ITEMS_SOLD);
+  const {
+    loading: ordersLoading,
+    data: ordersData,
+    error: ordersError,
+  } = useQuery(GET_ORDERS, { variables: { startDate, endDate } });
 
-  const { loading: itemsRestockedLoading, data: itemsRestockedData } =
-    useQuery(GET_ITEMS_RESTOCKED);
+  const {
+    loading: itemsSoldLoading,
+    data: itemsSoldData,
+    error: itemsSoldError,
+  } = useQuery(GET_ITEMS_SOLD);
 
-  const { loading: productsLoading, data: productsData } =
-    useQuery(GET_PRODUCTS);
+  const {
+    loading: itemsRestockedLoading,
+    data: itemsRestockedData,
+    error: itemsRestockedError,
+  } = useQuery(GET_ITEMS_RESTOCKED);
+
+  const {
+    loading: productsLoading,
+    data: productsData,
+    error: productsError,
+  } = useQuery(GET_PRODUCTS);
 
   const loading =
     dashboardLoading ||
@@ -46,13 +60,21 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
     itemsRestockedLoading ||
     productsLoading;
 
+  const error =
+    dashboardError ||
+    ordersError ||
+    itemsSoldError ||
+    itemsRestockedError ||
+    productsError;
+
   useEffect(() => {
     if (
-      dashboardData &&
-      ordersData &&
-      itemsSoldData &&
-      itemsRestockedData &&
-      productsData
+      dashboardData?.itemsSold &&
+      dashboardData?.itemsRestocked &&
+      dashboardData?.revenues &&
+      dashboardData?.categories &&
+      ordersData?.orders &&
+      itemsSoldData?.itemsSold
     ) {
       const defaultInput = `Provide insights based on the following data:
       - Items Sold: ${dashboardData.itemsSold.reduce(
@@ -64,7 +86,7 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
         0,
       )}
       - Total Revenue: IDR ${dashboardData.revenues
-        .reduce((acc: number, revenue: Revenue) => acc + revenue.amount, 0)
+        .reduce((acc: number, r: Revenue) => acc + r.amount, 0)
         .toLocaleString()}
       - Orders: ${ordersData.orders.length}
       - Best Selling Products: ${itemsSoldData.itemsSold
@@ -72,7 +94,7 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
         .map((item: ItemsSold) => item.product.name)
         .join(', ')}
       - Categories: ${dashboardData.categories
-        .map((category: Category) => category.name)
+        .map((c: Category) => c.name)
         .join(', ')}`;
       sendAIRequest(defaultInput);
     }
@@ -86,6 +108,8 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
 
   const sendAIRequest = async (input: string) => {
     try {
+      setAIError(null);
+      setAIChatResponse('');
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -96,27 +120,39 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
         }),
       });
 
-      if (!response.body) {
-        throw new Error('Failed to get a response body');
-      }
+      if (!response.body) throw new Error('No response body from AI');
 
       const reader = response.body.getReader();
-      setAIChatResponse('');
+      const decoder = new TextDecoder();
+      let aiText = '';
 
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
+      for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-        const currentChunk = new TextDecoder().decode(value);
-        setAIChatResponse((prev) => prev + currentChunk);
+        aiText += decoder.decode(value);
+        setAIChatResponse(aiText);
       }
-    } catch (error) {
-      console.error('Failed to fetch AI chat response:', error);
-      setAIChatResponse('Failed to communicate with AI.');
+    } catch (err) {
+      console.error('AI Error:', err);
+      setAIError('⚠️ Failed to get insights. Please try again later.');
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="text-gray-500 text-sm animate-pulse">
+        Loading data and generating AI insight...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-600 bg-red-50 border border-red-300 p-4 rounded">
+        ⚠️ Error fetching data. Please check your network or try again.
+      </div>
+    );
+  }
 
   return (
     <div className="flex gap-4 justify-between">
@@ -130,17 +166,21 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
           }}
         ></iframe>
       </div>
-      <div className="mb-4">
-        {aiChatResponse ? (
-          <div className="p-4 bg-secondary rounded-lg shadow-md border border-gray-200">
-            <h1 className="text-gray-800 font-bold text-lg">
-              AI Sales Insight
-            </h1>
-            <p>{aiChatResponse}</p>
-          </div>
-        ) : (
-          <p className="text-gray-500">Generating insights...</p>
-        )}
+      <div className="mb-4 max-w-xl">
+        <div className="p-4 bg-secondary rounded-lg shadow-md border border-gray-200">
+          <h1 className="text-gray-800 font-bold text-lg mb-2">
+            🧠 AI Sales Insight
+          </h1>
+          {aiError ? (
+            <p className="text-red-600 text-sm">{aiError}</p>
+          ) : aiChatResponse ? (
+            <p className="text-gray-700 whitespace-pre-wrap">
+              {aiChatResponse}
+            </p>
+          ) : (
+            <p className="text-gray-500">Generating insights...</p>
+          )}
+        </div>
       </div>
     </div>
   );
