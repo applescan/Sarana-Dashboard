@@ -76,6 +76,12 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
       ordersData?.orders &&
       itemsSoldData?.itemsSold
     ) {
+      const bestSellers = [...itemsSoldData.itemsSold]
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 3)
+        .map((item: ItemsSold) => item.product.name)
+        .join(', ');
+
       const defaultInput = `Provide insights based on the following data:
       - Items Sold: ${dashboardData.itemsSold.reduce(
         (acc: number, item: ItemsSold) => acc + item.quantity,
@@ -89,10 +95,7 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
         .reduce((acc: number, r: Revenue) => acc + r.amount, 0)
         .toLocaleString()}
       - Orders: ${ordersData.orders.length}
-      - Best Selling Products: ${itemsSoldData.itemsSold
-        .slice(0, 3)
-        .map((item: ItemsSold) => item.product.name)
-        .join(', ')}
+      - Best Selling Products: ${bestSellers}
       - Categories: ${dashboardData.categories
         .map((c: Category) => c.name)
         .join(', ')}`;
@@ -155,7 +158,7 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
   }
 
   return (
-    <div className="flex gap-4 justify-between">
+    <div className="flex gap-4 justify-between items-stretch">
       <div>
         <iframe
           src="https://lottie.host/embed/3d0a9402-f9ed-4345-b334-d4e7b6454ce3/KVNu0XHNaS.json"
@@ -166,8 +169,8 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
           }}
         ></iframe>
       </div>
-      <div className="mb-4 max-w-xl">
-        <div className="p-4 bg-secondary rounded-lg shadow-md border border-gray-200">
+      <div className="mb-4 w-full">
+        <div className="w-full p-4 bg-secondary rounded-lg shadow-md border border-gray-200 min-h-[150px] flex flex-col justify-between">
           <h1 className="text-gray-800 font-bold text-lg mb-2">
             🧠 AI Sales Insight
           </h1>
