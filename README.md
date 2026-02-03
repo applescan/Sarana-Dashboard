@@ -19,6 +19,7 @@ The application is available in both Indonesian and English to cater to the loca
 </table>
 
 ## Screenshots
+
 ![](https://github.com/applescan/Sarana-Dashboard/blob/main/public/sarana-dashboard.jpg)
 ![](https://github.com/applescan/Sarana-Dashboard/blob/main/public/sarana-dashboard-1.jpg)
 ![](https://github.com/applescan/Sarana-Dashboard/blob/main/public/sarana-dashboard-2.jpg)
@@ -51,21 +52,23 @@ The application is available in both Indonesian and English to cater to the loca
 - **Styling**: **Tailwind CSS** and **ShadCN** – Bringing a touch of modern design to your interface. 🎨
 
 ### Built with
-•	Next.js
-•	Prisma
-•	Clerk
-•	Canva
-•	Echarts
-•	Figma
-•	React
-•	Tailwind CSS
-•	GraphQL
-•	Typescript
-•	Supabase
-•	Node.js
+
+• Next.js
+• Prisma
+• Clerk
+• Canva
+• Echarts
+• Figma
+• React
+• Tailwind CSS
+• GraphQL
+• Typescript
+• Supabase
+• Node.js
 
 ## Demo
-Here is a working live demo:  https://sarana-dashboard.vercel.app/
+
+Here is a working live demo: https://sarana-dashboard.vercel.app/
 
 ## Author
 

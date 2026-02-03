@@ -15,8 +15,14 @@
 body {
   min-height: 100vh;
   background-color: #020617;
-  font-family: var(--font-jakarta), 'Inter', system-ui, -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    var(--font-jakarta),
+    'Inter',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-weight: 400;
   color: #e2e8f0;
   -webkit-font-smoothing: antialiased;
