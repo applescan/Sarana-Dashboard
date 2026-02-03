@@ -38,26 +38,26 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect }) => {
 
   return (
     <Card
-      className="flex flex-col max-h-[240px] gap-5 bg-white border border-gray-300 text-gray-900 text-left p-0 cursor-pointer hover:bg-primary/5"
+      className="group flex h-full cursor-pointer flex-col justify-between border-white/10 bg-card/80 transition hover:-translate-y-1 hover:border-primary/40"
       onClick={() => onSelect(product)}
     >
-      <CardHeader className="flex items-center gap-2 text-gray-300">
-        {Icon && <Icon className="h-10 w-10"></Icon>}
-        <CardTitle className="text-gray-900 text-left text-2xl">
+      <CardHeader className="flex flex-row items-center gap-3 text-secondary-foreground">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-primary-foreground">
+          {Icon && <Icon className="h-6 w-6" />}
+        </div>
+        <CardTitle className="text-left text-2xl text-primary-foreground">
           {product.name}
         </CardTitle>
       </CardHeader>
-      <CardContent className="text-gray-900">
-        <p className="text-gray-900">
-          <span className="font-bold">Desc:</span> {product.description}
+      <CardContent className="flex flex-col gap-3 text-sm text-secondary-foreground/80">
+        <p className="leading-relaxed">
+          <span className="text-secondary-foreground">Description:</span>{' '}
+          {product.description}
         </p>
-        <p>
-          <span className="font-bold">Price:</span> IDR{' '}
-          {product.sellPrice.toLocaleString()}
+        <p className="font-semibold text-primary-foreground">
+          Price: IDR {product.sellPrice.toLocaleString()}
         </p>
-        <p>
-          <span className="font-bold">Stock:</span> {product.stock}
-        </p>
+        <p className="text-muted">Stock: {product.stock}</p>
       </CardContent>
     </Card>
   );

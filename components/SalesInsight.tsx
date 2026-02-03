@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client';
 import React, { useState, useEffect, FC } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import {
   GET_DASHBOARD_DATA,
   GET_ORDERS,
@@ -143,49 +144,49 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
 
   if (loading) {
     return (
-      <div className="text-gray-500 text-sm animate-pulse">
-        Loading data and generating AI insight...
-      </div>
+      <Card className="min-h-[180px] animate-pulse bg-card/50">
+        <CardHeader>
+          <CardTitle className="text-xl">🧠 AI Sales Insight</CardTitle>
+        </CardHeader>
+        <CardContent>Loading data and generating insights...</CardContent>
+      </Card>
     );
   }
 
   if (error) {
     return (
-      <div className="text-red-600 bg-red-50 border border-red-300 p-4 rounded">
-        ⚠️ Error fetching data. Please check your network or try again.
-      </div>
+      <Card className="border-red-500/30 bg-red-500/10 text-red-100">
+        <CardHeader>
+          <CardTitle className="text-xl">⚠️ Insight unavailable</CardTitle>
+        </CardHeader>
+        <CardContent>
+          Please check your connection and try again shortly.
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="flex gap-4 justify-between items-stretch">
-      <div>
-        <iframe
-          src="https://lottie.host/embed/3d0a9402-f9ed-4345-b334-d4e7b6454ce3/KVNu0XHNaS.json"
-          style={{
-            width: '150px',
-            height: '100%',
-            border: 'none',
-          }}
-        ></iframe>
-      </div>
-      <div className="mb-4 w-full">
-        <div className="w-full p-4 bg-secondary rounded-lg shadow-md border border-gray-200 min-h-[150px] flex flex-col justify-between">
-          <h1 className="text-gray-800 font-bold text-lg mb-2">
-            🧠 AI Sales Insight
-          </h1>
-          {aiError ? (
-            <p className="text-red-600 text-sm">{aiError}</p>
-          ) : aiChatResponse ? (
-            <p className="text-gray-700 whitespace-pre-wrap">
-              {aiChatResponse}
-            </p>
-          ) : (
-            <p className="text-gray-500">Generating insights...</p>
-          )}
-        </div>
-      </div>
-    </div>
+    <Card className="relative overflow-hidden">
+      <div className="absolute -left-10 top-2 hidden h-40 w-40 rounded-full bg-gradient-to-br from-primary/60 to-accent/40 blur-3xl sm:block" />
+      <CardHeader className="relative z-10 flex flex-col gap-2">
+        <CardTitle className="text-xl">🧠 AI Sales Insight</CardTitle>
+        <p className="text-sm text-muted">
+          Machine-curated signals based on your latest performance.
+        </p>
+      </CardHeader>
+      <CardContent className="relative z-10">
+        {aiError ? (
+          <p className="text-red-300 text-sm">{aiError}</p>
+        ) : aiChatResponse ? (
+          <p className="text-secondary-foreground/90 whitespace-pre-wrap leading-relaxed">
+            {aiChatResponse}
+          </p>
+        ) : (
+          <p className="text-muted">Generating insights...</p>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

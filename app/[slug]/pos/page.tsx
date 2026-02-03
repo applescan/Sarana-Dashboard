@@ -129,19 +129,17 @@ const POSPage = () => {
     parseFloat(amountPaid) > subtotal ? parseFloat(amountPaid) - subtotal : 0;
 
   return (
-    <div>
-      <section className="pb-5">
-        <Input
-          type="text"
-          placeholder="Search products by name"
-          value={searchTerm}
-          onChange={handleSearchTermChange}
-          className="w-56 p-2 border border-gray-300"
-        />
-      </section>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-4">
-        <div className="flex flex-col gap-2">
+    <div className="space-y-6">
+      <section className="rounded-3xl border border-white/10 bg-card/70 p-4 shadow-glow">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="w-full md:max-w-sm">
+            <Input
+              type="text"
+              placeholder="Search products by name"
+              value={searchTerm}
+              onChange={handleSearchTermChange}
+            />
+          </div>
           <div className="flex flex-wrap gap-2">
             <Badge
               key="all"
@@ -162,17 +160,24 @@ const POSPage = () => {
               </Badge>
             ))}
           </div>
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredProducts?.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onSelect={handleSelectProduct}
-              />
-            ))}
-          </section>
         </div>
-        <div>
+      </section>
+
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[2fr_1fr] xl:grid-cols-[3fr_1fr]">
+        <section className="flex max-h-[100vh] flex-col overflow-hidden rounded-3xl border border-white/10 bg-card/60 p-4 shadow-glow">
+          <div className="flex-1 overflow-auto pr-1">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredProducts?.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onSelect={handleSelectProduct}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+        <div className="h-full max-h-[100vh]">
           <SelectedItemsList
             selectedItems={selectedItems}
             products={productsData?.products || []}

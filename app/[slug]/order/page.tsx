@@ -68,27 +68,51 @@ const OrderPage: FC = () => {
   ];
 
   return (
-    <div>
-      <div className="flex items-center mb-4">
-        <input
-          type="checkbox"
-          id="range-checkbox"
-          checked={isRange}
-          onChange={handleRangeToggle}
-          className="mr-2"
-        />
-        <label htmlFor="range-checkbox" className="text-xs md:text-sm">
-          Enable Range Selection
-        </label>
-      </div>
-
-      <div className="mb-4">
-        <DatePickerWithRange
-          selectedDate={selectedDate}
-          onDateChange={handleDateChange}
-          isRange={isRange}
-        />
-      </div>
+    <div className="space-y-6">
+      <section className="rounded-3xl border border-white/10 bg-card/70 p-6 shadow-glow">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-muted">
+              Order window
+            </p>
+            <h2 className="text-2xl font-semibold text-primary-foreground">
+              {isRange ? 'Compare Dates' : 'Single Day'}
+            </h2>
+            <p className="text-sm text-secondary-foreground/70">
+              Toggle range to measure restocks across custom intervals.
+            </p>
+          </div>
+          <div className="flex w-full flex-wrap items-center gap-4 sm:justify-end">
+            <label className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-muted">
+              Range
+              <button
+                type="button"
+                onClick={handleRangeToggle}
+                className={`relative h-6 w-12 rounded-full border border-white/20 transition ${
+                  isRange
+                    ? 'bg-gradient-to-r from-primary to-accent'
+                    : 'bg-white/10'
+                }`}
+              >
+                <span
+                  className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white transition ${
+                    isRange ? 'right-1' : 'left-1'
+                  }`}
+                />
+              </button>
+            </label>
+            <div className="w-full min-[420px]:w-48 sm:w-60">
+              <DatePickerWithRange
+                selectedDate={selectedDate}
+                onDateChange={handleDateChange}
+                isRange={isRange}
+                compact
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
       <OrderTable
         key={ordersData.orders.length}
         columns={columns}

@@ -175,7 +175,11 @@ const OrderTable: FC<OrderTableProps> = ({
     if (accessor === 'status') {
       return (
         <span
-          className={`badge ${order.status === 'RECEIVED' ? 'bg-green-500' : 'bg-red-500'} text-white`}
+          className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
+            order.status === 'RECEIVED'
+              ? 'border-emerald-500/40 bg-emerald-500/20 text-emerald-200'
+              : 'border-rose-500/40 bg-rose-500/20 text-rose-200'
+          }`}
         >
           {order.status}
         </span>
@@ -216,19 +220,19 @@ const OrderTable: FC<OrderTableProps> = ({
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-2 mb-4">
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Input
           type="text"
           placeholder="Search orders by item name"
           value={searchTerm}
           onChange={handleSearchTermChange}
-          className="w-full sm:w-56 p-2 border border-gray-300 mb-4 sm:mb-0"
+          className="w-full sm:w-64"
         />
         <Protect condition={(has) => has({ role: 'org:admin' })}>
           <Button
             variant="brand"
             onClick={() => setIsDialogOpen(true)}
-            className="h-10 flex items-center gap-2"
+            className="flex h-11 items-center gap-2"
           >
             <IoMdAdd />
             Add Order
@@ -241,13 +245,13 @@ const OrderTable: FC<OrderTableProps> = ({
         onOpenChange={() => setIsDialogOpen(false)}
         title="Add New Order"
         desc={
-          <div className="flex flex-col gap-2 mb-4">
-            <p className="pb-2 text-base">
+          <div className="mb-4 flex flex-col gap-4">
+            <p className="pb-2 text-base text-secondary-foreground/80">
               Fill in the details of the new order below.
             </p>
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
               <div className="w-full sm:w-56">
-                <label className="block text-sm font-sm text-gray-700">
+                <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
                   Category
                 </label>
                 <Select onValueChange={(value) => handleSelectCategory(value)}>
@@ -269,7 +273,7 @@ const OrderTable: FC<OrderTableProps> = ({
                 </Select>
               </div>
               <div className="w-full sm:w-56">
-                <label className="block text-sm font-sm text-gray-700">
+                <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
                   Product
                 </label>
                 <Select
@@ -300,7 +304,7 @@ const OrderTable: FC<OrderTableProps> = ({
               </div>
             </div>
             <div>
-              <label className="block text-sm font-sm text-gray-700">
+              <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
                 Quantity
               </label>
               <Input
@@ -308,7 +312,7 @@ const OrderTable: FC<OrderTableProps> = ({
                 value={orderQuantity}
                 onChange={handleQuantityChange}
                 placeholder="Enter quantity"
-                className="w-full sm:w-56 p-2 border border-gray-300"
+                className="w-full sm:w-56"
               />
             </div>
           </div>
@@ -336,59 +340,61 @@ const OrderTable: FC<OrderTableProps> = ({
         button="Delete"
       />
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[600px] border border-gray-300">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 shadow-glow">
+        <table className="w-full min-w-[600px] text-left text-sm">
           <thead>
-            <tr className="bg-gray-100 text-left">
+            <tr className="bg-white/5 text-muted uppercase tracking-[0.2em]">
               {columns.map((column) => (
-                <th
-                  key={column.Header}
-                  className="p-2 border-b border-gray-300"
-                >
+                <th key={column.Header} className="py-3 px-4">
                   {column.Header}
                 </th>
               ))}
-              <th className="p-2 border-b border-gray-300">Actions</th>
+              <th className="py-3 px-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="p-2 text-center">
+                <td
+                  colSpan={columns.length + 1}
+                  className="p-6 text-center text-muted"
+                >
                   No orders found.
                 </td>
               </tr>
             ) : (
               filteredOrders.map((order) => (
-                <tr key={order.id}>
+                <tr key={order.id} className="hover:bg-white/5">
                   {columns.map((column) => (
                     <td
                       key={column.accessor}
-                      className="px-4 border-b border-gray-200"
+                      className="border-t border-white/5 px-4 py-3"
                     >
                       {getCellValue(order, column.accessor)}
                     </td>
                   ))}
-                  <td className="p-3 border-b border-gray-200 flex gap-2 justify-between">
-                    <Protect condition={(has) => has({ role: 'org:admin' })}>
+                  <td className="border-t border-white/5 px-4 py-3">
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Protect condition={(has) => has({ role: 'org:admin' })}>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleDeleteOrder(order.id)}
+                          className="justify-center"
+                        >
+                          <FaTrashCan />
+                        </Button>
+                      </Protect>
                       <Button
+                        onClick={() => handleMarkOrderAsReceived(order.id)}
                         variant="outline-primary"
-                        onClick={() => handleDeleteOrder(order.id)}
-                        className="p-1"
+                        className="w-full justify-center"
+                        disabled={order.status === 'RECEIVED'}
                       >
-                        <FaTrashCan />
+                        {order.status === 'RECEIVED'
+                          ? 'Received'
+                          : 'Mark as Received'}
                       </Button>
-                    </Protect>
-                    <Button
-                      onClick={() => handleMarkOrderAsReceived(order.id)}
-                      variant="outline-primary"
-                      className="border border-transparent hover:bg-gray-200 hover:text-gray-800 w-[170px]"
-                      disabled={order.status === 'RECEIVED'}
-                    >
-                      {order.status === 'RECEIVED'
-                        ? 'Received'
-                        : 'Mark as Received'}
-                    </Button>
+                    </div>
                   </td>
                 </tr>
               ))

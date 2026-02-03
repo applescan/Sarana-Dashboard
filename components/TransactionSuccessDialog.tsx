@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { FaCheckCircle } from 'react-icons/fa';
 import Button from './ui/Button';
 import {
   Dialog,
@@ -21,15 +22,14 @@ const TransactionSuccessModal: FC<TransactionSuccessModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm sm:max-w-md md:max-w-lg mx-auto p-4">
+      <DialogContent className="mx-auto max-w-lg p-6">
         <DialogHeader className="flex flex-col items-center text-center">
-          <DialogDescription className="mb-4">
-            <img
-              src="/buy.gif"
-              alt="Transaction Successful"
-              className="w-1/2 h-auto mx-auto"
+          <DialogDescription className="mb-4 flex flex-col items-center gap-4 text-secondary-foreground">
+            <FaCheckCircle
+              className="h-24 w-24 text-primary"
+              aria-hidden="true"
             />
-            <DialogTitle className="text-lg sm:text-xl md:text-2xl text-gray-900 pt-4 text-center">
+            <DialogTitle className="text-2xl font-semibold text-primary-foreground">
               Transaction Successful
             </DialogTitle>
           </DialogDescription>

@@ -14,10 +14,18 @@ export default async function Page({
   }
 
   return (
-    <section className="pb-10">
-      <h1 className="text-2xl sm:text-3xl font-bold pb-8 text-left">
-        Order List
-      </h1>
+    <section className="pb-12">
+      <div className="mb-8 rounded-3xl border border-white/10 bg-card/60 p-6 shadow-glow">
+        <p className="text-xs uppercase tracking-[0.35em] text-muted">
+          Fulfillment
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold text-primary-foreground">
+          Purchase Orders
+        </h1>
+        <p className="text-sm text-secondary-foreground/70">
+          Track supplier orders, confirm receipts, and keep restocks on time.
+        </p>
+      </div>
       {children}
     </section>
   );

@@ -58,10 +58,12 @@ const ProductFormDialog: FC<ProductFormDialogProps> = ({
       onOpenChange={onOpenChange}
       title={title}
       desc={
-        <div className="flex flex-wrap gap-2 mb-4">
-          <p className="pb-2 text-base">{description}</p>
-          <div className="w-56">
-            <label className="block text-sm font-sm text-gray-700">
+        <div className="mb-4 flex flex-wrap gap-3">
+          <p className="pb-2 text-base text-secondary-foreground/80">
+            {description}
+          </p>
+          <div className="w-52">
+            <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
               Product Name
             </label>
             <Input
@@ -69,32 +71,40 @@ const ProductFormDialog: FC<ProductFormDialogProps> = ({
               placeholder="Product Name"
               value={productName}
               onChange={(e) => onProductNameChange(e.target.value)}
-              className="p-2 border border-gray-300"
             />
           </div>
-          <div className="w-56">
-            <label className="block text-sm font-sm text-gray-700">
+          <div className="w-1/2">
+            <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
               Category
             </label>
-            <Select onValueChange={onProductCategoryChange}>
+            <Select
+              onValueChange={onProductCategoryChange}
+              value={productCategory}
+            >
               <SelectTrigger>
                 <SelectValue
                   placeholder={productCategory || 'Select Category'}
                 />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="p-2">
                 <SelectScrollUpButton />
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.name}>
-                    {category.name}
-                  </SelectItem>
-                ))}
+                <div className="grid max-h-64 grid-cols-1 gap-1 sm:grid-cols-2">
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category.id}
+                      value={category.name}
+                      className="justify-center text-center"
+                    >
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </div>
                 <SelectScrollDownButton />
               </SelectContent>
             </Select>
           </div>
-          <div className="w-56">
-            <label className="block text-sm font-sm text-gray-700">
+          <div className="w-52">
+            <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
               Buy Price
             </label>
             <Input
@@ -102,11 +112,10 @@ const ProductFormDialog: FC<ProductFormDialogProps> = ({
               placeholder="Buy Price"
               value={productBuyPrice}
               onChange={(e) => onProductBuyPriceChange(e.target.value)}
-              className="p-2 border border-gray-300"
             />
           </div>
-          <div className="w-56">
-            <label className="block text-sm font-sm text-gray-700">
+          <div className="w-1/2">
+            <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
               Sell Price
             </label>
             <Input
@@ -114,11 +123,10 @@ const ProductFormDialog: FC<ProductFormDialogProps> = ({
               placeholder="Sell Price"
               value={productSellPrice}
               onChange={(e) => onProductSellPriceChange(e.target.value)}
-              className="p-2 border border-gray-300"
             />
           </div>
           <div className="w-full">
-            <label className="block text-sm font-sm text-gray-700">
+            <label className="mb-2 block text-xs uppercase tracking-[0.35em] text-muted">
               Product Description
             </label>
             <Input
@@ -126,7 +134,6 @@ const ProductFormDialog: FC<ProductFormDialogProps> = ({
               placeholder="Product Description"
               value={productDescription}
               onChange={(e) => onProductDescriptionChange(e.target.value)}
-              className="p-2 border border-gray-300"
             />
           </div>
         </div>

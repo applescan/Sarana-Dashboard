@@ -19,10 +19,15 @@ export default async function Page({
   const orgName = response.name;
 
   return (
-    <section className="pb-10">
-      <h1 className="text-2xl sm:text-3xl font-bold pb-8 text-left">
-        {orgName} Dashboard
-      </h1>
+    <section className="pb-12">
+      <div className="mb-8 rounded-3xl border border-white/10 bg-card/60 p-6 shadow-glow">
+        <p className="text-xs uppercase tracking-[0.4em] text-muted">
+          Overview
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold text-primary-foreground sm:text-4xl">
+          {orgName} Dashboard
+        </h1>
+      </div>
       {children}
     </section>
   );

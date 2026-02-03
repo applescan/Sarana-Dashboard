@@ -1,142 +1,134 @@
 'use client';
 import { SignInButton, SignedOut, SignedIn, UserButton } from '@clerk/nextjs';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
+import { FaBarsStaggered } from 'react-icons/fa6';
+import { MdClose } from 'react-icons/md';
+import Button from './Button';
+
+const navItems = [
+  { label: 'Dashboard', path: 'dashboard' },
+  { label: 'Sales', path: 'pos' },
+  { label: 'Product', path: 'product' },
+  { label: 'Orders', path: 'order' },
+];
 
 export default function Header() {
   const slug = 'sarana';
-
-  const disabledLinkClass = 'text-gray-400 pointer-events-none';
-  const activeLinkClass = 'text-gray-700 hover:text-primary-700';
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const hideAuthCta =
+    pathname?.startsWith('/sign-in') || pathname?.startsWith('/sign-up');
+
+  const NavLink = ({ path, label }: { path: string; label: string }) => (
+    <Link
+      href={slug ? `/${slug}/${path}` : '#'}
+      className="text-sm font-medium text-secondary-foreground/80 transition hover:text-primary-foreground"
+    >
+      {label}
+    </Link>
+  );
 
   return (
-    <header className="bg-white border-gray-200 shadow-lg fixed w-full z-10">
-      <nav className="px-4 py-3 mx-auto">
-        <div className="flex justify-between items-center">
-          <a
-            href={slug ? `/${slug}/dashboard` : '#'}
-            className={`flex items-center ${slug ? activeLinkClass : disabledLinkClass}`}
-          >
-            <img src="/sarana.png" alt="Sarana Logo" className="h-12" />
-          </a>
-          <div className="flex items-center lg:hidden">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
-              aria-controls="mobile-menu"
-              aria-expanded="false"
-              onClick={() => setMenuOpen(!menuOpen)}
+    <header className="fixed inset-x-0 top-0 z-30 px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <div className="mt-4 rounded-3xl border border-glass-border bg-surface/60 px-4 py-4 shadow-glow backdrop-blur-2xl">
+          <div className="flex items-center justify-between gap-4">
+            <Link
+              href={slug ? `/${slug}/dashboard` : '#'}
+              className="flex items-center gap-3"
             >
-              <span className="sr-only">Open main menu</span>
-              <svg
-                className={`${menuOpen ? 'hidden' : 'block'} h-6 w-6`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-              <svg
-                className={`${menuOpen ? 'block' : 'hidden'} h-6 w-6`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-          <div className="hidden lg:flex lg:items-center lg:space-x-8">
-            <SignedIn>
-              <a
-                href={slug ? `/${slug}/dashboard` : '#'}
-                className={`text-sm font-normal ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Dashboard
-              </a>
-              <a
-                href={slug ? `/${slug}/pos` : '#'}
-                className={`text-sm font-normal ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Sales
-              </a>
-              <a
-                href={slug ? `/${slug}/product` : '#'}
-                className={`text-sm font-normal ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Product
-              </a>
-              <a
-                href={slug ? `/${slug}/order` : '#'}
-                className={`text-sm font-normal ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Orders
-              </a>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </div>
-        </div>
-        <div
-          className={`${menuOpen ? 'block' : 'hidden'} lg:hidden absolute top-14 left-0 right-0 bg-white shadow-lg z-20`}
-          id="mobile-menu"
-        >
-          <div className="pt-2 space-y-1">
-            <SignedIn>
-              <a
-                href={slug ? `/${slug}/dashboard` : '#'}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Dashboard
-              </a>
-              <a
-                href={slug ? `/${slug}/pos` : '#'}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Sales
-              </a>
-              <a
-                href={slug ? `/${slug}/product` : '#'}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Product
-              </a>
-              <a
-                href={slug ? `/${slug}/order` : '#'}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${slug ? activeLinkClass : disabledLinkClass}`}
-              >
-                Orders
-              </a>
-              <div className="border-t border-gray-200 py-3">
-                <div className="pl-4">
-                  <UserButton />
-                </div>
+              <Image
+                src="/icon.png"
+                alt="Sarana logo"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-2xl border border-white/15 bg-white/10 p-2 shadow-glow"
+                priority
+              />
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-muted">
+                  Sarana
+                </p>
+                <h1 className="text-lg font-semibold text-primary-foreground">
+                  Point Of Sales System
+                </h1>
               </div>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
+            </Link>
+
+            <div className="hidden items-center gap-8 lg:flex">
+              <SignedIn>
+                <nav className="flex items-center gap-6">
+                  {navItems.map((item) => (
+                    <NavLink key={item.path} {...item} />
+                  ))}
+                </nav>
+              </SignedIn>
+              <div className="flex items-center gap-3">
+                {!hideAuthCta && (
+                  <SignedOut>
+                    <SignInButton>
+                      <Button variant="secondary" paddingLess>
+                        Sign in
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
+                )}
+                <SignedIn>
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        userButtonAvatarBox:
+                          'ring-2 ring-primary/60 rounded-full',
+                      },
+                    }}
+                  />
+                </SignedIn>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 lg:hidden">
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              <button
+                type="button"
+                className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/5 text-white"
+                onClick={() => setMenuOpen((prev) => !prev)}
+              >
+                {menuOpen ? (
+                  <MdClose className="h-5 w-5" />
+                ) : (
+                  <FaBarsStaggered className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
+          <SignedIn>
+            <div
+              className={`lg:hidden ${menuOpen ? 'mt-6 opacity-100' : 'pointer-events-none h-0 opacity-0'} transition-all`}
+            >
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                {navItems.map((item) => (
+                  <NavLink key={item.path} {...item} />
+                ))}
+              </div>
+            </div>
+          </SignedIn>
+          {!hideAuthCta && (
+            <SignedOut>
+              <div className="mt-4 flex items-center justify-end lg:hidden">
+                <SignInButton>
+                  <Button variant="secondary" className="w-full justify-center">
+                    Sign in
+                  </Button>
+                </SignInButton>
+              </div>
+            </SignedOut>
+          )}
         </div>
-      </nav>
+      </div>
     </header>
   );
 }

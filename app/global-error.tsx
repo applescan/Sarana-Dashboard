@@ -4,23 +4,26 @@ import Button from '../components/ui/Button';
 
 const GlobalError: FC = () => {
   return (
-    <div className="fixed inset-0 flex flex-col md:flex-row items-center justify-center bg-white px-4 py-8">
-      <div className="flex items-center justify-center w-full max-w-md mb-8 md:mb-0 md:w-1/2">
-        <img
-          src="/404.png"
-          alt="404 Error"
-          className="w-full h-auto object-contain"
-        />
+    <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-surface px-6 py-10 text-secondary-foreground">
+      <div className="relative h-48 w-48">
+        <div className="absolute inset-0 rounded-full border border-white/10" />
+        <div className="absolute inset-4 rounded-full border border-white/20" />
+        <div className="absolute inset-8 flex items-center justify-center rounded-full bg-gradient-to-br from-primary/40 to-accent/40 text-4xl font-semibold text-white">
+          404
+        </div>
       </div>
-      <div className="flex flex-col items-center w-full max-w-md text-center md:text-left md:w-1/2 md:pl-8">
-        <h1 className="font-extrabold text-4xl md:text-6xl mb-4">Oops!</h1>
-        <p className="mb-4 text-center">
-          Sorry for the inconvenience. Maybe try reloading this page again.
+      <div className="max-w-lg text-center">
+        <h1 className="text-4xl font-bold text-primary-foreground">
+          Something went sideways
+        </h1>
+        <p className="mt-4 text-secondary-foreground/80">
+          Sorry for the turbulence—please try refreshing the page or navigating
+          back home while we recalibrate the dashboard.
         </p>
-        <Button variant="outline-primary" className="h-10 text-sm font-normal">
-          <a href="/">Go back home</a>
-        </Button>
       </div>
+      <a href="/">
+        <Button variant="brand">Go back home</Button>
+      </a>
     </div>
   );
 };

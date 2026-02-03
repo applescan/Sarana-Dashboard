@@ -254,53 +254,56 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
   );
 
   return (
-    <div>
-      <div className="flex flex-wrap gap-2 pb-5">
-        <Badge
-          key="all"
-          variant={selectedCategory === 'All' ? 'default' : 'secondary'}
-          onClick={() => handleSelectCategory('All')}
-        >
-          All
-        </Badge>
-        {categories.map((category) => (
-          <Badge
-            key={category.id}
-            variant={
-              selectedCategory === category.name ? 'default' : 'secondary'
-            }
-            onClick={() => handleSelectCategory(category.name)}
-          >
-            {category.name}
-          </Badge>
-        ))}
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-2 mb-2">
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Search products by name"
-            value={searchTerm}
-            onChange={handleSearchTermChange}
-            className="w-56 p-2 border border-gray-300 mb-4"
-          />
-          <Protect condition={(has) => has({ role: 'org:admin' })}>
-            <Button
-              variant="brand"
-              onClick={handleDeleteSelectedProducts}
-              disabled={!hasSelectedProducts}
-              className="h-10"
+    <div className="space-y-6">
+      <section className="rounded-3xl border border-white/10 bg-card/70 p-4 shadow-glow">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="w-full md:max-w-sm">
+            <Input
+              type="text"
+              placeholder="Search products by name"
+              value={searchTerm}
+              onChange={handleSearchTermChange}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge
+              key="all"
+              variant={selectedCategory === 'All' ? 'default' : 'secondary'}
+              onClick={() => handleSelectCategory('All')}
             >
-              Delete Selected
-            </Button>
-          </Protect>
+              All
+            </Badge>
+            {categories.map((category) => (
+              <Badge
+                key={category.id}
+                variant={
+                  selectedCategory === category.name ? 'default' : 'secondary'
+                }
+                onClick={() => handleSelectCategory(category.name)}
+              >
+                {category.name}
+              </Badge>
+            ))}
+          </div>
         </div>
+      </section>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Protect condition={(has) => has({ role: 'org:admin' })}>
+          <Button
+            variant="brand"
+            onClick={handleDeleteSelectedProducts}
+            disabled={!hasSelectedProducts}
+            className="h-11 w-full sm:w-auto"
+          >
+            Delete Selected
+          </Button>
+        </Protect>
         <Protect condition={(has) => has({ role: 'org:admin' })}>
           <Button
             variant="brand"
             onClick={() => setIsDialogOpen(true)}
-            className="h-10 flex items-center gap-2"
+            className="flex h-11 items-center justify-center gap-2"
           >
             <IoMdAdd />
             Add Product
@@ -360,35 +363,28 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         button={'Close'}
       />
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[600px] border border-gray-300">
+      <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 shadow-glow">
+        <table className="w-full min-w-[600px] text-left text-sm">
           <thead>
-            <tr className="bg-gray-100 text-left">
+            <tr className="bg-white/5 text-muted uppercase tracking-[0.25em]">
               <Protect condition={(has) => has({ role: 'org:admin' })}>
-                <th className="py-2 px-4 border-b border-gray-200 text-left">
-                  Select
-                </th>
+                <th className="py-3 px-4">Select</th>
               </Protect>
               {columns.map((column) => (
-                <th
-                  key={column.accessor}
-                  className="py-2 px-4 border-b border-gray-200 text-left"
-                >
+                <th key={column.accessor} className="py-3 px-4">
                   {column.Header}
                 </th>
               ))}
               <Protect condition={(has) => has({ role: 'org:admin' })}>
-                <th className="py-2 px-4 border-b border-gray-200 text-left">
-                  Actions
-                </th>
+                <th className="py-3 px-4">Actions</th>
               </Protect>
             </tr>
           </thead>
           <tbody>
             {filteredProducts.map((product) => (
-              <tr key={product.id}>
+              <tr key={product.id} className="hover:bg-white/5">
                 <Protect condition={(has) => has({ role: 'org:admin' })}>
-                  <td className="py-2 px-4 border-b border-gray-200">
+                  <td className="border-t border-white/5 py-3 px-4">
                     <input
                       type="checkbox"
                       checked={!!selectedProducts[product.id]}
@@ -399,7 +395,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                 {columns.map((column) => (
                   <td
                     key={column.accessor}
-                    className="py-2 px-4 border-b border-gray-200"
+                    className="border-t border-white/5 py-3 px-4 align-top"
                   >
                     {column.accessor === 'name' &&
                     editProductId === product.id ? (
@@ -407,7 +403,6 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                         type="text"
                         value={editProductName}
                         onChange={(e) => setEditProductName(e.target.value)}
-                        className="border w-full"
                       />
                     ) : column.accessor === 'description' &&
                       editProductId === product.id ? (
@@ -417,7 +412,6 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                         onChange={(e) =>
                           setEditProductDescription(e.target.value)
                         }
-                        className="border w-full"
                       />
                     ) : column.accessor === 'buyPrice' &&
                       editProductId === product.id ? (
@@ -427,7 +421,6 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                         onChange={(e) =>
                           setEditProductBuyPrice(Number(e.target.value))
                         }
-                        className="border w-full"
                       />
                     ) : column.accessor === 'sellPrice' &&
                       editProductId === product.id ? (
@@ -437,11 +430,11 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                         onChange={(e) =>
                           setEditProductSellPrice(Number(e.target.value))
                         }
-                        className="border w-full"
                       />
                     ) : column.accessor === 'category.name' &&
                       editProductId === product.id ? (
                       <Select
+                        value={editProductCategory}
                         onValueChange={(value: SetStateAction<string>) =>
                           setEditProductCategory(value)
                         }
@@ -469,37 +462,33 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
                   </td>
                 ))}
                 <Protect condition={(has) => has({ role: 'org:admin' })}>
-                  <td className="py-2 px-4 border-b border-gray-200">
+                  <td className="border-t border-white/5 py-3 px-4">
                     {editProductId === product.id ? (
-                      <div>
+                      <div className="flex gap-2">
                         <Button
                           onClick={handleSaveProduct}
                           variant="outline-primary"
-                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
                         >
                           <IoSaveSharp className="h-5 w-5" />
                         </Button>
                         <Button
                           onClick={handleCancelEdit}
                           variant="outline-primary"
-                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
                         >
                           <IoMdClose className="h-5 w-5" />
                         </Button>
                       </div>
                     ) : (
-                      <div>
+                      <div className="flex gap-2">
                         <Button
                           onClick={() => handleEditProduct(product)}
                           variant="outline-primary"
-                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
                         >
                           <MdEdit className="h-5 w-5" />
                         </Button>
                         <Button
                           onClick={() => handleDeleteProduct(product.id)}
                           variant="outline-primary"
-                          className="border border-transparent hover:bg-gray-200 hover:text-gray-800"
                         >
                           <FaTrashCan className="h-5 w-5" />
                         </Button>

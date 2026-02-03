@@ -2,15 +2,14 @@ import React from 'react';
 
 export default function Loading() {
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-white z-50">
-      <div className="flex flex-col items-center p-4">
-        <img
-          src="/loading.gif"
-          alt="loading"
-          className="w-32 h-32 md:w-48 md:h-48"
-        />
-        <p className="font-bold text-lg md:text-xl mt-4">Loading...</p>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-surface/90 backdrop-blur-2xl">
+      <div className="relative h-20 w-20">
+        <span className="absolute inset-0 rounded-full border-2 border-white/10" />
+        <span className="absolute inset-0 rounded-full border-2 border-transparent border-t-accent animate-spin" />
       </div>
+      <p className="text-lg font-semibold text-secondary-foreground">
+        Preparing your dashboard...
+      </p>
     </div>
   );
 }

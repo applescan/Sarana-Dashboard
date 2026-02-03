@@ -9,49 +9,66 @@ type SalesByCategoryChartProps = {
 
 const SalesByCategoryChart = ({ data }: SalesByCategoryChartProps) => {
   const option = {
+    backgroundColor: 'transparent',
+    textStyle: {
+      color: '#E2E8F0',
+      fontFamily: 'var(--font-jakarta, Inter)',
+    },
     tooltip: {
       trigger: 'item',
+      backgroundColor: 'rgba(15,23,42,0.9)',
+      borderColor: 'rgba(129,140,248,0.4)',
+      textStyle: {
+        color: '#FFFFFF',
+      },
     },
     legend: {
-      top: '20px',
-      bottom: '20px',
+      top: '2%',
       left: 'center',
+      padding: [0, 0, 24, 0],
+      textStyle: {
+        color: '#94A3B8',
+      },
     },
     series: [
       {
         name: 'Sales by Category',
         type: 'pie',
+        center: ['50%', '58%'],
         radius: ['40%', '70%'],
         avoidLabelOverlap: true,
-        padAngle: 5,
+        padAngle: 2,
         itemStyle: {
-          borderRadius: 10,
+          borderRadius: 16,
+          borderColor: '#020617',
+          borderWidth: 2,
         },
         label: {
           show: false,
-          position: 'center',
         },
         emphasis: {
+          scale: true,
+          scaleSize: 8,
           label: {
             show: true,
-            fontSize: '40',
+            fontSize: 18,
             fontWeight: 'bold',
+            color: '#FFFFFF',
           },
         },
         labelLine: {
           show: false,
         },
-        data: data,
-        top: '20%',
+        data,
       },
     ],
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full px-2">
       <ReactECharts
         option={option}
-        style={{ height: 'calc(100vh - 200px)', maxHeight: '450px' }}
+        style={{ height: '320px', width: '100%' }}
       />
     </div>
   );

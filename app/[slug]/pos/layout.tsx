@@ -13,5 +13,20 @@ export default async function Page({
     return auth().redirectToSignIn();
   }
 
-  return <section className="pb-10">{children}</section>;
+  return (
+    <section className="pb-12">
+      <div className="mb-8 rounded-3xl border border-white/10 bg-card/60 p-6 shadow-glow">
+        <p className="text-xs uppercase tracking-[0.35em] text-muted">
+          Point of Sale
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold text-primary-foreground">
+          Seamless Selling Experience
+        </h1>
+        <p className="text-sm text-secondary-foreground/70">
+          Search, filter, and complete transactions without leaving this screen.
+        </p>
+      </div>
+      {children}
+    </section>
+  );
 }

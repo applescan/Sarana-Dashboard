@@ -68,84 +68,131 @@ const DashboardPage: FC = () => {
   if (error) return <GlobalError />;
 
   return (
-    <div>
-      <div className="relative flex flex-col md:flex-row justify-between mb-4">
-        <div className="mb-4 md:mb-0">
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              id="range-checkbox"
-              checked={isRange}
-              onChange={handleRangeToggle}
-              className="mr-2"
-            />
-            <label htmlFor="range-checkbox" className="text-xs md:text-sm">
-              Enable Range Selection
+    <div className="space-y-8">
+      <section className="rounded-3xl border border-white/10 bg-card/70 p-6 shadow-glow">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.35em] text-muted">
+              Timeframe
+            </p>
+            <h2 className="text-xl font-semibold text-primary-foreground sm:text-2xl">
+              {isRange ? 'Compare custom dates' : 'Single-day spotlight'}
+            </h2>
+            <p className="text-sm text-secondary-foreground/70">
+              Tune the view to understand how sales, restocks, and revenue are
+              trending.
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-muted">
+              Range
+              <button
+                type="button"
+                onClick={handleRangeToggle}
+                className={`relative h-6 w-12 rounded-full border border-white/20 transition ${
+                  isRange
+                    ? 'bg-gradient-to-r from-primary to-accent'
+                    : 'bg-white/10'
+                }`}
+              >
+                <span
+                  className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-white transition ${
+                    isRange ? 'right-1' : 'left-1'
+                  }`}
+                />
+              </button>
             </label>
-          </div>
-          <DatePickerWithRange
-            selectedDate={selectedDate}
-            onDateChange={handleDateChange}
-            isRange={isRange}
-          />
-        </div>
-      </div>
-
-      <div className="relative mb-6">
-        {showAIInsight && (
-          <div>
-            <Button
-              onClick={toggleAIInsight}
-              className="absolute -top-10 right-2 text-gray-800"
-            >
-              {showAIInsight ? 'Hide' : 'Show'}
-            </Button>
-            <AIInsight
-              startDate={selectedDate?.from}
-              endDate={isRange ? selectedDate?.to : selectedDate?.from}
+            <DatePickerWithRange
+              selectedDate={selectedDate}
+              onDateChange={handleDateChange}
+              isRange={isRange}
+              compact
+              className="w-auto"
             />
           </div>
-        )}
-        {!showAIInsight && (
-          <Button
-            onClick={toggleAIInsight}
-            className="absolute -top-10 right-2 text-gray-800 font-medium"
-          >
-            ✨ Show AI Sales Insights
-          </Button>
-        )}
-      </div>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 pb-8">
+      <section className="rounded-3xl border border-white/10 bg-card/70 p-6 shadow-glow">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-muted">
+              Intelligence
+            </p>
+            <h2 className="text-2xl font-semibold text-primary-foreground">
+              AI Sales Mentor
+            </h2>
+            <p className="text-sm text-secondary-foreground/70">
+              Summaries from orders, restocks, and revenue in seconds.
+            </p>
+          </div>
+          <Button
+            variant="brand"
+            onClick={toggleAIInsight}
+            className="shrink-0"
+          >
+            {showAIInsight ? 'Hide Insight' : 'Generate Insight'}
+          </Button>
+        </div>
+        <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+          {showAIInsight ? (
+            <div className="max-h-72 overflow-auto pr-2">
+              <AIInsight
+                startDate={selectedDate?.from}
+                endDate={isRange ? selectedDate?.to : selectedDate?.from}
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-secondary-foreground/70">
+              Tap “Generate Insight” to let Sarana explain what changed,
+              highlight risks, and surface the best opportunities for your team.
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatsCard
-          icon={<FaBoxesPacking className="h-7 w-7 md:h-9 md:w-9" />}
+          icon={<FaBoxesPacking className="h-6 w-6" />}
           desc="Items Sold"
           value={itemsSold.toString()}
         />
         <StatsCard
-          icon={<MdWidgets className="h-7 w-7 md:h-9 md:w-9" />}
+          icon={<MdWidgets className="h-6 w-6" />}
           desc="Items Restocked"
           value={itemsRestocked.toString()}
         />
         <StatsCard
-          icon={<FaMoneyBillWave className="h-7 w-7 md:h-9 md:w-9" />}
+          icon={<FaMoneyBillWave className="h-6 w-6" />}
           desc="Sales Revenue"
           value={`IDR ${totalRevenue.toLocaleString()}`}
         />
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-        <div className="p-4 md:p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
-          <h2 className="text-sm md:text-lg font-medium">
-            All Time Revenue Stats
-          </h2>
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <article className="rounded-3xl border border-white/10 bg-card/80 p-6 shadow-glow">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-primary-foreground">
+              Revenue Momentum
+            </h2>
+            <span className="text-xs uppercase tracking-[0.35em] text-muted">
+              All time
+            </span>
+          </div>
           <RevenueChart categories={categories} data={revenueData} />
-        </div>
-        <div className="p-4 md:p-6 rounded-lg shadow-md bg-secondary border border-gray-200">
-          <h2 className="text-sm md:text-lg font-medium">Sales by Category</h2>
+        </article>
+        <article className="rounded-3xl border border-white/10 bg-card/80 p-6 shadow-glow">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-primary-foreground">
+              Sales by Category
+            </h2>
+            <span className="text-xs uppercase tracking-[0.35em] text-muted">
+              Snapshot
+            </span>
+          </div>
           <SalesByCategoryChart data={buildingSupplySalesData} />
-        </div>
-      </div>
+        </article>
+      </section>
     </div>
   );
 };

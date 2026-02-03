@@ -51,18 +51,16 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
   };
 
   return (
-    <Card className="sticky top-16 h-[90vh] flex flex-col bg-white border border-gray-300 text-gray-900 text-left cursor-pointer">
+    <Card className="sticky top-24 flex min-h-[85vh] lg:min-h-[92vh] max-h-[100vh] flex-col border-white/10 bg-card/90 text-secondary-foreground">
       <CardHeader>
-        <CardTitle className="text-gray-900 text-left text-2xl mb-4">
+        <CardTitle className="mb-4 text-left text-2xl text-primary-foreground">
           Selected Items
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow overflow-auto items-center">
+      <CardContent className="flex-grow overflow-auto">
         {Object.keys(selectedItems).length === 0 ? (
-          <div className="my-auto flex h-full">
-            <p className="text-left text-gray-400 text-sm font-light pt-10">
-              No items selected
-            </p>
+          <div className="my-auto flex h-full items-center justify-center">
+            <p className="text-center text-sm text-muted">No items selected</p>
           </div>
         ) : (
           Object.entries(selectedItems).map(([productId, quantity]) => {
@@ -71,19 +69,21 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
             return (
               <div
                 key={productId}
-                className="mb-4 text-gray-900 text-left text-xl flex items-center justify-between"
+                className="mb-4 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 text-left text-base"
               >
-                <div className="flex flex-col w-full">
-                  <div className="flex justify-between">
-                    <p className="text-base">{product.name}</p>
+                <div className="flex w-full flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg font-semibold text-primary-foreground">
+                      {product.name}
+                    </p>
                     <button
                       onClick={() => onRemoveItem(productId)}
-                      className="ml-4 text-gray-400"
+                      className="ml-4 text-muted transition hover:text-red-400"
                     >
                       <IoIosCloseCircleOutline />
                     </button>
                   </div>
-                  <div className="flex gap-2 justify-between items-center">
+                  <div className="flex items-center justify-between gap-2">
                     <Input
                       type="number"
                       value={quantity}
@@ -92,9 +92,9 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
                       }
                       max={product.stock}
                       min={1}
-                      className="border w-1/2 h-8"
+                      className="w-1/2 border-white/20 bg-transparent"
                     />
-                    <p className="text-gray-900 text-base">
+                    <p className="text-base text-secondary-foreground">
                       IDR {(product.sellPrice * quantity).toLocaleString()}
                     </p>
                   </div>
@@ -104,19 +104,19 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
           })
         )}
       </CardContent>
-      <CardFooter className="sticky bottom-0 bg-white p-4 border-t">
-        <div className="flex flex-col w-full">
-          <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-lg">
-              Subtotal:
+      <CardFooter className="sticky bottom-0 border-t border-white/10 bg-card/80">
+        <div className="flex w-full flex-col gap-4">
+          <div className="text-left py-4">
+            <p className="text-sm uppercase tracking-[0.3em] text-muted">
+              Subtotal
             </p>
-            <p className="text-xl text-left text-gray-900">
+            <p className="text-3xl font-semibold text-primary-foreground">
               IDR {subtotal.toLocaleString()}
             </p>
           </div>
-          <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-lg">
-              Amount Paid:
+          <div className="text-left">
+            <p className="text-sm uppercase tracking-[0.3em] text-muted pb-2">
+              Amount Paid
             </p>
             <Input
               type="text"
@@ -127,14 +127,14 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
                 }
               }}
               onChange={handleAmountPaidChange}
-              className="border w-full h-8 text-gray-900 text-lg"
+              className="h-12 w-full text-lg"
             />
           </div>
-          <div className="mt-4 text-left">
-            <p className="font-bold text-left text-gray-900 text-lg">
-              Return Money:
+          <div className="text-left">
+            <p className="text-sm uppercase tracking-[0.3em] text-muted">
+              Return Money
             </p>
-            <p className="text-xl text-left text-gray-900">
+            <p className="text-2xl text-secondary-foreground">
               IDR {returnMoney.toLocaleString()}
             </p>
           </div>
@@ -145,6 +145,7 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
               !Object.keys(selectedItems).length ||
               parseFloat(amountPaid.replace(/,/g, '')) < subtotal
             }
+            className="mt-2"
           >
             Proceed
           </Button>
