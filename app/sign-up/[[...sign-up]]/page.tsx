@@ -4,27 +4,29 @@ import { FaHandshakeSimple, FaLeaf, FaTimeline } from 'react-icons/fa6';
 
 const authCardAppearance = {
   elements: {
-    rootBox: 'w-full',
-    card: 'bg-transparent shadow-none border-0 p-0',
-    main: 'space-y-5',
+    rootBox: 'w-full max-w-full min-w-0',
+    cardBox: 'w-full max-w-full min-w-0',
+    card: 'w-full max-w-full min-w-0 bg-transparent shadow-none border-0 p-0',
+    main: 'w-full max-w-full min-w-0 space-y-5',
+    form: 'w-full max-w-full min-w-0',
     headerTitle: 'text-primary-foreground text-xl font-semibold',
     headerSubtitle: 'text-muted text-sm',
-    socialButtons: 'flex flex-col gap-3',
+    socialButtons: 'flex w-full flex-col gap-3',
     socialButtonsBlockButton:
       'w-full rounded-2xl border border-white/40 bg-white/15 px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/25',
     formField: 'space-y-2',
     formFieldLabel: 'text-sm font-medium text-secondary-foreground',
     formFieldInput:
-      'rounded-2xl border-2 border-white/50 bg-white/10 px-4 py-3 text-primary-foreground placeholder:text-muted focus:border-primary/70 focus:ring-0 backdrop-blur',
+      'w-full rounded-2xl border-2 border-white/50 bg-white/10 px-4 py-3 text-primary-foreground placeholder:text-muted focus:border-primary/70 focus:ring-0 backdrop-blur',
     formButtonPrimary:
       'w-full rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:bg-primary/90',
-    footer: 'justify-center',
+    footer: 'w-full justify-center',
     footerAction__signIn:
       'text-primary hover:text-primary-foreground font-semibold',
     footerAction__signUp:
       'text-primary hover:text-primary-foreground font-semibold',
     identityPreview:
-      'rounded-2xl border border-white/10 bg-surface/80 text-secondary-foreground',
+      'w-full max-w-full min-w-0 rounded-2xl border border-white/10 bg-surface/80 text-secondary-foreground',
   },
   variables: {
     colorPrimary: '#818CF8',
@@ -54,9 +56,9 @@ const highlights = [
 
 export default function Page() {
   return (
-    <section className="rounded-3xl border border-white/10 bg-card/80 p-6 shadow-glow lg:p-10">
-      <div className="grid items-center gap-10 lg:grid-cols-[1fr_1fr]">
-        <div className="mx-auto w-full max-w-md rounded-2xl border border-white/10 bg-surface/70 p-6 shadow-glow">
+    <section className="rounded-3xl border border-white/10 bg-card/80 p-4 shadow-glow sm:p-6 lg:p-10">
+      <div className="grid items-start gap-8 lg:items-center lg:gap-10 lg:grid-cols-[1fr_1fr]">
+        <div className="mx-auto w-full max-w-md rounded-2xl border border-white/10 bg-surface/70 p-5 shadow-glow sm:p-6">
           <SignUp
             path="/sign-up"
             afterSignOutUrl="/sign-in"
@@ -69,7 +71,7 @@ export default function Page() {
             Sarana POS
           </p>
           <div>
-            <h1 className="text-3xl font-semibold text-primary-foreground sm:text-4xl">
+            <h1 className="text-2xl font-semibold text-primary-foreground sm:text-3xl lg:text-4xl">
               Built for growing family businesses
             </h1>
             <p className="mt-3 text-base text-muted">

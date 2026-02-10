@@ -164,8 +164,8 @@ const POSPage = () => {
       </section>
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[2fr_1fr] xl:grid-cols-[3fr_1fr]">
-        <section className="flex max-h-[100vh] flex-col overflow-hidden rounded-3xl border border-white/10 bg-card/60 p-4 shadow-glow">
-          <div className="flex-1 overflow-auto pr-1">
+        <section className="flex max-h-none flex-col overflow-visible rounded-3xl border border-white/10 bg-card/60 p-4 shadow-glow lg:max-h-[100vh] lg:overflow-hidden">
+          <div className="flex-1 overflow-visible pr-0 lg:overflow-auto lg:pr-1">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredProducts?.map((product) => (
                 <ProductCard
@@ -177,7 +177,7 @@ const POSPage = () => {
             </div>
           </div>
         </section>
-        <div className="h-full max-h-[100vh]">
+        <div className="h-auto max-h-none lg:h-full lg:max-h-[100vh]">
           <SelectedItemsList
             selectedItems={selectedItems}
             products={productsData?.products || []}

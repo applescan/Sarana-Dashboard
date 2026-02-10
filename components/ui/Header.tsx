@@ -92,26 +92,30 @@ export default function Header() {
               <SignedIn>
                 <UserButton />
               </SignedIn>
-              <button
-                type="button"
-                className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/5 text-white"
-                onClick={() => setMenuOpen((prev) => !prev)}
-              >
-                {menuOpen ? (
-                  <MdClose className="h-5 w-5" />
-                ) : (
-                  <FaBarsStaggered className="h-5 w-5" />
-                )}
-              </button>
+              {!hideAuthCta && (
+                <button
+                  type="button"
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/5 text-white"
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                >
+                  {menuOpen ? (
+                    <MdClose className="h-5 w-5" />
+                  ) : (
+                    <FaBarsStaggered className="h-5 w-5" />
+                  )}
+                </button>
+              )}
             </div>
           </div>
           <SignedIn>
             <div
               className={`lg:hidden ${menuOpen ? 'mt-6 opacity-100' : 'pointer-events-none h-0 opacity-0'} transition-all`}
             >
-              <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-5">
                 {navItems.map((item) => (
-                  <NavLink key={item.path} {...item} />
+                  <div key={item.path} className="rounded-2xl bg-white/5 px-4 py-3">
+                    <NavLink {...item} />
+                  </div>
                 ))}
               </div>
             </div>

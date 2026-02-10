@@ -363,7 +363,7 @@ const ProductTable: FC<ProductTableProps> = ({ columns, data, categories }) => {
         button={'Close'}
       />
 
-      <div className="overflow-hidden rounded-3xl border border-white/10 bg-card/80 shadow-glow">
+      <div className="overflow-x-auto rounded-3xl border border-white/10 bg-card/80 shadow-glow">
         <table className="w-full min-w-[600px] text-left text-sm">
           <thead>
             <tr className="bg-white/5 text-muted uppercase tracking-[0.25em]">

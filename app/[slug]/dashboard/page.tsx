@@ -83,7 +83,7 @@ const DashboardPage: FC = () => {
               trending.
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
             <label className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.35em] text-muted">
               Range
               <button
@@ -107,14 +107,14 @@ const DashboardPage: FC = () => {
               onDateChange={handleDateChange}
               isRange={isRange}
               compact
-              className="w-auto"
+              className="w-full sm:w-auto"
             />
           </div>
         </div>
       </section>
 
       <section className="rounded-3xl border border-white/10 bg-card/70 p-6 shadow-glow">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.35em] text-muted">
               Intelligence
@@ -129,7 +129,7 @@ const DashboardPage: FC = () => {
           <Button
             variant="brand"
             onClick={toggleAIInsight}
-            className="shrink-0"
+            className="w-full shrink-0 sm:w-auto"
           >
             {showAIInsight ? 'Hide Insight' : 'Generate Insight'}
           </Button>

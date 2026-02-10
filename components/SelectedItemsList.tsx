@@ -51,7 +51,7 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
   };
 
   return (
-    <Card className="sticky top-24 flex min-h-[85vh] lg:min-h-[92vh] max-h-[100vh] flex-col border-white/10 bg-card/90 text-secondary-foreground">
+    <Card className="flex min-h-[60vh] flex-col border-white/10 bg-card/90 text-secondary-foreground sm:min-h-[70vh] lg:sticky lg:top-24 lg:min-h-[92vh] lg:max-h-[100vh]">
       <CardHeader>
         <CardTitle className="mb-4 text-left text-2xl text-primary-foreground">
           Selected Items
@@ -104,7 +104,7 @@ const SelectedItemsList: FC<SelectedItemsListProps> = ({
           })
         )}
       </CardContent>
-      <CardFooter className="sticky bottom-0 border-t border-white/10 bg-card/80">
+      <CardFooter className="border-t border-white/10 bg-card/80 lg:sticky lg:bottom-0">
         <div className="flex w-full flex-col gap-4">
           <div className="text-left py-4">
             <p className="text-sm uppercase tracking-[0.3em] text-muted">
