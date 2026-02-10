@@ -113,7 +113,10 @@ export default function Header() {
             >
               <div className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-5">
                 {navItems.map((item) => (
-                  <div key={item.path} className="rounded-2xl bg-white/5 px-4 py-3">
+                  <div
+                    key={item.path}
+                    className="rounded-2xl bg-white/5 px-4 py-3"
+                  >
                     <NavLink {...item} />
                   </div>
                 ))}
