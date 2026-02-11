@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import React, { useState, useEffect, FC } from 'react';
+import React, { useState, useEffect, FC, useMemo, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import {
   GET_DASHBOARD_DATA,
@@ -40,13 +40,10 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
     loading: itemsSoldLoading,
     data: itemsSoldData,
     error: itemsSoldError,
-  } = useQuery(GET_ITEMS_SOLD);
+  } = useQuery(GET_ITEMS_SOLD, { variables: { startDate, endDate } });
 
-  const {
-    loading: itemsRestockedLoading,
-    data: itemsRestockedData,
-    error: itemsRestockedError,
-  } = useQuery(GET_ITEMS_RESTOCKED);
+  const { loading: itemsRestockedLoading, error: itemsRestockedError } =
+    useQuery(GET_ITEMS_RESTOCKED, { variables: { startDate, endDate } });
 
   const {
     loading: productsLoading,
@@ -68,55 +65,100 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
     itemsRestockedError ||
     productsError;
 
-  useEffect(() => {
+  const promptInput = useMemo(() => {
     if (
-      dashboardData?.itemsSold &&
-      dashboardData?.itemsRestocked &&
-      dashboardData?.revenues &&
-      dashboardData?.categories &&
-      ordersData?.orders &&
-      itemsSoldData?.itemsSold
+      !dashboardData?.itemsSold ||
+      !dashboardData?.itemsRestocked ||
+      !dashboardData?.revenues ||
+      !dashboardData?.categories ||
+      !ordersData?.orders ||
+      !itemsSoldData?.itemsSold ||
+      !productsData?.products
     ) {
-      const bestSellers = [...itemsSoldData.itemsSold]
-        .sort((a, b) => b.quantity - a.quantity)
-        .slice(0, 3)
-        .map((item: ItemsSold) => item.product.name)
-        .join(', ');
-
-      const defaultInput = `Provide insights based on the following data:
-      - Items Sold: ${dashboardData.itemsSold.reduce(
-        (acc: number, item: ItemsSold) => acc + item.quantity,
-        0,
-      )}
-      - Items Restocked: ${dashboardData.itemsRestocked.reduce(
-        (acc: number, item: ItemsRestocked) => acc + item.quantity,
-        0,
-      )}
-      - Total Revenue: IDR ${dashboardData.revenues
-        .reduce((acc: number, r: Revenue) => acc + r.amount, 0)
-        .toLocaleString()}
-      - Orders: ${ordersData.orders.length}
-      - Best Selling Products: ${bestSellers}
-      - Categories: ${dashboardData.categories
-        .map((c: Category) => c.name)
-        .join(', ')}`;
-      sendAIRequest(defaultInput);
+      return '';
     }
-  }, [
-    dashboardData,
-    ordersData,
-    itemsSoldData,
-    itemsRestockedData,
-    productsData,
-  ]);
+
+    const totalItemsSold = dashboardData.itemsSold.reduce(
+      (acc: number, item: ItemsSold) => acc + item.quantity,
+      0,
+    );
+    const totalItemsRestocked = dashboardData.itemsRestocked.reduce(
+      (acc: number, item: ItemsRestocked) => acc + item.quantity,
+      0,
+    );
+    const totalRevenue = dashboardData.revenues.reduce(
+      (acc: number, r: Revenue) => acc + r.amount,
+      0,
+    );
+    const orderCount = ordersData.orders.length;
+    const totalOrderValue = ordersData.orders.reduce(
+      (acc: number, order: { totalAmount: number }) => acc + order.totalAmount,
+      0,
+    );
+    const avgOrderValue = orderCount ? totalOrderValue / orderCount : 0;
+
+    const bestSellers = [...itemsSoldData.itemsSold]
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 3)
+      .map((item: ItemsSold) => item.product.name)
+      .join(', ');
+
+    const categoryTotals = new Map<string, number>();
+    dashboardData.itemsSold.forEach((item: ItemsSold) => {
+      const name = item.product.category?.name ?? 'Uncategorized';
+      categoryTotals.set(name, (categoryTotals.get(name) ?? 0) + item.quantity);
+    });
+    const topCategories = Array.from(categoryTotals.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name]) => name)
+      .join(', ');
+
+    const lowStock = [...productsData.products]
+      .sort((a, b) => a.stock - b.stock)
+      .slice(0, 3)
+      .map((product) => `${product.name} (${product.stock})`)
+      .join(', ');
+
+    return `Provide insights based on the following data:
+    - Items Sold: ${totalItemsSold}
+    - Items Restocked: ${totalItemsRestocked}
+    - Total Revenue: IDR ${totalRevenue.toLocaleString()}
+    - Orders: ${orderCount}
+    - Average Order Value: IDR ${avgOrderValue.toFixed(0)}
+    - Best Selling Products: ${bestSellers || 'None'}
+    - Top Categories: ${topCategories || 'None'}
+    - Lowest Stock Products: ${lowStock || 'None'}
+    - Categories: ${dashboardData.categories
+      .map((c: Category) => c.name)
+      .join(', ')}`;
+  }, [dashboardData, ordersData, itemsSoldData, productsData]);
+
+  const lastPromptRef = useRef<string>('');
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (!promptInput || loading || error) return;
+    if (lastPromptRef.current === promptInput) return;
+    lastPromptRef.current = promptInput;
+    sendAIRequest(promptInput);
+  }, [promptInput, loading, error]);
+
+  useEffect(() => {
+    return () => abortRef.current?.abort();
+  }, []);
 
   const sendAIRequest = async (input: string) => {
     try {
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
       setAIError(null);
       setAIChatResponse('');
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           messages: [
             { role: 'user', content: input + ' in 3 sentences or less.' },
@@ -124,6 +166,9 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`AI request failed with status ${response.status}`);
+      }
       if (!response.body) throw new Error('No response body from AI');
 
       const reader = response.body.getReader();
@@ -133,10 +178,13 @@ const AIInsight: FC<AIInsightProps> = ({ startDate, endDate }) => {
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-        aiText += decoder.decode(value);
+        aiText += decoder.decode(value, { stream: true });
         setAIChatResponse(aiText);
       }
+      aiText += decoder.decode();
+      setAIChatResponse(aiText);
     } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
       console.error('AI Error:', err);
       setAIError('⚠️ Failed to get insights. Please try again later.');
     }
